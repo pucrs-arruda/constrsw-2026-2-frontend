@@ -1,0 +1,87 @@
+:root {
+  // Brand & Colors (DESIGN.md)
+  --color-primary: #0066B3;
+  --color-primary-foreground: #FFFFFF;
+  --color-primary-container: #D0E5F4;
+  --color-on-primary-container: #00386B;
+
+  --color-secondary: #0A2540;
+  --color-secondary-foreground: #FFFFFF;
+  --color-secondary-container: #D6DEE8;
+  --color-on-secondary-container: #0A2540;
+
+  --color-tertiary: #6DCDF6;
+  --color-tertiary-foreground: #0A2540;
+  --color-tertiary-container: #E5F6FD;
+  --color-on-tertiary-container: #063A55;
+
+  --color-accent: #6DCDF6;
+  --color-accent-foreground: #0A2540;
+
+  --color-gold: #C4A035;
+  --color-gold-foreground: #1A1400;
+  --color-gold-container: #F7EBC7;
+  --color-on-gold-container: #4A3A00;
+
+  --color-destructive: #B1101A;
+  --color-destructive-foreground: #FFFFFF;
+  --color-error: #B1101A;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FDECEC;
+
+  --color-success: #1B6B4A;
+  --color-success-foreground: #FFFFFF;
+  --color-warning: #C4A035;
+  --color-warning-foreground: #1A1400;
+
+  --color-background: #F5F8FC;
+  --color-foreground: #0A2540;
+  --color-surface: #F5F8FC;
+  --color-surface-container: #E4EBF3;
+  --color-surface-container-low: #EEF3F8;
+  --color-surface-container-high: #D8E2EC;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-on-surface: #0A2540;
+  --color-on-surface-variant: #4A5568;
+
+  --color-border: #C5D0DE;
+  --color-outline: #C5D0DE;
+  --color-outline-variant: #E8EEF5;
+  --color-ring: #0066B3;
+
+  --color-occupancy-free: #E7F3EC;
+  --color-occupancy-taken: #E8EEF5;
+  --color-occupancy-exception: #E5F6FD;
+
+  // Typography
+  --font-family-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'Source Code Pro', Consolas, Monaco, monospace;
+
+  // Spacing & Metrics (DESIGN.md locked metrics)
+  --header-height: 64px;
+  --tertiary-strip-height: 4px;
+  --sidebar-width: 280px;
+  --button-height: 40px;
+  --touch-target: 48px;
+  --text-field-height: 56px;
+  --table-header-height: 48px;
+  --table-row-height: 52px;
+  --compact-row-height: 72px;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+  --spacing-7: 48px;
+
+  --page-padding: 24px;
+  --page-padding-compact: 16px;
+
+  // Shapes / Rounded
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 20px;
+}
