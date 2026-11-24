@@ -2,7 +2,7 @@
 
 Interface Web SPA do sistema Closed CRAS desenvolvida para a disciplina ConstrSW 2026/2 (PUCRS).
 
-## Contrato e Superfícies
+## Contrato e Superfícies (`spec-frontend`)
 
 Pacote SPEC:
 
@@ -12,9 +12,10 @@ _bmad-output/specs/spec-frontend/surfaces.md
 _bmad-output/specs/spec-frontend/ownership.md
 _bmad-output/specs/spec-frontend/contribution.md
 _bmad-output/specs/spec-frontend/stack.md
+_bmad-output/specs/spec-frontend/traceability.md
 ```
 
-Companions de UX: EXPERIENCE + DESIGN em `_bmad-output/planning-artifacts/ux-designs/ux-constrsw-2026-2-2026-11-23/`.
+Companions de UX: `EXPERIENCE.md` + `DESIGN.md` em `_bmad-output/planning-artifacts/ux-designs/ux-constrsw-2026-2-2026-11-23/`.
 Galeria PNG (25 frames) + amostra responsiva compact/medium: **[mockups/README.md](mockups/README.md)**.
 
 | Superfície | Dono |
@@ -29,10 +30,14 @@ Galeria PNG (25 frames) + amostra responsiva compact/medium: **[mockups/README.m
 | UX-PROFESSORS, UX-PROFESSOR-VIEW | Grupo 07 (`professors`) |
 | UX-ROOMS | Grupo 08 (`rooms`) |
 
+> **Nota sobre Ownership e Scaffold Provisório (`spec-frontend/ownership.md`):**
+> O **Grupo 08 é dono exclusivamente da superfície `UX-ROOMS`** (`src/app/surfaces/ux-rooms/`).
+> De acordo com o contrato (`ownership.md`), o scaffold Angular, o shell (`UX-HOME`, app bar, menu lateral), a tela de login (`UX-LOGIN`), `UX-EMPLOYEES` e o kit compartilhado de UI pertencem ao **Prof. Arruda** (Epic 0). Como o Epic 0 ainda não foi publicado em `origin/main`, todo o código criado pelo Grupo 08 fora de `src/app/surfaces/ux-rooms/` (`src/app/shell/`, `src/app/shared/`, `src/app/auth/`, configurações raiz e estilos base) constitui **scaffold provisório** para viabilizar o desenvolvimento, os testes e a execução autônoma da superfície `UX-ROOMS`, sem reivindicar autoria sobre `UX-LOGIN` ou `UX-HOME`. Quando o scaffold oficial do Prof. Arruda for publicado, a superfície `src/app/surfaces/ux-rooms/` (exportando `ROOMS_ROUTES` via `loadChildren`) será plugada diretamente nele.
+
 ---
 
 ## Tecnologias e Stack
-- **Framework:** Angular 22.x (standalone components, routing, signals, zoneless/zoneless-ready)
+- **Framework:** Angular 22.x (standalone components, routing, signals)
 - **Componentes:** Angular Material M3 (Material Design 3) + Angular CDK
 - **Estilos:** SCSS modularizado com design tokens PUCRS (`_tokens.scss`, `_theme.scss`, `_typography.scss`)
 - **Fontes:** Source Sans 3, Source Code Pro e Material Symbols Outlined self-hosted via pacotes `@fontsource` (zero dependência de CDN externo em runtime)
@@ -43,9 +48,9 @@ Galeria PNG (25 frames) + amostra responsiva compact/medium: **[mockups/README.m
 
 ## Estrutura de Pastas
 
-A estrutura segue a arquitetura acordada na seção 6.3 do plano de orquestração:
+A estrutura segue a convenção da Seção 0.2 do plano e de `spec-frontend/contribution.md`:
 
-```
+```text
 frontend/
 ├── Dockerfile
 ├── nginx.conf
@@ -62,23 +67,20 @@ frontend/
     ├── styles/                           (_tokens.scss, _theme.scss, _typography.scss)
     └── app/
         ├── app.config.ts                 (Providers globais: Router, HttpClient, LOCALE_ID pt-BR, APP_CONFIG)
-        ├── app.routes.ts                 (Rotas com lazy loading e authGuard)
+        ├── app.routes.ts                 (Rotas raiz; registra /salas com loadChildren -> ROOMS_ROUTES)
         ├── app.component.ts              (Componente raiz)
-        ├── core/
+        ├── shell/                        (PROVISÓRIO — Prof. Arruda: app-shell, app-bar 64dp, nav-drawer 280px, login, home, placeholder)
+        ├── auth/                         (PROVISÓRIO — Prof. Arruda: auth.service.ts, auth.interceptor.ts, auth.guard.ts, identity.model.ts)
+        ├── shared/                       (PROVISÓRIO — Prof. Arruda: kit compartilhado)
         │   ├── config/app-config.ts      (Token APP_CONFIG e interface)
-        │   ├── layout/                   (Shell, app-bar 64dp, nav-drawer 280px, nav-items)
-        │   ├── auth/                     (Stubs AG-04; implementação real AG-05)
         │   ├── http/                     (Tradução de erros e filtros: AG-06)
         │   └── ui/                       (ConfirmDialog, RefusalBanner, ErrorBanner, Skeleton, EmptyState)
-        ├── features/
-        │   ├── login/                    (Página de login: AG-05)
-        │   ├── home/                     (Landing autenticada simples)
-        │   ├── placeholder/              (Página para módulos de outros grupos)
-        │   └── rooms/
-        │       ├── data/                 (Modelos e cliente HTTP de salas: AG-06)
-        │       ├── list/                 (Lista de salas: AG-07)
-        │       └── detail/               (Detalhe e recursos de acessibilidade: AG-08)
-        └── shared/                       (Utilitários compartilhados)
+        └── surfaces/
+            └── ux-rooms/                 (GRUPO 08 — Dono oficial: UX-ROOMS)
+                ├── ux-rooms.routes.ts    (Exporta ROOMS_ROUTES carregado via loadChildren em /salas)
+                ├── data/                 (Modelos e cliente HTTP de salas: AG-06)
+                ├── list/                 (Lista de salas e dialog de formulário: AG-07)
+                └── detail/               (Detalhe da sala, turmas e recursos de acessibilidade: AG-08)
 ```
 
 ---
@@ -122,7 +124,7 @@ Os artefatos compilados serão gerados em `dist/frontend/browser`.
 
 O frontend possui um `Dockerfile` multi-stage:
 1. **Estágio de build (`node:24-alpine`):** Compila a aplicação Angular para produção e injeta as variáveis de ambiente `VITE_OAUTH_BASE_URL` e `VITE_BFF_BASE_URL` no arquivo `public/config.json`.
-2. **Estágio de runtime (`nginx:alpine`):** Serve os arquivos estáticos e atua como proxy reverso para `/api/auth/` (`http://oauth:8088/`) e `/api/bff/` (`http://api:3001/`), além de expor o healthcheck em `/health`.
+2. **Estágio de runtime (`nginx:alpine`):** Serve os arquivos estáticos e atua como proxy reverso para `/api/auth/` (`http://oauth:8088`) e `/api/bff/` (`http://api:3001`), além de expor o healthcheck em `/health`.
 
 ### Build da imagem Docker isolada:
 ```bash
@@ -138,11 +140,15 @@ docker compose up -d --build frontend
 
 ---
 
-## Convenções de Código e Design Tokens
+## Convenções de Código, Responsividade e Design Tokens
 - **Design Tokens:** Definidos em `src/styles/_tokens.scss` e `_theme.scss` a partir do `DESIGN.md`.
+- **Classes de janela (`EXPERIENCE.md` / Seção 0.4):**
+  - `Compact`: `360–599px` (drawer modal; caption e e-mail ocultos na app bar, mantendo hambúrguer, marca, avatar e botão Sair)
+  - `Medium`: `600–1279px` (drawer modal abaixo de `1024px` e drawer fixo de `280px` a partir de `1024px`)
+  - `Expanded`: `>= 1280px` (drawer fixo de `280px`, tabela completa e master-detail em 2 colunas)
 - **Métricas Material M3:**
   - App bar: 64dp com faixa tertiary de 4dp
-  - Botões (filled, outlined, text): altura fixa de 40dp e border-radius de 20px
+  - Botões (filled, outlined, text): altura fixa de 40dp e border-radius de 20px (alvo de toque >= 48px em compact/medium)
   - Inputs: altura de 56dp
   - Tabela: cabeçalho 48dp, linhas 52dp
-- **Acessibilidade:** WCAG 2.2 AA, atributos `role="alert"`, navegação por teclado (Esc fecha drawer modal) e gerenciamento de foco.
+- **Acessibilidade:** WCAG 2.2 AA, atributos `role="alert"`, navegação por teclado (Esc fecha drawer modal e devolve o foco ao botão de menu).

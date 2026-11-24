@@ -12,8 +12,8 @@ import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 
 import { routes } from './app.routes';
-import { APP_CONFIG, DEFAULT_APP_CONFIG, AppConfig } from './core/config/app-config';
-import { authInterceptor } from './core/auth/auth.interceptor';
+import { APP_CONFIG, DEFAULT_APP_CONFIG, AppConfig } from './shared/config/app-config';
+import { authInterceptor } from './auth/auth.interceptor';
 
 registerLocaleData(localePt, 'pt-BR');
 

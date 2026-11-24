@@ -242,8 +242,15 @@ export class ShellComponent {
   @ViewChild('drawer') drawer!: MatSidenav;
   @ViewChild('menuButton', { read: ElementRef }) menuButton?: ElementRef<HTMLButtonElement>;
 
+  /** Pivô do drawer fixo (>= 1024px) e alias isExpanded para compatibilidade com template */
   readonly isExpanded = signal<boolean>(false);
+  /** Classe compact (360–599px) */
   readonly isCompact = signal<boolean>(false);
+  /** Classe medium (600–1279px) */
+  readonly isMedium = signal<boolean>(false);
+  /** Classe expanded de conteúdo (>= 1280px: tabela completa e master-detail em 2 colunas) */
+  readonly isWideExpanded = signal<boolean>(false);
+
   readonly identity = this.authService.identity;
   readonly userInitials = computed(() => {
     const email = this.identity()?.email ?? '';
@@ -257,13 +264,16 @@ export class ShellComponent {
 
   constructor() {
     this.breakpointObserver
-      .observe(['(min-width: 1024px)', '(max-width: 599px)'])
+      .observe(['(max-width: 599px)', '(min-width: 1024px)', '(min-width: 1280px)'])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
-        const expanded = result.breakpoints['(min-width: 1024px)'] ?? false;
         const compact = result.breakpoints['(max-width: 599px)'] ?? false;
-        this.isExpanded.set(expanded);
+        const navFixed = result.breakpoints['(min-width: 1024px)'] ?? false;
+        const wideExpanded = result.breakpoints['(min-width: 1280px)'] ?? false;
         this.isCompact.set(compact);
+        this.isExpanded.set(navFixed);
+        this.isMedium.set(!compact && !wideExpanded);
+        this.isWideExpanded.set(wideExpanded);
       });
   }
 

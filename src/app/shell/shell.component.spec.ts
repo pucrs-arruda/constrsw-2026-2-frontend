@@ -80,5 +80,44 @@ describe('ShellComponent', () => {
     expect(closeSpy).toHaveBeenCalled();
     expect(document.activeElement).toBe(menuBtn);
   });
+
+  it('deve refletir os estados responsivos para as larguras 360px (compact), 768px (medium) e 1280px (expanded)', () => {
+    // 360px: compact = true, expanded (nav fixo) = false, medium = false, wideExpanded = false
+    component.isCompact.set(true);
+    component.isExpanded.set(false);
+    component.isMedium.set(false);
+    component.isWideExpanded.set(false);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.menu-button')).toBeTruthy();
+    expect(compiled.querySelector('.brand-caption')).toBeNull();
+    expect(compiled.querySelector('.user-meta')).toBeNull();
+    expect(compiled.querySelector('.user-avatar')?.textContent?.trim()).toBe('AD');
+    expect(compiled.querySelector('.main-content')?.classList.contains('compact-padding')).toBe(true);
+
+    // 768px: compact = false, expanded (nav fixo) = false, medium = true, wideExpanded = false
+    component.isCompact.set(false);
+    component.isExpanded.set(false);
+    component.isMedium.set(true);
+    component.isWideExpanded.set(false);
+    fixture.detectChanges();
+    expect(compiled.querySelector('.menu-button')).toBeTruthy();
+    expect(compiled.querySelector('.brand-caption')?.textContent?.trim()).toBe('PUCRS · ConstrSW');
+    expect(compiled.querySelector('.user-email')?.textContent?.trim()).toBe('admin@pucrs.br');
+    expect(compiled.querySelector('.main-content')?.classList.contains('compact-padding')).toBe(false);
+
+    // 1280px: compact = false, expanded (nav fixo) = true, medium = false, wideExpanded = true
+    component.isCompact.set(false);
+    component.isExpanded.set(true);
+    component.isMedium.set(false);
+    component.isWideExpanded.set(true);
+    fixture.detectChanges();
+    expect(compiled.querySelector('.menu-button')).toBeNull();
+    expect(compiled.querySelector('.brand-caption')?.textContent?.trim()).toBe('PUCRS · ConstrSW');
+    expect(compiled.querySelector('.user-email')?.textContent?.trim()).toBe('admin@pucrs.br');
+    expect(component.drawer.mode).toBe('side');
+    expect(component.drawer.opened).toBe(true);
+  });
 });
+
 

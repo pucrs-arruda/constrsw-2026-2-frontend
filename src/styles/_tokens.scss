@@ -83,4 +83,12 @@
   // Typography Families
   --font-family-sans: 'Source Sans 3', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-mono: 'Source Code Pro', Consolas, Monaco, monospace;
+
+  // Breakpoints (EXPERIENCE.md / Seção 0.4: compact 360-599, medium 600-1279 com drawer fixo >=1024, expanded >=1280)
+  --breakpoint-compact-max: 599px;
+  --breakpoint-medium-min: 600px;
+  --breakpoint-nav-pivot: 1024px;
+  --breakpoint-medium-max: 1279px;
+  --breakpoint-expanded-min: 1280px;
 }
+
