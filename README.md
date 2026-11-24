@@ -1,13 +1,19 @@
 # frontend
 
-Serviço frontend — ConstrSW 2026/2 (Closed CRAS).
+SPA Angular Closed CRAS — ConstrSW 2026/2.
 
-SPA Angular + Angular Material. Dados só via BFF; autenticação via `backend/oauth` (Bearer). Tokens e anatomia: spines UX no repo base (`_bmad-output/planning-artifacts/ux-designs/ux-constrsw-2026-2-2026-11-23/`).
+## Donos de superfície (OQ-1 fechada)
 
-## Mockups
+| Superfície | Dono |
+|---|---|
+| UX-LOGIN, UX-HOME, UX-EMPLOYEES | Prof. Arruda |
+| UX-CLASSES, UX-CLASS-ENROLLMENTS | Grupo 01 (`classes`) |
+| UX-CLASS-LESSONS | Grupo 02 (`lessons`) |
+| UX-LESSON-RESERVATIONS, UX-OCCUPANCY | Grupo 03 (`reservations`) |
+| UX-STUDENTS, UX-STUDENT-READ | Grupo 04 (`students`) |
+| UX-COURSES | Grupo 05 (`courses`) |
+| UX-RESOURCES | Grupo 06 (`resources`) |
+| UX-PROFESSORS, UX-PROFESSOR-VIEW | Grupo 07 (`professors`) |
+| UX-ROOMS | Grupo 08 (`rooms`) |
 
-Galeria PNG dos 25 frames de produto + deep links Figma:
-
-→ **[mockups/README.md](mockups/README.md)**
-
-Arquivo editável: [Figma Closed CRAS](https://www.figma.com/design/FTSWNiR5rQHXqDizXFJYqp) (só leitura para os grupos).
+Mapa canônico: `_bmad-output/specs/spec-closed-cras/capability-map.md` e companion EXPERIENCE 2026-11-23.
