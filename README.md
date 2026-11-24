@@ -31,3 +31,11 @@ Companions de UX: EXPERIENCE + DESIGN em `_bmad-output/planning-artifacts/ux-des
 | UX-ROOMS | Grupo 08 (`rooms`) |
 
 Mapa canônico: `_bmad-output/specs/spec-frontend/ownership.md`.
+
+## Mockups
+
+Galeria PNG (25 frames) + amostra responsiva compact/medium:
+
+→ **[mockups/README.md](mockups/README.md)**
+
+Figma (só leitura): https://www.figma.com/design/FTSWNiR5rQHXqDizXFJYqp

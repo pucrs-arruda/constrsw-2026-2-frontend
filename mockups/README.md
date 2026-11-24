@@ -41,12 +41,27 @@ PNGs em `frames/`. Deep links usam `node-id` com hífen.
 | 24 | Professor — plano + roster (FR-31) | [frames/24-professor-plano-roster.png](frames/24-professor-plano-roster.png) | [abrir](https://www.figma.com/design/FTSWNiR5rQHXqDizXFJYqp?node-id=85-958) |
 | 25 | Student — minhas aulas (FR-19) | [frames/25-student-minhas-aulas.png](frames/25-student-minhas-aulas.png) | [abrir](https://www.figma.com/design/FTSWNiR5rQHXqDizXFJYqp?node-id=85-1124) |
 
+## Amostra responsiva
+
+Pasta [`responsive/`](responsive/) — compact (~360) e medium (~768) de superfícies-chave (gate CAP-12 / EXPERIENCE *Responsive & Platform*).  
+HTML de apoio: [`closed-cras-responsivo.html`](closed-cras-responsivo.html) (abrir no browser).
+
+| Amostra | Compact | Medium |
+|---|---|---|
+| Login | [login-compact.png](responsive/login-compact.png) | [login-medium.png](responsive/login-medium.png) |
+| Home / nav | [home-nav-compact.png](responsive/home-nav-compact.png) | [home-nav-medium.png](responsive/home-nav-medium.png) |
+| Salas — lista | [salas-compact.png](responsive/salas-compact.png) | [salas-medium.png](responsive/salas-medium.png) |
+| Salas — dialog | [salas-dialog-compact.png](responsive/salas-dialog-compact.png) | [salas-dialog-medium.png](responsive/salas-dialog-medium.png) |
+| Sala — detalhe | [sala-detalhe-compact.png](responsive/sala-detalhe-compact.png) | [sala-detalhe-medium.png](responsive/sala-detalhe-medium.png) |
+| Turma — aulas | [turma-aulas-compact.png](responsive/turma-aulas-compact.png) | [turma-aulas-medium.png](responsive/turma-aulas-medium.png) |
+| Alunos — 503 | [alunos-503-compact.png](responsive/alunos-503-compact.png) | [alunos-503-medium.png](responsive/alunos-503-medium.png) |
+
 ## Como usar
 
 1. Clone o submódulo `frontend` (ou o repo base com submódulos).
-2. Abra `mockups/README.md` no GitHub ou localmente e navegue pelos PNGs.
-3. Para implementar, use o Figma + spines; **não** trate o PNG como fonte de tokens.
+2. Abra `mockups/README.md` no GitHub ou localmente e navegue pelos PNGs / HTML responsivo.
+3. Para implementar, use o Figma + spines + `spec-frontend`; **não** trate o PNG como fonte de tokens.
 
 ## Fora desta galeria
 
-Biblioteca de componentes (Lib 1–7) e frames responsivos compact/medium ficam só no Figma — não são telas de produto obrigatórias nesta pasta.
+Biblioteca de componentes (Lib 1–7) permanece só no Figma. Expanded (≥1280) cobre-se pelos frames de produto em `frames/`.
