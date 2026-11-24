@@ -48,16 +48,21 @@ import { NavDrawerComponent } from './nav-drawer.component';
 
           <div class="brand-group">
             <span class="brand-title type-title">Closed CRAS</span>
-            <span class="brand-caption type-caption">PUCRS · ConstrSW</span>
+            @if (!isCompact()) {
+              <span class="brand-caption type-caption">PUCRS · ConstrSW</span>
+            }
           </div>
 
           <span class="spacer"></span>
 
           <div class="user-area">
             @if (identity(); as user) {
-              <div class="user-meta">
-                <span class="user-email type-body">{{ user.email }}</span>
-              </div>
+              @if (!isCompact()) {
+                <div class="user-meta">
+                  <span class="user-email type-body">{{ user.email }}</span>
+                </div>
+              }
+              <span class="user-avatar" [attr.aria-label]="user.email">{{ userInitials() }}</span>
             }
             <button
               mat-button
@@ -73,15 +78,18 @@ import { NavDrawerComponent } from './nav-drawer.component';
       </header>
 
       <!-- Sidenav Container -->
-      <mat-sidenav-container class="sidenav-container">
+      <mat-sidenav-container class="sidenav-container" (backdropClick)="closeModalDrawer()">
         <mat-sidenav
           #drawer
           [mode]="isExpanded() ? 'side' : 'over'"
           [opened]="isExpanded()"
+          [disableClose]="true"
+          [autoFocus]="!isExpanded() ? 'first-tabbable' : 'dialog'"
           class="nav-sidenav"
           [attr.role]="isExpanded() ? 'navigation' : 'dialog'"
           [attr.aria-label]="'Menu principal'"
-          (closed)="onDrawerClosed()"
+          (closedStart)="restoreMenuFocus()"
+          (closed)="restoreMenuFocus()"
         >
           <app-nav-drawer (itemClicked)="onNavItemClicked()"></app-nav-drawer>
         </mat-sidenav>
@@ -157,7 +165,7 @@ import { NavDrawerComponent } from './nav-drawer.component';
       .user-area {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
       }
 
       .user-meta {
@@ -171,9 +179,36 @@ import { NavDrawerComponent } from './nav-drawer.component';
         font-weight: 600;
       }
 
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        background-color: var(--color-secondary);
+        color: #ffffff;
+        display: inline-grid;
+        place-items: center;
+        font-weight: 600;
+        font-size: 13px;
+        flex: none;
+        user-select: none;
+      }
+
       .btn-logout {
         height: 40px;
         color: var(--color-primary);
+      }
+
+      @media (max-width: 599px) {
+        .brand-caption,
+        .user-meta {
+          display: none !important;
+        }
+        .app-bar {
+          padding: 0 8px;
+        }
+        .user-area {
+          gap: 8px;
+        }
       }
 
       .sidenav-container {
@@ -210,6 +245,15 @@ export class ShellComponent {
   readonly isExpanded = signal<boolean>(false);
   readonly isCompact = signal<boolean>(false);
   readonly identity = this.authService.identity;
+  readonly userInitials = computed(() => {
+    const email = this.identity()?.email ?? '';
+    const localPart = email.split('@')[0] || 'U';
+    const segments = localPart.split(/[._-]+/).filter(Boolean);
+    if (segments.length >= 2) {
+      return (segments[0][0] + segments[1][0]).toUpperCase();
+    }
+    return localPart.slice(0, 2).toUpperCase();
+  });
 
   constructor() {
     this.breakpointObserver
@@ -224,26 +268,39 @@ export class ShellComponent {
   }
 
   toggleDrawer(): void {
-    this.drawer?.toggle();
+    if (this.drawer?.opened) {
+      this.closeModalDrawer();
+    } else {
+      this.drawer?.open();
+    }
+  }
+
+  closeModalDrawer(): void {
+    if (!this.isExpanded() && this.drawer?.opened) {
+      void this.drawer.close().then(() => {
+        this.restoreMenuFocus();
+      });
+      this.restoreMenuFocus();
+    }
   }
 
   onNavItemClicked(): void {
+    this.closeModalDrawer();
+  }
+
+  restoreMenuFocus(): void {
     if (!this.isExpanded()) {
-      this.drawer?.close();
+      const btn = this.menuButton?.nativeElement;
+      btn?.focus();
+      setTimeout(() => btn?.focus(), 0);
     }
   }
 
-  onDrawerClosed(): void {
-    if (!this.isExpanded()) {
-      // Retorna o foco para o botão de menu após fechar
-      this.menuButton?.nativeElement?.focus();
-    }
-  }
-
-  @HostListener('keydown.escape')
-  onEscape(): void {
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscape(event?: Event): void {
     if (!this.isExpanded() && this.drawer?.opened) {
-      this.drawer.close();
+      event?.preventDefault();
+      this.closeModalDrawer();
     }
   }
 
@@ -251,3 +308,4 @@ export class ShellComponent {
     await this.authService.logout();
   }
 }
+

@@ -31,10 +31,25 @@ describe('ShellComponent', () => {
     expect(title).toBe('Closed CRAS');
   });
 
-  it('deve exibir o e-mail do usuário autenticado', () => {
+  it('deve exibir o e-mail e o avatar do usuário autenticado em modo não compacto', () => {
+    component.isCompact.set(false);
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const email = compiled.querySelector('.user-email')?.textContent?.trim();
+    const avatar = compiled.querySelector('.user-avatar')?.textContent?.trim();
     expect(email).toBe('admin@pucrs.br');
+    expect(avatar).toBe('AD');
+  });
+
+  it('deve ocultar caption e e-mail em modo compacto (375px), mantendo marca, avatar e Sair', () => {
+    component.isCompact.set(true);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.brand-caption')).toBeNull();
+    expect(compiled.querySelector('.user-meta')).toBeNull();
+    expect(compiled.querySelector('.brand-title')?.textContent?.trim()).toBe('Closed CRAS');
+    expect(compiled.querySelector('.user-avatar')?.textContent?.trim()).toBe('AD');
+    expect(compiled.querySelector('.btn-logout')).toBeTruthy();
   });
 
   it('deve chamar logout ao clicar no botão Sair', async () => {
@@ -45,14 +60,25 @@ describe('ShellComponent', () => {
     expect(logoutSpy).toHaveBeenCalled();
   });
 
-  it('deve fechar drawer no Escape quando drawer estiver aberto e não expandido', () => {
+  it('deve fechar drawer no Escape quando aberto e não expandido, restaurando o foco no botão de menu', async () => {
     component.isExpanded.set(false);
     fixture.detectChanges();
 
-    const closeSpy = vi.spyOn(component.drawer, 'close');
-    // simula drawer aberto
+    const compiled = fixture.nativeElement as HTMLElement;
+    const menuBtn = compiled.querySelector('.menu-button') as HTMLButtonElement;
+    const navLink = compiled.querySelector('.nav-link') as HTMLElement;
+
+    const closeSpy = vi.spyOn(component.drawer, 'close').mockResolvedValue('close');
     Object.defineProperty(component.drawer, 'opened', { value: true, configurable: true });
-    component.onEscape();
+
+    // Simula foco dentro do drawer antes do Escape
+    navLink?.focus();
+
+    component.onEscape(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await Promise.resolve();
+
     expect(closeSpy).toHaveBeenCalled();
+    expect(document.activeElement).toBe(menuBtn);
   });
 });
+
