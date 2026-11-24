@@ -1,0 +1,70 @@
+@use '@angular/material' as mat;
+
+// Define Angular Material M3 theme with custom palettes
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$cyan-palette,
+  ),
+  typography: (
+    brand-family: 'Source Sans 3, -apple-system, sans-serif',
+    plain-family: 'Source Sans 3, -apple-system, sans-serif',
+  ),
+  density: (
+    scale: 0,
+  ),
+));
+
+@mixin apply-theme() {
+  @include mat.theme($theme);
+
+  // Exact brand colors overrides for Angular Material M3 system tokens
+  --mat-sys-primary: var(--color-primary);
+  --mat-sys-on-primary: var(--color-primary-foreground);
+  --mat-sys-primary-container: var(--color-primary-container);
+  --mat-sys-on-primary-container: var(--color-on-primary-container);
+
+  --mat-sys-secondary: var(--color-secondary);
+  --mat-sys-on-secondary: var(--color-secondary-foreground);
+  --mat-sys-secondary-container: var(--color-secondary-container);
+  --mat-sys-on-secondary-container: var(--color-on-secondary-container);
+
+  --mat-sys-tertiary: var(--color-tertiary);
+  --mat-sys-on-tertiary: var(--color-tertiary-foreground);
+  --mat-sys-tertiary-container: var(--color-tertiary-container);
+  --mat-sys-on-tertiary-container: var(--color-on-tertiary-container);
+
+  --mat-sys-error: var(--color-error);
+  --mat-sys-on-error: var(--color-on-error);
+  --mat-sys-error-container: var(--color-error-container);
+
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--color-on-surface);
+  --mat-sys-surface-container: var(--color-surface-container);
+  --mat-sys-surface-container-low: var(--color-surface-container-low);
+  --mat-sys-surface-container-high: var(--color-surface-container-high);
+  --mat-sys-surface-container-lowest: var(--color-surface-container-lowest);
+  --mat-sys-on-surface-variant: var(--color-on-surface-variant);
+
+  --mat-sys-outline: var(--color-outline);
+  --mat-sys-outline-variant: var(--color-outline-variant);
+
+  // Button locked 40px height
+  .mat-mdc-button,
+  .mat-mdc-unelevated-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-outlined-button {
+    height: var(--button-height) !important;
+    min-height: var(--button-height) !important;
+    border-radius: var(--radius-full) !important;
+    font-family: var(--font-family-sans) !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 20px !important;
+  }
+
+  .mat-mdc-button-base {
+    touch-action: manipulation;
+  }
+}
