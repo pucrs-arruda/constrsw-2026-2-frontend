@@ -2,6 +2,20 @@
 
 SPA Angular Closed CRAS — ConstrSW 2026/2.
 
+## Contrato
+
+Apontar o pacote SPEC:
+
+```text
+_bmad-output/specs/spec-frontend/SPEC.md
+_bmad-output/specs/spec-frontend/surfaces.md
+_bmad-output/specs/spec-frontend/ownership.md
+_bmad-output/specs/spec-frontend/contribution.md
+_bmad-output/specs/spec-frontend/stack.md
+```
+
+Companions de UX: EXPERIENCE + DESIGN em `_bmad-output/planning-artifacts/ux-designs/ux-constrsw-2026-2-2026-11-23/`.
+
 ## Donos de superfície (OQ-1 fechada)
 
 | Superfície | Dono |
@@ -16,4 +30,4 @@ SPA Angular Closed CRAS — ConstrSW 2026/2.
 | UX-PROFESSORS, UX-PROFESSOR-VIEW | Grupo 07 (`professors`) |
 | UX-ROOMS | Grupo 08 (`rooms`) |
 
-Mapa canônico: `_bmad-output/specs/spec-closed-cras/capability-map.md` e companion EXPERIENCE 2026-11-23.
+Mapa canônico: `_bmad-output/specs/spec-frontend/ownership.md`.
