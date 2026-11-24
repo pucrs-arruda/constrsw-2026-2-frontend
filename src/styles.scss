@@ -1,6 +1,7 @@
 @use './styles/tokens';
 @use './styles/typography';
 @use './styles/theme';
+@use '@angular/material' as mat;
 
 html, body {
   height: 100%;
@@ -19,4 +20,8 @@ html {
 
 * {
   box-sizing: border-box;
+}
+
+.courses-fullscreen {
+  @include mat.dialog-overrides((container-shape: 0));
 }

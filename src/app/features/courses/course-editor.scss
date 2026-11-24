@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+  padding-top: 8px;
+}
+.wide {
+  grid-column: 1 / -1;
+}
+h3 {
+  font-size: 16px;
+  margin: 8px 0 12px;
+}
+.scope {
+  margin: 0 0 12px;
+  color: var(--color-on-surface-variant);
+}
+@media (max-width: 839px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 599px) {
+  :host,
+  form {
+    height: 100%;
+  }
+  mat-dialog-content {
+    flex: 1;
+    max-height: none;
+  }
+  mat-dialog-actions button {
+    min-height: 48px;
+  }
+}

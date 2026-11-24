@@ -1,0 +1,244 @@
+@let state = screen();
+<header>
+  <span class="context">Contexto · Disciplinas</span>
+  <h1>
+    {{
+      state.type === 'detail'
+        ? state.course.name
+        : detailRoute()
+          ? 'Detalhe da disciplina'
+          : 'Disciplinas'
+    }}
+  </h1>
+  <p>
+    {{
+      detailRoute()
+        ? 'Ficha da disciplina, referências e itens do plano.'
+        : 'Disciplinas com turmas do semestre e plano de ensino.'
+    }}
+  </p>
+</header>
+@if (detailRoute()) {
+  <a mat-button routerLink="/disciplinas" [queryParams]="query()">Voltar ao catálogo</a>
+}
+<app-refusal-banner [message]="refusal()" />
+@switch (state.type) {
+  @case ('loading') {
+    <app-skeleton [variant]="detailRoute() ? 'card' : 'table'" />
+  }
+  @case ('error') {
+    <app-error-banner [message]="state.message" (retry)="reload()" />
+  }
+  @case ('list') {
+    <div class="toolbar">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Buscar por código ou nome</mat-label>
+        <input
+          matInput
+          type="search"
+          [value]="search()"
+          (input)="search.set($any($event.target).value)"
+        />
+      </mat-form-field>
+      <button mat-flat-button (click)="edit({ kind: 'course' })">Nova disciplina</button>
+    </div>
+    @if (filtered().length) {
+      <div class="catalog">
+        <table mat-table [dataSource]="filtered()" aria-label="Catálogo de disciplinas">
+          <ng-container matColumnDef="code">
+            <th mat-header-cell *matHeaderCellDef>Código</th>
+            <td mat-cell *matCellDef="let c" class="code">{{ c.code }}</td>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nome</th>
+            <td mat-cell *matCellDef="let c" class="name">{{ c.name }}</td>
+          </ng-container>
+          <ng-container matColumnDef="classes">
+            <th mat-header-cell *matHeaderCellDef>Turmas do semestre</th>
+            <td mat-cell *matCellDef="let c">
+              {{ c.classes.length
+              }}<span class="compact">{{ c.classes.length === 1 ? ' turma' : ' turmas' }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="hours">
+            <th mat-header-cell *matHeaderCellDef>Carga horária</th>
+            <td mat-cell *matCellDef="let c">{{ c.workloadHours }} h</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let c">
+              <div class="actions">
+                <a
+                  mat-button
+                  [routerLink]="['/disciplinas', c.id]"
+                  [queryParams]="query()"
+                  [attr.aria-label]="'Abrir ' + c.name"
+                  >Abrir</a
+                >
+                <button
+                  mat-button
+                  (click)="edit({ kind: 'course', course: c })"
+                  [attr.aria-label]="'Editar ' + c.name"
+                >
+                  Editar
+                </button>
+                <button
+                  mat-button
+                  class="danger"
+                  [disabled]="deleting()"
+                  (click)="remove({ kind: 'course', course: c })"
+                  [attr.aria-label]="'Excluir ' + c.name"
+                >
+                  Excluir
+                </button>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
+    } @else if (state.courses.length) {
+      <app-empty-state
+        message="Nenhuma disciplina encontrada."
+        actionLabel="Limpar busca"
+        (action)="search.set('')"
+      />
+    } @else {
+      <app-empty-state
+        message="Nenhuma disciplina cadastrada."
+        actionLabel="Nova disciplina"
+        (action)="edit({ kind: 'course' })"
+      />
+    }
+  }
+  @case ('detail') {
+    @let c = state.course;
+    <div class="detail-grid">
+      <section class="card facts">
+        <h2>Dados da disciplina</h2>
+        <dl>
+          <dt>Código</dt>
+          <dd>{{ c.code }}</dd>
+          <dt>Carga horária</dt>
+          <dd>{{ c.workloadHours }} horas</dd>
+          <dt>Ementa</dt>
+          <dd class="prose">{{ c.syllabus || 'Sem ementa cadastrada.' }}</dd>
+        </dl>
+        <div class="actions">
+          <button mat-flat-button (click)="edit({ kind: 'course', course: c })">
+            Editar disciplina
+          </button>
+          <button
+            mat-button
+            class="danger"
+            [disabled]="deleting()"
+            (click)="remove({ kind: 'course', course: c })"
+          >
+            Excluir
+          </button>
+        </div>
+      </section>
+      <section class="card">
+        <h2>
+          Referências bibliográficas <span>{{ c.bibliographicReferences.length }}</span>
+        </h2>
+        <ul>
+          @for (r of c.bibliographicReferences; track r.id) {
+            <li>
+              <strong>{{ r.title }}</strong>
+              <p>{{ r.authors }}</p>
+              <small
+                >{{ references[r.type] }}
+                @if (r.publisher) {
+                  · {{ r.publisher }}
+                }
+                @if (r.year) {
+                  · {{ r.year }}
+                }
+                @if (r.edition) {
+                  · Edição {{ r.edition }}
+                }
+              </small>
+              <div class="actions">
+                <button
+                  mat-button
+                  (click)="edit({ kind: 'reference', course: c, reference: r })"
+                  [attr.aria-label]="'Editar referência ' + r.title"
+                >
+                  Editar
+                </button>
+                <button
+                  mat-button
+                  class="danger"
+                  [disabled]="deleting()"
+                  (click)="remove({ kind: 'reference', course: c, reference: r })"
+                  [attr.aria-label]="'Excluir referência ' + r.title"
+                >
+                  Excluir
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li>Nenhuma referência cadastrada.</li>
+          }
+        </ul>
+        <button mat-button (click)="edit({ kind: 'reference', course: c })">Nova referência</button>
+      </section>
+      <section class="card">
+        <h2>
+          Itens do plano <span>{{ c.syllabusItems.length }}</span>
+        </h2>
+        <ol>
+          @for (item of c.syllabusItems; track item.id) {
+            <li>
+              <small>{{ item.order }} · {{ kinds[item.kind] }}</small>
+              <p class="prose">{{ item.statement }}</p>
+              <div class="actions">
+                <button
+                  mat-button
+                  (click)="edit({ kind: 'item', course: c, item })"
+                  [attr.aria-label]="'Editar item ' + item.order"
+                >
+                  Editar
+                </button>
+                <button
+                  mat-button
+                  class="danger"
+                  [disabled]="deleting()"
+                  (click)="remove({ kind: 'item', course: c, item })"
+                  [attr.aria-label]="'Excluir item ' + item.order"
+                >
+                  Excluir
+                </button>
+              </div>
+            </li>
+          } @empty {
+            <li>Nenhum item cadastrado no plano de ensino.</li>
+          }
+        </ol>
+        <button mat-button (click)="edit({ kind: 'item', course: c })">Novo item do plano</button>
+      </section>
+      <section class="card classes">
+        <h2>
+          Turmas do semestre <span>{{ c.classes.length }}</span>
+        </h2>
+        <ul>
+          @for (group of c.classes; track group.id) {
+            <li>
+              <strong>{{ group.label || group.code || 'Turma' }}</strong>
+              <p>
+                @if (group.code && group.label) {
+                  {{ group.code }} ·
+                }
+                {{ group.year }}/{{ group.semester }} · {{ group.seats }} vagas
+              </p>
+            </li>
+          } @empty {
+            <li>Nenhuma turma vinculada no semestre vigente.</li>
+          }
+        </ul>
+      </section>
+    </div>
+  }
+}

@@ -10,7 +10,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Alunos', route: '/em-breve/alunos', icon: 'person' },
   { label: 'Salas de Aula', route: '/salas', icon: 'meeting_room' },
   { label: 'Recursos', route: '/em-breve/recursos', icon: 'devices' },
-  { label: 'Disciplinas', route: '/em-breve/disciplinas', icon: 'menu_book' },
+  { label: 'Disciplinas', route: '/disciplinas', icon: 'menu_book' },
   { label: 'Turmas', route: '/em-breve/turmas', icon: 'groups' },
   { label: 'Ocupação', route: '/em-breve/ocupacao', icon: 'calendar_month' },
   { label: 'Plano + roster', route: '/em-breve/plano-roster', icon: 'assignment' },

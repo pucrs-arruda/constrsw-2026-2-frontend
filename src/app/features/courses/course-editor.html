@@ -1,0 +1,111 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<form (submit)="$event.preventDefault(); save()" novalidate>
+  <mat-dialog-content>
+    @if (target.kind !== 'course') {
+      <p class="scope">{{ target.course.code }} · {{ target.course.name }}</p>
+    }
+    <app-refusal-banner [message]="message()" />
+    @if (target.kind === 'course') {
+      <div class="fields" [formGroup]="courseForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Código</mat-label>
+          <input matInput formControlName="code" maxlength="20" required />
+          <mat-error>Informe um código de até 20 caracteres.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Carga horária (h)</mat-label>
+          <input matInput formControlName="workloadHours" type="number" min="1" step="1" required />
+          <mat-error>Informe um número inteiro de horas maior que zero.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="wide">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="name" maxlength="200" required />
+          <mat-error>Informe o nome da disciplina.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="wide">
+          <mat-label>Ementa (opcional)</mat-label>
+          <textarea matInput rows="3" formControlName="syllabus"></textarea>
+        </mat-form-field>
+      </div>
+    }
+    @if (hasReference) {
+      @if (createCourse) {
+        <h3>Referência bibliográfica inicial</h3>
+      }
+      <div class="fields" [formGroup]="referenceForm">
+        <mat-form-field appearance="outline" class="wide">
+          <mat-label>Título</mat-label>
+          <input matInput formControlName="title" maxlength="300" required />
+          <mat-error>Informe o título da obra.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="wide">
+          <mat-label>Autores</mat-label>
+          <input matInput formControlName="authors" required />
+          <mat-error>Informe os autores.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de referência</mat-label>
+          <mat-select formControlName="type">
+            <mat-option value="BASIC">Básica</mat-option>
+            <mat-option value="SUPPLEMENTARY">Complementar</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Editora (opcional)</mat-label>
+          <input matInput formControlName="publisher" maxlength="150" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Ano (opcional)</mat-label>
+          <input matInput formControlName="year" type="number" min="1" max="9999" step="1" />
+          <mat-error>Informe um ano entre 1 e 9999.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Edição (opcional)</mat-label>
+          <input matInput formControlName="edition" maxlength="50" />
+        </mat-form-field>
+      </div>
+    }
+    @if (target.kind === 'item') {
+      <div class="fields" [formGroup]="itemForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de item</mat-label>
+          <mat-select formControlName="kind">
+            <mat-option value="CONTENT">Conteúdo</mat-option>
+            <mat-option value="BIBLIOGRAPHY">Bibliografia</mat-option>
+            <mat-option value="CRITERION">Critério</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Ordem</mat-label>
+          <input
+            matInput
+            formControlName="order"
+            type="number"
+            required
+            min="1"
+            max="32767"
+            step="1"
+          />
+          <mat-error>Escolha uma posição entre 1 e 32767.</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="wide">
+          <mat-label>Enunciado</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            formControlName="statement"
+            maxlength="2000"
+            required
+          ></textarea>
+          <mat-error>Informe o enunciado do item.</mat-error>
+        </mat-form-field>
+      </div>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" [disabled]="busy()" (click)="cancel()">Cancelar</button>
+    <button mat-flat-button type="submit" [disabled]="busy()">
+      {{ busy() ? 'Salvando…' : 'Salvar' }}
+    </button>
+  </mat-dialog-actions>
+</form>

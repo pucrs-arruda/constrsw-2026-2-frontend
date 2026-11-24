@@ -14,6 +14,16 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'salas' },
       {
+        path: 'disciplinas',
+        loadComponent: () => import('./features/courses/courses.page').then((m) => m.CoursesPage),
+        title: 'Disciplinas · Closed CRAS',
+      },
+      {
+        path: 'disciplinas/:id',
+        loadComponent: () => import('./features/courses/courses.page').then((m) => m.CoursesPage),
+        title: 'Detalhe da disciplina · Closed CRAS',
+      },
+      {
         path: 'salas',
         loadComponent: () => import('./features/rooms/list/rooms-list.page').then((m) => m.RoomsListPage),
         title: 'Salas de Aula',
