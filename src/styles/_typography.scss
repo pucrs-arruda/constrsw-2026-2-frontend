@@ -1,0 +1,60 @@
+// Self-hosted fonts via @fontsource (no external runtime CDN)
+@use '@fontsource/source-sans-3/300.css' as *;
+@use '@fontsource/source-sans-3/400.css' as *;
+@use '@fontsource/source-sans-3/600.css' as *;
+@use '@fontsource/source-sans-3/700.css' as *;
+
+@use '@fontsource/source-code-pro/400.css' as *;
+@use '@fontsource/source-code-pro/500.css' as *;
+@use '@fontsource/source-code-pro/600.css' as *;
+
+@use '@fontsource/material-symbols-outlined/index.css' as *;
+
+.type-display {
+  font-family: var(--font-family-sans);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 36px;
+}
+
+.type-headline {
+  font-family: var(--font-family-sans);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.type-title {
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.type-body {
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.type-label {
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.type-caption {
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.type-mono {
+  font-family: var(--font-family-mono);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}

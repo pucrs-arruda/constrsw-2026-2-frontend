@@ -1,0 +1,50 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as *;
+@use 'styles/theme' as theme;
+
+html {
+  height: 100%;
+  @include theme.apply-theme;
+}
+
+body {
+  color-scheme: light;
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-family-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+// Global button metric locks (DESIGN.md: 40dp height, 20px radius)
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-flat-button,
+.mat-mdc-unelevated-button {
+  height: 40px !important;
+  border-radius: var(--radius-full) !important;
+  font-family: var(--font-family-sans) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 20px !important;
+}
+
+// Table metric locks (DESIGN.md: 48dp header, 52dp row)
+.mat-mdc-table {
+  background-color: var(--color-surface-container-lowest) !important;
+
+  .mat-mdc-header-row {
+    height: 48px !important;
+    background-color: var(--color-surface-container) !important;
+  }
+
+  .mat-mdc-row {
+    height: 52px !important;
+  }
+}

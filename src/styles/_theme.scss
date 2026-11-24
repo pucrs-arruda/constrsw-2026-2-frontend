@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+
+$custom-theme: (
+  color: (
+    primary: mat.$azure-palette,
+    tertiary: mat.$cyan-palette,
+  ),
+  typography: 'Source Sans 3',
+  density: 0,
+);
+
+@mixin apply-theme {
+  @include mat.theme($custom-theme);
+
+  // M3 System Tokens Overrides conforme DESIGN.md
+  --mat-sys-primary: #0066B3;
+  --mat-sys-on-primary: #FFFFFF;
+  --mat-sys-primary-container: #D0E5F4;
+  --mat-sys-on-primary-container: #00386B;
+
+  --mat-sys-secondary: #0A2540;
+  --mat-sys-on-secondary: #FFFFFF;
+  --mat-sys-secondary-container: #D6DEE8;
+  --mat-sys-on-secondary-container: #0A2540;
+
+  --mat-sys-tertiary: #6DCDF6;
+  --mat-sys-on-tertiary: #0A2540;
+  --mat-sys-tertiary-container: #E5F6FD;
+  --mat-sys-on-tertiary-container: #063A55;
+
+  --mat-sys-error: #B1101A;
+  --mat-sys-on-error: #FFFFFF;
+  --mat-sys-error-container: #FDECEC;
+  --mat-sys-on-error-container: #410002;
+
+  --mat-sys-surface: #F5F8FC;
+  --mat-sys-on-surface: #0A2540;
+  --mat-sys-surface-variant: #E4EBF3;
+  --mat-sys-on-surface-variant: #4A5568;
+
+  --mat-sys-outline: #C5D0DE;
+  --mat-sys-outline-variant: #E8EEF5;
+
+  --mat-sys-surface-container: #E4EBF3;
+  --mat-sys-surface-container-low: #EEF3F8;
+  --mat-sys-surface-container-high: #D8E2EC;
+  --mat-sys-surface-container-lowest: #FFFFFF;
+}
