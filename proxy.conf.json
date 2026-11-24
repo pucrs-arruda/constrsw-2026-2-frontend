@@ -1,0 +1,18 @@
+{
+  "/api/auth": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": false,
+    "pathRewrite": {
+      "^/api/auth": ""
+    }
+  },
+  "/api/bff": {
+    "target": "http://localhost:8180",
+    "secure": false,
+    "changeOrigin": false,
+    "pathRewrite": {
+      "^/api/bff": ""
+    }
+  }
+}

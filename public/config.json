@@ -1,0 +1,4 @@
+{
+  "oauthBaseUrl": "/api/auth",
+  "bffBaseUrl": "/api/bff"
+}
