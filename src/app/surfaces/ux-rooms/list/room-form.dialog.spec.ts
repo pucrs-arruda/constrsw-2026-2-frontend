@@ -45,11 +45,19 @@ describe('RoomFormDialog', () => {
     expect(close).toHaveBeenCalledWith({ ...room, capacity: 40 });
   });
 
-  it('bloqueia o envio ao apagar a capacidade obrigatória', () => {
-    fixture.componentInstance.form.controls.capacity.setValue(null);
+  it('bloqueia o envio de capacidade inválida', () => {
+    fixture.componentInstance.form.controls.capacity.setValue(0);
     fixture.componentInstance.save();
     expect(fixture.componentInstance.form.controls.capacity.hasError('capacity')).toBe(true);
     expect(patch).not.toHaveBeenCalled();
+  });
+
+  it('aceita apagar a capacidade (opcional na API) e envia null', () => {
+    patch.mockReturnValue(of({ ...room, capacity: null }));
+    fixture.componentInstance.form.controls.capacity.setValue(null);
+    expect(fixture.componentInstance.form.controls.capacity.valid).toBe(true);
+    fixture.componentInstance.save();
+    expect(patch).toHaveBeenCalledWith('1', { capacity: null });
   });
 
   it('mantém os campos preenchidos e exibe a mensagem de conflito', () => {

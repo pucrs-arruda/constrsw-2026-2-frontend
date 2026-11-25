@@ -5,8 +5,10 @@ import {
   type TestRequest,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { Router } from '@angular/router';
+import { firstValueFrom, of, throwError } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthSession } from '../../../shell/auth-session';
 import { environment } from '../../../../environments/environment';
 import { RoomsApiService } from './rooms-api.service';
 import type { AccessibilityFeature, RoomUpdate, RoomView } from './rooms.models';
@@ -195,5 +197,75 @@ describe('RoomsApiService', () => {
         .flush(null, { status: 204, statusText: 'No Content' });
       await expect(result).resolves.toBeUndefined();
     }
+  });
+});
+
+describe('RoomsApiService — sessão expirada (401)', () => {
+  const refresh = vi.fn();
+  const clear = vi.fn();
+  const navigateByUrl = vi.fn();
+  let api: RoomsApiService;
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AuthSession, useValue: { refresh, clear } },
+        { provide: Router, useValue: { navigateByUrl } },
+      ],
+    });
+    api = TestBed.inject(RoomsApiService);
+    http = TestBed.inject(HttpTestingController);
+  });
+  afterEach(() => http.verify());
+
+  it('renova a sessão e repete a chamada que recebeu 401', async () => {
+    refresh.mockReturnValue(of(undefined));
+    const result = firstValueFrom(api.get(room.id));
+    http.expectOne({ method: 'GET', url: roomUrl }).flush(null, { status: 401, statusText: 'Unauthorized' });
+    await Promise.resolve();
+    http.expectOne({ method: 'GET', url: roomUrl }).flush(room);
+    await expect(result).resolves.toEqual(room);
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('renova também nas listas (HttpClient direto)', async () => {
+    refresh.mockReturnValue(of(undefined));
+    const result = firstValueFrom(api.list({}));
+    http.expectOne({ method: 'GET', url }).flush(null, { status: 401, statusText: 'Unauthorized' });
+    await Promise.resolve();
+    http.expectOne({ method: 'GET', url }).flush([room], { headers: { 'X-Total-Count': '1' } });
+    await expect(result).resolves.toEqual({ items: [room], total: 1 });
+  });
+
+  it('volta ao login quando a renovação falha', async () => {
+    refresh.mockReturnValue(throwError(() => new Error('refresh recusado')));
+    const result = firstValueFrom(api.remove(room.id));
+    http.expectOne({ method: 'DELETE', url: roomUrl }).flush(null, { status: 401, statusText: 'Unauthorized' });
+    await expect(result).rejects.toMatchObject({ kind: 'unauthorized', status: 401 });
+    expect(clear).toHaveBeenCalled();
+    expect(navigateByUrl).toHaveBeenCalledWith('/login');
+  });
+
+  it('volta ao login se o 401 persiste depois de renovar e não repete de novo', async () => {
+    refresh.mockReturnValue(of(undefined));
+    const result = firstValueFrom(api.get(room.id));
+    http.expectOne({ method: 'GET', url: roomUrl }).flush(null, { status: 401, statusText: 'Unauthorized' });
+    await Promise.resolve();
+    http.expectOne({ method: 'GET', url: roomUrl }).flush(null, { status: 401, statusText: 'Unauthorized' });
+    await expect(result).rejects.toMatchObject({ kind: 'unauthorized' });
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(navigateByUrl).toHaveBeenCalledWith('/login');
+  });
+
+  it('não tenta renovar erros que não são 401', async () => {
+    const result = firstValueFrom(api.get(room.id));
+    http.expectOne({ method: 'GET', url: roomUrl }).flush(null, { status: 403, statusText: 'Forbidden' });
+    await expect(result).rejects.toMatchObject({ kind: 'forbidden' });
+    expect(refresh).not.toHaveBeenCalled();
   });
 });
