@@ -1,0 +1,73 @@
+<app-edit-dialog-layout
+  [dialogTitle]="dialogTitle"
+  [closeDisabled]="saving()"
+>
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  <form class="dependent-form" [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Nome</mat-label>
+      <input matInput type="text" formControlName="name" autocomplete="name" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <mat-error>Informe o nome do dependente.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Data de nascimento</mat-label>
+      <input matInput type="date" formControlName="birthDate" />
+      @if (form.controls.birthDate.touched && form.controls.birthDate.invalid) {
+        <mat-error>Informe uma data válida (AAAA-MM-DD).</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Tipo de vínculo</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="dependencyType"
+        autocomplete="off"
+      />
+      @if (
+        form.controls.dependencyType.touched &&
+        form.controls.dependencyType.invalid
+      ) {
+        <mat-error>Informe o tipo de vínculo.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Situação</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="Active">Ativo</mat-option>
+        <mat-option value="Inactive">Inativo</mat-option>
+      </mat-select>
+      @if (form.controls.status.touched && form.controls.status.invalid) {
+        <mat-error>Selecione a situação.</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  <div editActions>
+    <button
+      type="button"
+      mat-button
+      [disabled]="saving()"
+      (click)="cancel()"
+    >
+      Cancelar
+    </button>
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      Salvar
+    </button>
+  </div>
+</app-edit-dialog-layout>

@@ -32,6 +32,8 @@ export class EditDialogLayout {
   readonly dialogTitle = input.required<string>();
   /** Accessible label for the close control (default Fechar). */
   readonly closeLabel = input('Fechar');
+  /** When true, disables the header close control (e.g. while saving). */
+  readonly closeDisabled = input(false);
 }
 
 export interface OpenEditDialogOptions<D> extends MatDialogConfig<D> {

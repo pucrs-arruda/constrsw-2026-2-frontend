@@ -1,0 +1,136 @@
+<section class="employees-detail" aria-labelledby="employees-detail-title">
+  @if (isCompact()) {
+    <a
+      class="employees-detail__back"
+      routerLink="/funcionarios"
+    >
+      ← Voltar para Funcionários
+    </a>
+  }
+
+  <header class="employees-detail__page-header">
+    <div class="employees-detail__titles">
+      <h1 id="employees-detail-title" class="employees-detail__title">
+        Detalhe do funcionário
+      </h1>
+      <p class="employees-detail__caption">
+        Consulte os dados do funcionário e mantenha os dependentes vinculados.
+      </p>
+    </div>
+  </header>
+
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @if (loading()) {
+    <app-skeleton-block label="Carregando funcionário…" [lines]="6" />
+  } @else if (notFound()) {
+    <app-empty-state
+      title="Funcionário não encontrado."
+      message="O registro solicitado não existe ou não está mais disponível."
+    >
+      <a
+        emptyCta
+        mat-flat-button
+        color="primary"
+        routerLink="/funcionarios"
+      >
+        Voltar para Funcionários
+      </a>
+    </app-empty-state>
+  } @else if (showMaster()) {
+    <div class="employees-detail__layout">
+      <article class="employees-detail__master" aria-labelledby="employee-master-title">
+        <h2 id="employee-master-title" class="employees-detail__panel-title">
+          {{ employee()!.name }}
+        </h2>
+        <dl class="employees-detail__fields">
+          <div class="employees-detail__field">
+            <dt>Nome</dt>
+            <dd>{{ employee()!.name }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>Matrícula</dt>
+            <dd>{{ employee()!.registrationNumber }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>Situação</dt>
+            <dd>{{ statusDisplay() }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>Cargo</dt>
+            <dd>{{ employee()!.position }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>Admissão</dt>
+            <dd>{{ hireDateDisplay() }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>E-mail</dt>
+            <dd>{{ employee()!.email || '—' }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>Telefone</dt>
+            <dd>{{ employee()!.phone || '—' }}</dd>
+          </div>
+          <div class="employees-detail__field">
+            <dt>Salário</dt>
+            <dd>{{ salaryDisplay() }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <section
+        class="employees-detail__dependents"
+        aria-labelledby="employee-dependents-title"
+      >
+        <div class="employees-detail__dependents-header">
+          <h2 id="employee-dependents-title" class="employees-detail__panel-title">
+            Dependentes
+          </h2>
+          @if (canWriteDependents()) {
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              class="employees-detail__cta"
+              (click)="onCreateDependent()"
+            >
+              Novo
+            </button>
+          }
+        </div>
+
+        @if (showDependentsEmpty()) {
+          <app-empty-state
+            title="Nenhum dependente cadastrado."
+            message="Inclua um dependente para vinculá-lo a este funcionário."
+          >
+            @if (canWriteDependents()) {
+              <button
+                emptyCta
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="onCreateDependent()"
+              >
+                Novo
+              </button>
+            }
+          </app-empty-state>
+        } @else if (showDependentsTable()) {
+          <app-responsive-data-table
+            [columns]="columns"
+            [rows]="dependentRows()"
+            [showOpen]="false"
+            [showEdit]="canWriteDependents()"
+            [showDelete]="canWriteDependents()"
+            (editRow)="onEditDependent($event)"
+            (deleteRow)="onDeleteDependent($event)"
+          />
+        }
+      </section>
+    </div>
+  }
+</section>

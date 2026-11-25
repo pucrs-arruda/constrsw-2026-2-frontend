@@ -6,7 +6,7 @@ import { HomeLanding } from './shell/home-landing';
 import { LoginPage } from './shell/login-page';
 import { SurfacePlaceholder } from './shell/surface-placeholder';
 import { EmployeesCreateStub } from './surfaces/ux-employees/employees-create-stub';
-import { EmployeesDetailStub } from './surfaces/ux-employees/employees-detail-stub';
+import { EmployeesDetailPage } from './surfaces/ux-employees/employees-detail-page';
 import { EmployeesListPage } from './surfaces/ux-employees/employees-list-page';
 
 export const routes: Routes = [
@@ -44,7 +44,7 @@ export const routes: Routes = [
           },
           {
             path: ':id',
-            component: EmployeesDetailStub,
+            component: EmployeesDetailPage,
           },
         ],
       },
