@@ -21,6 +21,7 @@ import { ApiError } from '../../../shared/http/api-error';
 import { ConfirmDialogComponent, EmptyStateComponent, ErrorBannerComponent, RefusalBannerComponent, SkeletonComponent } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import { Page, Room, RoomFilter, RoomQuery, RoomView } from '../data/rooms.models';
+import { capacityLabel } from '../data/rooms.utils';
 import { RoomFormDialog } from './room-form.dialog';
 
 const searchFields = ['code', 'name', 'building'] as const;
@@ -188,9 +189,7 @@ export class RoomsListPage {
     this.navigate({ q: null, campo: null, predio: null, capMin: null, ativa: null, page: null });
   }
 
-  capacityLabel(room: Room): string {
-    return room.capacity === null ? 'Capacidade não informada' : String(room.capacity);
-  }
+  readonly capacityLabel = capacityLabel;
 
   retry(): void {
     this.reload.next();

@@ -155,7 +155,10 @@ export class RoomFormDialog {
     if (this.saving() || this.form.invalid || this.resourceDraft.value.trim()) return;
     const patch = this.changes();
     if (this.room && Object.keys(patch).length === 0) return;
-    const request = this.room ? this.api.patch(this.room.id, patch) : this.api.create(this.values());
+    const { resourceIds, ...fields } = this.values();
+    const request = this.room
+      ? this.api.patch(this.room.id, patch)
+      : this.api.create(resourceIds.length ? { ...fields, resourceIds } : fields);
     this.saving.set(true);
     this.error.set('');
     this.form.disable();
