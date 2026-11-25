@@ -16,9 +16,13 @@
       >
     </button>
 
-    <span class="app-shell__mark" aria-hidden="true">
-      <span class="app-shell__mark-diamond"></span>
-    </span>
+    <img
+      class="app-shell__mark"
+      src="/brand/pucrs-brasao.png"
+      width="40"
+      height="40"
+      alt="Brasão PUCRS"
+    />
 
     <div class="app-shell__titles">
       <span class="app-shell__name">Closed CRAS</span>
@@ -69,7 +73,13 @@
               [routerLinkActiveOptions]="{ exact: true }"
               (click)="onNavItemClick()"
             >
-              {{ item.label }}
+              <mat-icon
+                matListItemIcon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >{{ item.icon }}</mat-icon
+              >
+              <span matListItemTitle>{{ item.label }}</span>
             </a>
           }
         </mat-nav-list>

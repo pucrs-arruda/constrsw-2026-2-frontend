@@ -5,6 +5,9 @@ import { guestGuard } from './shell/guest.guard';
 import { HomeLanding } from './shell/home-landing';
 import { LoginPage } from './shell/login-page';
 import { SurfacePlaceholder } from './shell/surface-placeholder';
+import { EmployeesCreatePage } from './surfaces/ux-employees/employees-create-page';
+import { EmployeesDetailPage } from './surfaces/ux-employees/employees-detail-page';
+import { EmployeesListPage } from './surfaces/ux-employees/employees-list-page';
 
 export const routes: Routes = [
   {
@@ -29,8 +32,21 @@ export const routes: Routes = [
       },
       {
         path: 'funcionarios',
-        component: SurfacePlaceholder,
-        data: { title: 'Funcionários' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: EmployeesListPage,
+          },
+          {
+            path: 'novo',
+            component: EmployeesCreatePage,
+          },
+          {
+            path: ':id',
+            component: EmployeesDetailPage,
+          },
+        ],
       },
       {
         path: 'professores',
@@ -61,8 +77,10 @@ export const routes: Routes = [
       },
       {
         path: 'turmas',
-        component: SurfacePlaceholder,
-        data: { title: 'Turmas' },
+        loadChildren: () =>
+          import('./surfaces/ux-classes/ux-classes.routes').then(
+            (m) => m.UX_CLASSES_ROUTES,
+          ),
       },
       {
         path: 'ocupacao',

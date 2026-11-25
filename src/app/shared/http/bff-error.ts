@@ -45,6 +45,94 @@ export interface MapBffHttpErrorOptions {
 
 const OUTAGE_STATUSES = new Set([0, 502, 503, 504]);
 
+/** pt-BR labels for OpenAPI employee Problem.code (institutional, not raw enum). */
+const PROBLEM_CODE_LABELS: Readonly<Record<string, string>> = {
+  validation: 'validação',
+  unauthorized: 'não autenticado',
+  forbidden: 'proibido',
+  'not-found': 'não encontrado',
+  conflict: 'conflito',
+  internal: 'erro interno',
+};
+
+/** Duck-typed body from {@link HttpErrorResponse} or BffRequestError-like wrappers. */
+function resolveProblemBody(err: unknown): unknown {
+  let raw: unknown = null;
+  if (err instanceof HttpErrorResponse) {
+    raw = err.error;
+  } else if (err && typeof err === 'object' && 'http' in err) {
+    const http = (err as { http: unknown }).http;
+    if (http instanceof HttpErrorResponse) {
+      raw = http.error;
+    }
+  }
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      return null;
+    }
+    try {
+      return JSON.parse(trimmed) as unknown;
+    } catch {
+      return null;
+    }
+  }
+  return raw;
+}
+
+/**
+ * Prefer RFC 7807-ish problem+json `detail`, then `title`.
+ * When `code` is present, appends a pt-BR label (e.g. `(conflito)`) if not already in text.
+ */
+export function formatBffProblemMessage(
+  err: HttpErrorResponse | { http: HttpErrorResponse } | unknown,
+): string | null {
+  const body = resolveProblemBody(err);
+  if (!body || typeof body !== 'object') {
+    return null;
+  }
+
+  const problem = body as {
+    detail?: unknown;
+    title?: unknown;
+    code?: unknown;
+  };
+
+  let base: string | null = null;
+  if (typeof problem.detail === 'string' && problem.detail.trim().length > 0) {
+    base = problem.detail.trim();
+  } else if (
+    typeof problem.title === 'string' &&
+    problem.title.trim().length > 0
+  ) {
+    base = problem.title.trim();
+  }
+
+  if (!base) {
+    return null;
+  }
+
+  const codeRaw =
+    typeof problem.code === 'string'
+      ? problem.code.trim()
+      : problem.code != null
+        ? String(problem.code).trim()
+        : '';
+  if (!codeRaw) {
+    return base;
+  }
+
+  const label = PROBLEM_CODE_LABELS[codeRaw] ?? codeRaw;
+  const baseLower = base.toLowerCase();
+  if (
+    baseLower.includes(codeRaw.toLowerCase()) ||
+    baseLower.includes(label.toLowerCase())
+  ) {
+    return base;
+  }
+  return `${base} (${label})`;
+}
+
 /**
  * Maps an HttpErrorResponse from BFF (or BFF-proxied) calls to institutional banners.
  * Does not perform retries or client-side composition fallbacks.
@@ -88,7 +176,10 @@ export function mapBffHttpError(
   return {
     kind: 'refusal',
     bannerKind: 'refusal',
-    message: options.refusalMessage?.trim() || BFF_BANNER_MESSAGES.refusal,
+    message:
+      options.refusalMessage?.trim() ||
+      formatBffProblemMessage(err) ||
+      BFF_BANNER_MESSAGES.refusal,
     status,
   };
 }

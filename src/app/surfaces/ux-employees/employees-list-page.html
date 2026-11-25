@@ -1,0 +1,71 @@
+<section class="employees-list" aria-labelledby="employees-list-title">
+  <header class="employees-list__page-header">
+    <div class="employees-list__titles">
+      <h1 id="employees-list-title" class="employees-list__title">Funcionários</h1>
+      <p class="employees-list__caption">
+        Consulte o cadastro de funcionários (incluindo inativos) e abra o
+        detalhe de cada registro.
+      </p>
+    </div>
+  </header>
+
+  <div class="employees-list__toolbar">
+    <mat-form-field
+      appearance="outline"
+      class="employees-list__search"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Buscar</mat-label>
+      <input
+        matInput
+        type="search"
+        name="employees-search"
+        autocomplete="off"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchInput($event)"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @if (loading()) {
+    <app-skeleton-block label="Carregando funcionários…" [lines]="5" />
+  } @else if (showEmpty()) {
+    <app-empty-state
+      title="Nenhum funcionário cadastrado ainda."
+      message="Use o botão Novo para cadastrar o primeiro funcionário."
+    />
+  } @else if (showNoSearchResults()) {
+    <app-empty-state
+      title="Nenhum resultado para a busca."
+      message="Ajuste o termo ou limpe a busca para ver todos os funcionários."
+    />
+  } @else if (showTable()) {
+    <app-responsive-data-table
+      [columns]="columns"
+      [rows]="filteredRows()"
+      [showOpen]="true"
+      [showEdit]="false"
+      [showDelete]="false"
+      (openRow)="onOpenRow($event)"
+    />
+  }
+
+  @if (canCreate()) {
+    <button
+      mat-fab
+      extended
+      color="primary"
+      type="button"
+      class="employees-list__fab"
+      aria-label="Novo funcionário"
+      (click)="onCreate()"
+    >
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+      Novo
+    </button>
+  }
+</section>
