@@ -147,8 +147,10 @@ describe('AppShell', () => {
       'AS',
     );
 
+    // O rótulo é o `[matListItemTitle]`: o `textContent` do <a> inclui a
+    // ligadura do ícone (ex. "badgeFuncionários").
     const labels = Array.from(
-      el.querySelectorAll('mat-nav-list a[mat-list-item], mat-nav-list a'),
+      el.querySelectorAll('mat-nav-list a [matListItemTitle]'),
     ).map((a) => a.textContent?.trim());
     expect(labels).toEqual(NAV_ITEMS.map((i) => i.label));
     expect(el.querySelector('.home-landing__title')?.textContent).toContain(
@@ -237,7 +239,9 @@ describe('AppShell', () => {
     const { fixture } = await openShell('/funcionarios');
     const el = fixture.nativeElement as HTMLElement;
     const active = el.querySelector('a.app-shell__nav-item--active');
-    expect(active?.textContent?.trim()).toBe('Funcionários');
+    expect(active?.querySelector('[matListItemTitle]')?.textContent?.trim()).toBe(
+      'Funcionários',
+    );
     expect(
       el.querySelector('.surface-placeholder__title')?.textContent,
     ).toContain('Funcionários');
