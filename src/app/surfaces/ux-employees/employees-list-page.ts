@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { BffRequestError, type AlertBannerKind } from '../../shared/http';
@@ -66,6 +67,7 @@ function matchesSearch(employee: EmployeeRead, query: string): boolean {
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     AlertBanner,
     EmptyState,
@@ -164,7 +166,7 @@ export class EmployeesListPage implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (list) => {
-          this.employees.set(list);
+          this.employees.set(Array.isArray(list) ? list : []);
           this.loading.set(false);
         },
         error: (err: unknown) => {
@@ -181,6 +183,12 @@ export class EmployeesListPage implements OnInit {
         this.canCreate.set(false);
         this.session.clear();
         void this.router.navigateByUrl('/login');
+        return;
+      }
+      // Empty catalog sometimes surfaces as 404 — treat as empty list so create FAB remains usable.
+      if (err.mapped.status === 404) {
+        this.bannerKind.set(null);
+        this.bannerMessage.set('');
         return;
       }
       const kind = err.mapped.bannerKind;

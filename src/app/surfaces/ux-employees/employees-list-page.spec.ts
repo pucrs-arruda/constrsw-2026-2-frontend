@@ -171,6 +171,26 @@ describe('EmployeesListPage', () => {
     expect(el.querySelector('app-empty-state')).not.toBeNull();
     expect(el.textContent).toContain('Nenhum funcionário cadastrado ainda.');
     expect(el.querySelector('app-responsive-data-table')).toBeNull();
+    const fab = el.querySelector('button.employees-list__fab');
+    expect(fab).not.toBeNull();
+    expect((fab?.textContent ?? '').trim()).toContain('Novo');
+  });
+
+  it('treats list 404 as empty catalog and keeps create FAB', async () => {
+    const fixture = createPage();
+    flushIdentity(['funcionario']);
+    const listReq = http.expectOne(`${environment.bffBaseUrl}/v1/employees`);
+    listReq.flush(
+      { message: 'not found' },
+      { status: 404, statusText: 'Not Found' },
+    );
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-empty-state')).not.toBeNull();
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+    expect(el.querySelector('button.employees-list__fab')).not.toBeNull();
   });
 
   it('filters rows client-side by search query', async () => {
@@ -219,17 +239,14 @@ describe('EmployeesListPage', () => {
     fixture.detectChanges();
   });
 
-  it('hides Nova when identity has no funcionario role', async () => {
+  it('hides create FAB when identity has no funcionario role', async () => {
     const fixture = createPage();
     flushPending({ papeis: ['professor'] });
     await fixture.whenStable();
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    const novaButtons = Array.from(el.querySelectorAll('button')).filter((btn) =>
-      (btn.textContent ?? '').trim().includes('Nova'),
-    );
-    expect(novaButtons).toHaveLength(0);
+    expect(el.querySelector('button.employees-list__fab')).toBeNull();
   });
 
   it('navigates to detail stub when Abrir is clicked', async () => {
@@ -250,7 +267,7 @@ describe('EmployeesListPage', () => {
     expect(navigateSpy).toHaveBeenCalledWith('/funcionarios/emp-1');
   });
 
-  it('navigates to create stub when Nova is clicked', async () => {
+  it('navigates to create when FAB Novo is clicked', async () => {
     const fixture = createPage();
     const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     flushPending({ papeis: ['funcionario'] });
@@ -258,11 +275,9 @@ describe('EmployeesListPage', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    const nova = Array.from(el.querySelectorAll('button')).find((btn) =>
-      (btn.textContent ?? '').trim().includes('Nova'),
-    );
-    expect(nova).toBeTruthy();
-    nova!.click();
+    const fab = el.querySelector('button.employees-list__fab') as HTMLButtonElement | null;
+    expect(fab).toBeTruthy();
+    fab!.click();
     expect(navigateSpy).toHaveBeenCalledWith('/funcionarios/novo');
   });
 

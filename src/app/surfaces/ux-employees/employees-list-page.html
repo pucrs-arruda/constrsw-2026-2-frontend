@@ -25,18 +25,6 @@
         (ngModelChange)="onSearchInput($event)"
       />
     </mat-form-field>
-
-    @if (canCreate()) {
-      <button
-        mat-flat-button
-        color="primary"
-        type="button"
-        class="employees-list__cta"
-        (click)="onCreate()"
-      >
-        Nova
-      </button>
-    }
   </div>
 
   @if (bannerKind(); as kind) {
@@ -48,20 +36,8 @@
   } @else if (showEmpty()) {
     <app-empty-state
       title="Nenhum funcionário cadastrado ainda."
-      message="Quando houver registros no BFF, eles aparecem nesta lista."
-    >
-      @if (canCreate()) {
-        <button
-          emptyCta
-          mat-flat-button
-          color="primary"
-          type="button"
-          (click)="onCreate()"
-        >
-          Nova
-        </button>
-      }
-    </app-empty-state>
+      message="Use o botão Novo para cadastrar o primeiro funcionário."
+    />
   } @else if (showNoSearchResults()) {
     <app-empty-state
       title="Nenhum resultado para a busca."
@@ -76,5 +52,20 @@
       [showDelete]="false"
       (openRow)="onOpenRow($event)"
     />
+  }
+
+  @if (canCreate()) {
+    <button
+      mat-fab
+      extended
+      color="primary"
+      type="button"
+      class="employees-list__fab"
+      aria-label="Novo funcionário"
+      (click)="onCreate()"
+    >
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+      Novo
+    </button>
   }
 </section>
