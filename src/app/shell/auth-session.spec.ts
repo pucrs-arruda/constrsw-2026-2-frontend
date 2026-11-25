@@ -20,6 +20,7 @@ describe('AuthSession + bearerInterceptor', () => {
   let client: HttpClient;
 
   beforeEach(() => {
+    TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([bearerInterceptor])),
@@ -129,20 +130,64 @@ describe('AuthSession + bearerInterceptor', () => {
     expect(session.accessToken).toBeNull();
   });
 
-  it('does not attach Bearer to oauth login URL', async () => {
+  it('does not attach Bearer to oauth login/refresh/logout URLs', async () => {
     session.applyTokens({ access_token: 'tok-abc' });
-    const promise = firstValueFrom(
-      client.post(`${environment.oauthBaseUrl}/login`, new FormData(), {
-        withCredentials: true,
-      }),
+    for (const path of ['login', 'refresh', 'logout'] as const) {
+      const promise = firstValueFrom(
+        client.post(`${environment.oauthBaseUrl}/${path}`, {}, { withCredentials: true }),
+      );
+      const req = http.expectOne(`${environment.oauthBaseUrl}/${path}`);
+      expect(req.request.headers.has('Authorization')).toBe(false);
+      req.flush({ status: 'ok', access_token: 'x', token_type: 'Bearer', expires_in: 1 });
+      await promise;
+    }
+  });
+
+  it('rejects empty credentials without calling oauth', async () => {
+    const err = await firstValueFrom(session.login('  ', '')).catch((e) => e);
+    expect(err).toBeInstanceOf(OauthRequestError);
+    expect((err as OauthRequestError).kind).toBe('credentials_rejected');
+    http.expectNone(`${environment.oauthBaseUrl}/login`);
+    expect(session.accessToken).toBeNull();
+  });
+
+  it('clears session when refresh fails', async () => {
+    session.applyTokens({ access_token: 'old' });
+    const errPromise = firstValueFrom(session.refresh()).catch((e) => e);
+    const refreshReq = http.expectOne(`${environment.oauthBaseUrl}/refresh`);
+    refreshReq.flush(
+      { message: 'unauthorized' },
+      { status: 401, statusText: 'Unauthorized' },
     );
-    const req = http.expectOne(`${environment.oauthBaseUrl}/login`);
-    expect(req.request.headers.has('Authorization')).toBe(false);
-    req.flush({
+    const err = await errPromise;
+    expect(err).toBeInstanceOf(OauthRequestError);
+    expect((err as OauthRequestError).message).toContain('Sessão expirada');
+    expect(session.accessToken).toBeNull();
+  });
+
+  it('maps network failure on login to identity unavailable', async () => {
+    const errPromise = firstValueFrom(session.login('alice', 'secret')).catch(
+      (e) => e,
+    );
+    const loginReq = http.expectOne(`${environment.oauthBaseUrl}/login`);
+    loginReq.error(new ProgressEvent('error'));
+    const err = await errPromise;
+    expect(err).toBeInstanceOf(OauthRequestError);
+    expect((err as OauthRequestError).kind).toBe('identity_unavailable');
+    expect(session.accessToken).toBeNull();
+  });
+
+  it('sends username and password multipart fields on login', async () => {
+    const loginPromise = firstValueFrom(session.login('alice', 'secret'));
+    const loginReq = http.expectOne(`${environment.oauthBaseUrl}/login`);
+    const form = loginReq.request.body as FormData;
+    expect(form.get('username')).toBe('alice');
+    expect(form.get('password')).toBe('secret');
+    loginReq.flush({
       token_type: 'Bearer',
-      access_token: 'x',
-      expires_in: 1,
+      access_token: 'tok',
+      expires_in: 60,
     });
-    await promise;
+    await loginPromise;
   });
 });

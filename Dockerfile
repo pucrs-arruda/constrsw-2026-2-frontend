@@ -6,7 +6,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY angular.json tsconfig.json tsconfig.app.json ./
-COPY proxy.conf.json ./
 COPY public ./public
 COPY src ./src
 

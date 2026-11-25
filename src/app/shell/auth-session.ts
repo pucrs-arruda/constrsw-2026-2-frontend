@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, finalize, map, of, shareReplay, throwError } from 'rxjs';
 import { OauthApi, OauthRequestError, type OauthTokenResponse } from './oauth-api';
 
 /**
@@ -10,6 +10,7 @@ import { OauthApi, OauthRequestError, type OauthTokenResponse } from './oauth-ap
 export class AuthSession {
   private readonly oauth = inject(OauthApi);
   private accessTokenValue: string | null = null;
+  private refreshInFlight: Observable<void> | null = null;
 
   get accessToken(): string | null {
     return this.accessTokenValue;
@@ -32,7 +33,10 @@ export class AuthSession {
   }
 
   refresh(): Observable<void> {
-    return this.oauth.refresh().pipe(
+    if (this.refreshInFlight) {
+      return this.refreshInFlight;
+    }
+    this.refreshInFlight = this.oauth.refresh().pipe(
       map((tokens) => {
         this.storeAccessToken(tokens);
       }),
@@ -40,7 +44,12 @@ export class AuthSession {
         this.clear();
         return throwError(() => err);
       }),
+      finalize(() => {
+        this.refreshInFlight = null;
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
     );
+    return this.refreshInFlight;
   }
 
   logout(): Observable<void> {
@@ -65,8 +74,10 @@ export class AuthSession {
     this.storeAccessToken(tokens);
   }
 
-  private storeAccessToken(tokens: Pick<OauthTokenResponse, 'access_token'>): void {
-    if (!tokens.access_token) {
+  private storeAccessToken(
+    tokens: Pick<OauthTokenResponse, 'access_token'> | null | undefined,
+  ): void {
+    if (!tokens?.access_token) {
       this.clear();
       throw new OauthRequestError('unknown', null, 'Resposta oauth sem access_token');
     }

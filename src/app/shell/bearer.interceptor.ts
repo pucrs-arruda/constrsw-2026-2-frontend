@@ -12,7 +12,19 @@ export const bearerInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const bffBase = environment.bffBaseUrl.replace(/\/$/, '');
-  if (!req.url.startsWith(bffBase)) {
+  const isBff =
+    req.url === bffBase ||
+    req.url.startsWith(`${bffBase}/`) ||
+    // Absolute URLs that still target the same-origin BFF prefix
+    (() => {
+      try {
+        const path = new URL(req.url, 'http://local.invalid').pathname;
+        return path === bffBase || path.startsWith(`${bffBase}/`);
+      } catch {
+        return false;
+      }
+    })();
+  if (!isBff) {
     return next(req);
   }
 

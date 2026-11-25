@@ -31,6 +31,16 @@ export class OauthApi {
   private readonly base = environment.oauthBaseUrl.replace(/\/$/, '');
 
   login(username: string, password: string): Observable<OauthTokenResponse> {
+    if (!username?.trim() || !password) {
+      return throwError(
+        () =>
+          new OauthRequestError(
+            'credentials_rejected',
+            null,
+            'Não foi possível entrar. Verifique usuário e senha.',
+          ),
+      );
+    }
     const body = new FormData();
     body.append('username', username);
     body.append('password', password);
@@ -67,16 +77,23 @@ export class OauthApi {
   private mapError(err: unknown, op: string): OauthRequestError {
     if (err instanceof HttpErrorResponse) {
       if (err.status === 401) {
+        if (op === 'refresh') {
+          return new OauthRequestError(
+            'credentials_rejected',
+            401,
+            'Sessão expirada. Entre novamente.',
+          );
+        }
         return new OauthRequestError(
           'credentials_rejected',
           401,
           'Não foi possível entrar. Verifique usuário e senha.',
         );
       }
-      if (err.status === 0 || err.status === 503) {
+      if (err.status === 0 || err.status === 502 || err.status === 503 || err.status === 504) {
         return new OauthRequestError(
           'identity_unavailable',
-          err.status === 0 ? null : 503,
+          err.status === 0 ? null : err.status,
           'Identidade indisponível.',
         );
       }
