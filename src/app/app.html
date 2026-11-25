@@ -1,11 +1,14 @@
 <div class="shell">
-  <mat-toolbar color="primary" class="shell__brand" role="banner">
-    <span class="shell__mark" aria-hidden="true"></span>
+  <mat-toolbar class="shell__brand" role="banner">
+    <span class="shell__mark" aria-hidden="true">
+      <span class="shell__mark-diamond"></span>
+    </span>
     <div class="shell__titles">
       <span class="shell__name">Closed CRAS</span>
       <span class="shell__caption">PUCRS · ConstrSW</span>
     </div>
   </mat-toolbar>
+  <div class="shell__stripe" aria-hidden="true"></div>
 
   <main class="shell__main" id="conteudo-principal">
     <router-outlet />

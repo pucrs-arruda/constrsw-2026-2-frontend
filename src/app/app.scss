@@ -8,19 +8,33 @@
 }
 
 .shell__brand {
+  --mat-toolbar-container-background-color: var(--mat-sys-surface-container-lowest);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-surface);
   gap: 0.75rem;
   min-height: 64px;
   width: 100%;
   max-width: 100%;
   padding-inline: 1rem;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent);
+  z-index: 1;
 }
 
 .shell__mark {
+  display: grid;
+  place-items: center;
   flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background: var(--mat-sys-on-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--mat-sys-primary-container);
+}
+
+.shell__mark-diamond {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--mat-sys-primary);
+  transform: rotate(45deg);
 }
 
 .shell__titles {
@@ -34,13 +48,21 @@
   font: var(--mat-sys-title-medium);
   font-weight: 700;
   line-height: 1.25;
+  color: var(--mat-sys-primary);
   overflow-wrap: anywhere;
 }
 
 .shell__caption {
   font: var(--mat-sys-label-small);
-  opacity: 0.9;
+  color: var(--mat-sys-on-surface-variant);
   overflow-wrap: anywhere;
+}
+
+.shell__stripe {
+  flex: 0 0 auto;
+  height: 4px;
+  width: 100%;
+  background: var(--mat-sys-tertiary);
 }
 
 .shell__main {
@@ -53,6 +75,7 @@
 
 @media (max-width: 767px) {
   .shell__brand {
+    gap: 0.5rem;
     padding-inline: 0.75rem;
   }
 
