@@ -1,0 +1,55 @@
+<section class="resources-list" aria-labelledby="resources-list-title">
+  <header class="resources-list__page-header">
+    <div class="resources-list__titles">
+      <h1 id="resources-list-title" class="resources-list__title">Recursos</h1>
+      <p class="resources-list__caption">
+        Consulte os recursos reserváveis e quantas reservas futuras cada um tem.
+      </p>
+    </div>
+  </header>
+
+  <div class="resources-list__toolbar">
+    <mat-form-field
+      appearance="outline"
+      class="resources-list__search"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Buscar</mat-label>
+      <input
+        matInput
+        type="search"
+        name="resources-search"
+        autocomplete="off"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchInput($event)"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @if (loading()) {
+    <app-skeleton-block label="Carregando recursos…" [lines]="5" />
+  } @else if (showEmpty()) {
+    <app-empty-state
+      title="Nenhum recurso cadastrado ainda."
+      message="Os recursos cadastrados aparecerão aqui."
+    />
+  } @else if (showNoSearchResults()) {
+    <app-empty-state
+      title="Nenhum resultado para a busca."
+      message="Ajuste o termo ou limpe a busca para ver todos os recursos."
+    />
+  } @else if (showTable()) {
+    <app-responsive-data-table
+      [columns]="columns"
+      [rows]="filteredRows()"
+      [showOpen]="true"
+      [showEdit]="false"
+      [showDelete]="false"
+      (openRow)="onOpenRow($event)"
+    />
+  }
+</section>

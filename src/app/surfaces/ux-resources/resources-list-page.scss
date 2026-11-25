@@ -1,0 +1,65 @@
+.resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.resources-list__page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.resources-list__titles {
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.resources-list__title {
+  margin: 0 0 0.35rem;
+  font: var(--mat-sys-headline-small);
+  color: var(--mat-sys-on-surface);
+}
+
+.resources-list__caption {
+  margin: 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* Figma 14: search on the left, create CTA (story 6.2) on the right. */
+.resources-list__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.resources-list__search {
+  flex: 1 1 12rem;
+  max-width: 20rem;
+  width: 100%;
+}
+
+@media (max-width: 599.98px) {
+  .resources-list__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* In a column toolbar the 12rem flex-basis would become height. */
+  .resources-list__search {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+}
