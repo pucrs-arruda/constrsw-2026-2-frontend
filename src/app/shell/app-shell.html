@@ -1,0 +1,85 @@
+<div class="app-shell" [class.app-shell--compact]="isCompact()">
+  <mat-toolbar class="app-shell__brand" role="banner">
+    <button
+      #menuButton
+      type="button"
+      mat-icon-button
+      class="app-shell__menu-btn"
+      [attr.aria-label]="menuAriaLabel()"
+      [attr.aria-expanded]="sidenavOpened()"
+      [attr.aria-controls]="sidenavId"
+      [disabled]="isExpanded()"
+      (click)="toggleSheet()"
+    >
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+        >menu</mat-icon
+      >
+    </button>
+
+    <span class="app-shell__mark" aria-hidden="true">
+      <span class="app-shell__mark-diamond"></span>
+    </span>
+
+    <div class="app-shell__titles">
+      <span class="app-shell__name">Closed CRAS</span>
+      <span class="app-shell__caption">PUCRS · ConstrSW</span>
+    </div>
+
+    <div class="app-shell__identity" aria-live="polite">
+      <span class="app-shell__display-name">{{ identityLabel() }}</span>
+      <span
+        class="app-shell__avatar"
+        [attr.aria-label]="identityLabel()"
+        [attr.title]="identityLabel()"
+        >{{ initials() }}</span
+      >
+    </div>
+
+    <button
+      type="button"
+      mat-button
+      class="app-shell__sair"
+      [disabled]="loggingOut()"
+      (click)="onLogout()"
+    >
+      Sair
+    </button>
+  </mat-toolbar>
+
+  <div class="app-shell__stripe" aria-hidden="true"></div>
+
+  <mat-sidenav-container class="app-shell__container">
+    <mat-sidenav
+      [id]="sidenavId"
+      class="app-shell__sidenav"
+      [mode]="sidenavMode()"
+      [opened]="sidenavOpened()"
+      [fixedInViewport]="false"
+      (openedChange)="onSidenavOpenedChange($event)"
+      (closed)="onSidenavClosed()"
+    >
+      <nav aria-label="Navegação principal">
+        <mat-nav-list>
+          @for (item of navItems; track item.path) {
+            <a
+              mat-list-item
+              class="app-shell__nav-item"
+              [routerLink]="item.path"
+              routerLinkActive="app-shell__nav-item--active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="onNavItemClick()"
+            >
+              {{ item.label }}
+            </a>
+          }
+        </mat-nav-list>
+      </nav>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="app-shell__content">
+      <main class="app-shell__main" id="conteudo-principal">
+        <router-outlet />
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,16 @@
+.home-landing {
+  max-width: 40rem;
+  padding-block: 0.5rem;
+}
+
+.home-landing__title {
+  margin: 0 0 0.5rem;
+  font: var(--mat-sys-headline-small);
+  color: var(--mat-sys-on-surface);
+}
+
+.home-landing__caption {
+  margin: 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}

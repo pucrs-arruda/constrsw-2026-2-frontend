@@ -94,7 +94,7 @@ describe('authGuard + guestGuard + SessionBootstrap', () => {
     http.expectNone(`${environment.oauthBaseUrl}/refresh`);
   });
 
-  it('guestGuard: authenticated user redirects to HOME stub', async () => {
+  it('guestGuard: authenticated user redirects to HOME', async () => {
     session.applyTokens({ access_token: 'mem' });
     const result = await runGuard(guestGuard);
     expect(result instanceof UrlTree).toBe(true);

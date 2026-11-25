@@ -46,7 +46,7 @@ describe('LoginPage', () => {
     return { fixture, page };
   }
 
-  it('stores Bearer and navigates HOME stub on login 201', async () => {
+  it('stores Bearer and navigates HOME on login 201', async () => {
     const { fixture, page } = createPage();
     const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 

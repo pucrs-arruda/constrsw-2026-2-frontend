@@ -16,15 +16,12 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render blank shell brand on Material toolbar', async () => {
+  it('renders only router-outlet without global toolbar chrome', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('mat-toolbar.shell__brand')).toBeTruthy();
-    expect(compiled.querySelector('.shell__mark')).toBeTruthy();
-    expect(compiled.querySelector('.shell__mark-diamond')).toBeTruthy();
-    expect(compiled.querySelector('.shell__stripe')).toBeTruthy();
-    expect(compiled.querySelector('.shell__name')?.textContent).toContain('Closed CRAS');
-    expect(compiled.querySelector('.shell__caption')?.textContent).toContain('PUCRS · ConstrSW');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
+    expect(compiled.querySelector('mat-toolbar')).toBeNull();
+    expect(compiled.querySelector('app-shell')).toBeNull();
   });
 });

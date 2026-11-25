@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 
+/** Root host: outlet only — shell chrome lives on authenticated AppShell. */
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatToolbarModule],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

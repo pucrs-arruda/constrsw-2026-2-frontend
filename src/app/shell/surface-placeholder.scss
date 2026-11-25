@@ -1,15 +1,15 @@
-.home-stub {
+.surface-placeholder {
   max-width: 40rem;
   padding-block: 0.5rem;
 }
 
-.home-stub__title {
+.surface-placeholder__title {
   margin: 0 0 0.5rem;
   font: var(--mat-sys-headline-small);
   color: var(--mat-sys-on-surface);
 }
 
-.home-stub__caption {
+.surface-placeholder__caption {
   margin: 0;
   font: var(--mat-sys-body-medium);
   color: var(--mat-sys-on-surface-variant);
