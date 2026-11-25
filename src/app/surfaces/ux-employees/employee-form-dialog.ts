@@ -47,21 +47,6 @@ function optionalEmail(control: AbstractControl): ValidationErrors | null {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? null : { email: true };
 }
 
-function problemMessage(err: BffRequestError): string | null {
-  const body = err.http.error;
-  if (body && typeof body === 'object') {
-    const detail = (body as { detail?: unknown }).detail;
-    if (typeof detail === 'string' && detail.trim().length > 0) {
-      return detail.trim();
-    }
-    const title = (body as { title?: unknown }).title;
-    if (typeof title === 'string' && title.trim().length > 0) {
-      return title.trim();
-    }
-  }
-  return null;
-}
-
 @Component({
   selector: 'app-employee-form-dialog',
   standalone: true,
@@ -223,9 +208,8 @@ export class EmployeeFormDialog {
       const kind = err.mapped.bannerKind;
       if (kind === 'composition' || kind === 'identity' || kind === 'refusal') {
         this.bannerKind.set(kind);
-        const fromProblem =
-          kind === 'refusal' ? problemMessage(err) : null;
-        this.bannerMessage.set(fromProblem ?? err.mapped.message);
+        // mapped.message already applies formatBffProblemMessage / refusalMessage.
+        this.bannerMessage.set(err.mapped.message);
         return;
       }
     }

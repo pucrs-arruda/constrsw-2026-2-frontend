@@ -27,8 +27,9 @@ import { EmployeesApi, type EmployeeRead } from './employees-api';
 
 const EMPLOYEE_COLUMNS: readonly DataTableColumn[] = [
   { key: 'name', header: 'Nome', priority: 'high' },
-  { key: 'registrationNumber', header: 'Matrícula', priority: 'high' },
+  // Situação as 2nd high-priority so compact secondary line surfaces Inativo.
   { key: 'statusLabel', header: 'Situação', priority: 'high' },
+  { key: 'registrationNumber', header: 'Matrícula', priority: 'high' },
   { key: 'email', header: 'E-mail', priority: 'low' },
   { key: 'position', header: 'Cargo', priority: 'low' },
 ];

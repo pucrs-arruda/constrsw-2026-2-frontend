@@ -142,6 +142,23 @@ describe('EmployeesListPage', () => {
     expect(el.textContent).toContain('Bruno Alves');
     expect(el.textContent).toContain('Ativo');
     expect(el.textContent).toContain('Inativo');
+    expect(el.textContent).toContain('incluindo inativos');
+  });
+
+  it('keeps Inactive employees listable with Inativo label', async () => {
+    const fixture = createPage();
+    flushPending();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const page = fixture.componentInstance;
+    const inactiveRow = page.filteredRows().find((row) => row.id === 'emp-2');
+    expect(inactiveRow).toBeTruthy();
+    expect(inactiveRow?.['statusLabel']).toBe('Inativo');
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Bruno Alves');
+    expect(el.textContent).toContain('Inativo');
   });
 
   it('shows empty state when list is []', async () => {

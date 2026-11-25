@@ -157,6 +157,7 @@ export class DependentFormDialog {
       const kind = err.mapped.bannerKind;
       if (kind === 'composition' || kind === 'identity' || kind === 'refusal') {
         this.bannerKind.set(kind);
+        // mapped.message already applies formatBffProblemMessage / refusalMessage.
         this.bannerMessage.set(err.mapped.message);
         return;
       }

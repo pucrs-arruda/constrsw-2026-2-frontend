@@ -163,6 +163,42 @@ describe('EmployeeFormDialog', () => {
     );
   });
 
+  it('refusal with detail+code includes code and retains form', () => {
+    const fixture = createDialog({ mode: 'create' });
+    fillValidCreate(fixture);
+    fixture.componentInstance.save();
+
+    const req = http.expectOne(`${environment.bffBaseUrl}/v1/employees`);
+    req.flush(
+      {
+        type: 'about:blank',
+        title: 'Conflict',
+        detail: 'E-mail já cadastrado para outro funcionário.',
+        code: 'conflict',
+        status: 409,
+      },
+      { status: 409, statusText: 'Conflict' },
+    );
+    fixture.detectChanges();
+
+    expect(closeSpy).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.bannerKind()).toBe('refusal');
+    expect(fixture.componentInstance.bannerMessage()).toContain(
+      'E-mail já cadastrado para outro funcionário.',
+    );
+    expect(fixture.componentInstance.bannerMessage()).toContain('conflito');
+    expect(fixture.componentInstance.form.controls.name.value).toBe(
+      'Helena Costa',
+    );
+    expect(fixture.componentInstance.form.controls.email.value).toBe(
+      'helena.costa@pucrs.br',
+    );
+    const alert = (fixture.nativeElement as HTMLElement).querySelector(
+      '[role="alert"]',
+    );
+    expect(alert?.textContent).toContain('conflito');
+  });
+
   it('email conflict 400 with title falls back when detail absent', () => {
     const fixture = createDialog({ mode: 'create' });
     fillValidCreate(fixture);

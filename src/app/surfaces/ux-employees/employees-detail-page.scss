@@ -101,6 +101,18 @@
   word-break: break-word;
 }
 
+.employees-detail__status--inactive {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.employees-detail__status-note {
+  display: block;
+  margin: 0.35rem 0 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
 .employees-detail__dependents-header {
   display: flex;
   flex-wrap: wrap;

@@ -69,7 +69,17 @@
           </div>
           <div class="employees-detail__field">
             <dt>Situação</dt>
-            <dd>{{ statusDisplay() }}</dd>
+            <dd
+              class="employees-detail__status"
+              [class.employees-detail__status--inactive]="isInactive()"
+            >
+              {{ statusDisplay() }}
+              @if (isInactive()) {
+                <span class="employees-detail__status-note">
+                  Cadastro inativo — permanece visível para consulta.
+                </span>
+              }
+            </dd>
           </div>
           <div class="employees-detail__field">
             <dt>Cargo</dt>

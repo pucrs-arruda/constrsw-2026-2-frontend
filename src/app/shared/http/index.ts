@@ -1,5 +1,6 @@
 export {
   BFF_BANNER_MESSAGES,
+  formatBffProblemMessage,
   mapBffHttpError,
   type AlertBannerKind,
   type BffErrorKind,

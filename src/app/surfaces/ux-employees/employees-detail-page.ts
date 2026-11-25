@@ -145,6 +145,10 @@ export class EmployeesDetailPage implements OnInit {
     return emp ? statusLabel(emp.status) : '';
   });
 
+  readonly isInactive = computed(
+    () => this.employee()?.status === 'Inactive',
+  );
+
   readonly hireDateDisplay = computed(() => {
     const emp = this.employee();
     return emp ? formatDate(emp.hireDate) : '';

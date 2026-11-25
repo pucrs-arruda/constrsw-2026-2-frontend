@@ -284,6 +284,29 @@ describe('EmployeesDetailPage', () => {
     expect(el.textContent).toContain('Inativo');
   });
 
+  it('marks Inactive status with note and keeps master visible', async () => {
+    const fixture = createPage();
+    flushPending({
+      employee: { ...EMPLOYEE, status: 'Inactive' },
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const page = fixture.componentInstance;
+    expect(page.isInactive()).toBe(true);
+    expect(page.statusDisplay()).toBe('Inativo');
+    expect(page.showMaster()).toBe(true);
+
+    const el = fixture.nativeElement as HTMLElement;
+    const status = el.querySelector('.employees-detail__status--inactive');
+    expect(status).not.toBeNull();
+    expect(status?.textContent).toContain('Inativo');
+    expect(el.textContent).toContain(
+      'Cadastro inativo — permanece visível para consulta.',
+    );
+    expect(el.textContent).toContain('Helena Costa');
+  });
+
   it('shows compact back link below 600px', async () => {
     compact$.next(true);
     const fixture = createPage();
