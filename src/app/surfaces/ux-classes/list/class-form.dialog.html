@@ -1,0 +1,210 @@
+<app-edit-dialog-layout [dialogTitle]="isEdit ? 'Editar turma' : 'Nova turma'">
+  <form
+    id="class-form"
+    class="class-form"
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+    @if (submitError(); as err) {
+      <div class="class-form__banner">
+        <app-alert-banner [kind]="err.kind" [message]="err.message" />
+      </div>
+    }
+
+    @if (unavailableMessage) {
+      <div class="class-form__banner">
+        <app-alert-banner kind="composition" />
+        <p class="class-form__catalog-note">{{ unavailableMessage }}</p>
+      </div>
+    }
+
+    @if (selectedProfessorInactive()) {
+      <p class="class-form__warning" role="status">
+        Atenção: o professor selecionado consta como inativo. O serviço poderá recusar a operação (FR-1a).
+      </p>
+    }
+
+    <div class="class-form__grid">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Código da turma</mat-label>
+        <input matInput formControlName="code" placeholder="Ex.: SE-A" maxlength="64" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Rótulo / descrição</mat-label>
+        <input matInput formControlName="label" placeholder="Ex.: Engenharia de Software" maxlength="255" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="class-form__full">
+        <mat-label>Disciplina</mat-label>
+        <mat-select formControlName="courseId" required>
+          @if (currentCourseMissing && data.classItem) {
+            <mat-option [value]="data.classItem.courseId">
+              {{ data.classItem.courseId }}
+            </mat-option>
+          }
+          @for (course of courses; track course.id) {
+            <mat-option [value]="course.id">
+              {{ course.code }} — {{ course.name }}
+            </mat-option>
+          } @empty {
+            @if (!currentCourseMissing) {
+              <mat-option disabled>Nenhuma disciplina disponível</mat-option>
+            }
+          }
+        </mat-select>
+        @if (isEdit) {
+          <mat-hint>Campo imutável após a criação.</mat-hint>
+        }
+        @if (form.controls.courseId.hasError('required')) {
+          <mat-error>Selecione uma disciplina existente.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Professor</mat-label>
+        <mat-select formControlName="professorId" required>
+          @if (currentProfessorMissing && data.classItem) {
+            <mat-option [value]="data.classItem.professorId">
+              {{ data.classItem.professorId }}
+            </mat-option>
+          }
+          @for (prof of professors; track professorIdOf(prof)) {
+            <mat-option [value]="professorIdOf(prof)">
+              {{ professorOptionLabel(prof) }}
+            </mat-option>
+          } @empty {
+            @if (!currentProfessorMissing) {
+              <mat-option disabled>Nenhum professor disponível</mat-option>
+            }
+          }
+        </mat-select>
+        @if (form.controls.professorId.hasError('required')) {
+          <mat-error>Selecione um professor existente.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Sala padrão</mat-label>
+        <mat-select formControlName="roomId" required>
+          @if (currentRoomMissing && data.classItem) {
+            <mat-option [value]="data.classItem.roomId">
+              {{ data.classItem.roomId }}
+            </mat-option>
+          }
+          @for (room of rooms; track room.id) {
+            <mat-option [value]="room.id">
+              {{ room.code }} — {{ room.name }} ({{ room.capacity }} vagas){{ room.active ? '' : ' · Inativa' }}
+            </mat-option>
+          } @empty {
+            @if (!currentRoomMissing) {
+              <mat-option disabled>Nenhuma sala disponível</mat-option>
+            }
+          }
+        </mat-select>
+        @if (form.controls.roomId.hasError('required')) {
+          <mat-error>Selecione uma sala existente.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Ano</mat-label>
+        <input matInput type="number" formControlName="year" min="2000" max="2100" required />
+        @if (isEdit) {
+          <mat-hint>Imutável após a criação.</mat-hint>
+        }
+        @if (form.controls.year.invalid) {
+          <mat-error>Informe um ano entre 2000 e 2100.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Semestre</mat-label>
+        <mat-select formControlName="semester" required>
+          <mat-option [value]="1">1º semestre</mat-option>
+          <mat-option [value]="2">2º semestre</mat-option>
+        </mat-select>
+        @if (isEdit) {
+          <mat-hint>Imutável após a criação.</mat-hint>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Data de início</mat-label>
+        <input matInput type="date" formControlName="startDate" required />
+        @if (isEdit) {
+          <mat-hint>Imutável após a criação.</mat-hint>
+        }
+        @if (form.controls.startDate.hasError('required')) {
+          <mat-error>Informe a data de início.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Data de término</mat-label>
+        <input matInput type="date" formControlName="endDate" required />
+        @if (isEdit) {
+          <mat-hint>Imutável após a criação.</mat-hint>
+        }
+        @if (form.controls.endDate.hasError('required')) {
+          <mat-error>Informe a data de término.</mat-error>
+        }
+      </mat-form-field>
+
+      @if (form.hasError('dateRange')) {
+        <p class="class-form__range-error class-form__full" role="alert">
+          A data de início deve ser anterior ou igual à data de término.
+        </p>
+      }
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Vagas</mat-label>
+        <input matInput type="number" formControlName="seats" min="1" required />
+        @if (form.controls.seats.invalid) {
+          <mat-error>Informe ao menos 1 vaga.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Modalidade</mat-label>
+        <mat-select formControlName="modality">
+          <mat-option value="presencial">Presencial</mat-option>
+          <mat-option value="hibrida">Híbrida</mat-option>
+          <mat-option value="remoto">Remoto</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      @if (isEdit) {
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="class-form__full">
+          <mat-label>Situação da turma</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="active">Ativa</mat-option>
+            <mat-option value="closed">Encerrada</mat-option>
+          </mat-select>
+        </mat-form-field>
+      }
+    </div>
+  </form>
+
+  <button
+    editActions
+    type="button"
+    mat-button
+    class="class-form__action"
+    mat-dialog-close
+    [disabled]="saving()"
+  >
+    Cancelar
+  </button>
+  <button
+    editActions
+    type="submit"
+    form="class-form"
+    mat-flat-button
+    class="class-form__action"
+    [disabled]="saving()"
+  >
+    {{ saving() ? 'Salvando…' : isEdit ? 'Salvar alterações' : 'Abrir turma' }}
+  </button>
+</app-edit-dialog-layout>

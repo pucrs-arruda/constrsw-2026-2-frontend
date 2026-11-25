@@ -1,0 +1,118 @@
+<section class="class-detail" aria-labelledby="class-detail-heading">
+  <a
+    mat-button
+    class="class-detail__back"
+    routerLink="/turmas"
+  >
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">
+      arrow_back
+    </mat-icon>
+    Voltar para Turmas
+  </a>
+
+  @if (loading()) {
+    <app-skeleton-block [lines]="4" label="Carregando detalhe da turma…" />
+  } @else if (error(); as err) {
+    <div class="class-detail__error-panel">
+      <app-alert-banner [kind]="err.kind" [message]="err.message" />
+      <button type="button" mat-stroked-button class="class-detail__btn" (click)="load()">
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (classItem(); as item) {
+    <header class="class-detail__header">
+      <div class="class-detail__heading-col">
+        <span class="class-detail__context-chip">Contexto · Turma</span>
+        <h1
+          #detailHeading
+          id="class-detail-heading"
+          class="class-detail__title"
+          tabindex="-1"
+        >
+          Turma {{ classCode() }} — {{ courseTitle() }}
+        </h1>
+        <p class="class-detail__caption">
+          Hub da turma: alunos matriculados, aulas e reservas do período.
+        </p>
+
+        <div class="class-detail__chips" aria-label="Resumo da turma">
+          <span class="class-detail__chip class-detail__chip--primary">
+            Período {{ periodLabel() }}
+          </span>
+          <span class="class-detail__chip">
+            Sala padrão {{ roomLabel() }}
+          </span>
+          <span class="class-detail__chip">
+            {{ item.seats }} vagas
+          </span>
+          <span class="class-detail__chip class-detail__chip--tertiary">
+            Prof. {{ professorLabel() }}
+          </span>
+          <span
+            class="class-detail__chip"
+            [class.class-detail__chip--closed]="item.status === 'closed'"
+          >
+            {{ statusLabel() }}
+          </span>
+        </div>
+      </div>
+
+      <div class="class-detail__actions">
+        <button
+          type="button"
+          mat-stroked-button
+          class="class-detail__btn"
+          (click)="onEdit()"
+        >
+          Editar turma
+        </button>
+        <button
+          type="button"
+          mat-button
+          class="class-detail__btn class-detail__btn--danger"
+          (click)="onDelete()"
+        >
+          Excluir
+        </button>
+      </div>
+    </header>
+
+    @if (actionError(); as err) {
+      <app-alert-banner [kind]="err.kind" [message]="err.message" />
+    }
+
+    <div class="class-detail__tabs-card">
+      <mat-tab-group
+        [selectedIndex]="selectedTabIndex()"
+        (selectedIndexChange)="onTabIndexChange($event)"
+        [preserveContent]="true"
+        animationDuration="0ms"
+      >
+        <mat-tab label="Alunos matriculados">
+          <app-class-enrollments-tab
+            [classItem]="item"
+            (classUpdated)="onClassUpdated($event)"
+          />
+        </mat-tab>
+
+        <mat-tab label="Aulas">
+          <section class="class-detail__handoff" aria-label="Aulas da turma">
+            <h2 class="class-detail__handoff-title">Aulas da turma</h2>
+            <p class="class-detail__handoff-text">
+              Superfície <strong>UX-CLASS-LESSONS</strong> (Grupo 02 — Epic 2): geração de aulas a partir do período ({{ item.startDate }} a {{ item.endDate }}) e CRUD de aulas desta turma.
+            </p>
+          </section>
+        </mat-tab>
+
+        <mat-tab label="Reservas">
+          <section class="class-detail__handoff" aria-label="Reservas do período">
+            <h2 class="class-detail__handoff-title">Reservas do período</h2>
+            <p class="class-detail__handoff-text">
+              Superfície <strong>UX-LESSON-RESERVATIONS</strong> (Grupo 03 — Epic 3): grade faixa × dia e nova reserva vinculada às aulas da turma {{ classCode() }}.
+            </p>
+          </section>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  }
+</section>
