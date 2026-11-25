@@ -75,8 +75,10 @@ export const routes: Routes = [
       },
       {
         path: 'turmas',
-        component: SurfacePlaceholder,
-        data: { title: 'Turmas' },
+        loadChildren: () =>
+          import('./surfaces/ux-classes/ux-classes.routes').then(
+            (m) => m.UX_CLASSES_ROUTES,
+          ),
       },
       {
         path: 'ocupacao',
