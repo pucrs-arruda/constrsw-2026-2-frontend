@@ -1,6 +1,6 @@
 # E2E frontend (Playwright)
 
-Suite fim-a-fim da SPA Closed CRAS cobrindo telas já implementadas (login, shell/home, placeholders de domínio e UX-EMPLOYEES).
+Suite fim-a-fim da SPA Closed CRAS cobrindo telas já implementadas (login, shell/home, placeholders de domínio, UX-EMPLOYEES e UX-ROOMS).
 
 ## Pré-requisitos
 
@@ -10,10 +10,11 @@ Stack Compose com pelo menos:
 - `oauth` (`8181`)
 - `keycloak` (`8081`)
 - `employees` (`8184`)
+- `rooms` (`8189`) e `classes` (`8182`) — para a UX-ROOMS
 - `api` / BFF (identidade `/api/v1/identidade/me`)
 
 ```bash
-docker compose up -d --build postgresql keycloak oauth employees bff frontend
+docker compose up -d --build postgresql keycloak oauth employees rooms classes bff frontend
 ```
 
 ## Comandos

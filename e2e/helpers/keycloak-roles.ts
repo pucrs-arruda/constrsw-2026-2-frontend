@@ -55,10 +55,35 @@ export async function ensureFuncionarioRole(
     throw new Error(`Keycloak user not found: ${username}`);
   }
 
-  const roleRes = await fetch(
+  // O realm versionado (`infrastructure/.../constrsw.json`) define administrator, coordinator,
+  // professor e student — não `funcionario`. Sem criar a role quando falta, o global-setup aborta
+  // e nenhuma suíte roda. Criar é idempotente: o 409 do Keycloak significa "já existe".
+  let roleRes = await fetch(
     `${E2E_KEYCLOAK_URL}/admin/realms/${E2E_KEYCLOAK_REALM}/roles/funcionario`,
     { headers },
   );
+  if (roleRes.status === 404) {
+    const createRes = await fetch(
+      `${E2E_KEYCLOAK_URL}/admin/realms/${E2E_KEYCLOAK_REALM}/roles`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          name: 'funcionario',
+          description: 'Papel de lab exigido pelo E2E da SPA.',
+        }),
+      },
+    );
+    if (!createRes.ok && createRes.status !== 409) {
+      throw new Error(
+        `criar role funcionario: ${createRes.status} ${await createRes.text()}`,
+      );
+    }
+    roleRes = await fetch(
+      `${E2E_KEYCLOAK_URL}/admin/realms/${E2E_KEYCLOAK_REALM}/roles/funcionario`,
+      { headers },
+    );
+  }
   if (!roleRes.ok) {
     throw new Error(
       `role funcionario: ${roleRes.status} ${await roleRes.text()}`,
