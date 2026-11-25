@@ -165,11 +165,10 @@ export class RoomsListPage {
   }
 
   columns(): string[] {
-    // Colunas do frame 12: Código, Capacidade, Andar, Turmas semestre, Ações.
-    // Nome e Situação entram só quando sobra largura; o mock não as desenha.
-    return this.layout() === 'expanded'
-      ? ['code', 'name', 'capacity', 'floor', 'active', 'classes', 'actions']
-      : ['code', 'capacity', 'floor', 'classes', 'actions'];
+    // As cinco colunas do frame 12, em qualquer largura: Código, Capacidade, Andar,
+    // Turmas semestre, Ações. Nome e situação da sala ficam no detalhe — o mockup não
+    // os coloca na lista, e inventar coluna aqui é divergir dele de novo.
+    return ['code', 'capacity', 'floor', 'classes', 'actions'];
   }
 
   private navigate(queryParams: Record<string, string | number | null>): void {

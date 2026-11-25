@@ -55,8 +55,8 @@ describe('RoomsListPage', () => {
   afterEach(() => { harness = undefined!; });
 
   it.each([
-    [360, false, false], [768, true, false], [1280, true, true],
-  ])('renderiza o total e as salas no layout de %ipx', async (width, table, complete) => {
+    [360, false], [768, true], [1280, true],
+  ])('renderiza o total e as salas no layout de %ipx', async (width, table) => {
     viewport = width;
     await navigate();
     const screen = harness.routeNativeElement!;
@@ -64,7 +64,11 @@ describe('RoomsListPage', () => {
     expect(screen.textContent).toContain('A-101');
     expect(screen.textContent).toContain('Capacidade não informada');
     expect(!!screen.querySelector('table')).toBe(table);
-    expect(!!screen.querySelector('.mat-column-name')).toBe(complete);
+    // O frame 12 fixa cinco colunas em qualquer largura: nome e situação ficam no detalhe.
+    expect(screen.querySelector('.mat-column-name')).toBeNull();
+    if (table) {
+      expect(screen.querySelector('.mat-column-floor')).not.toBeNull();
+    }
   });
 
   it('esconde as ações de escrita para quem não é administrador', async () => {
