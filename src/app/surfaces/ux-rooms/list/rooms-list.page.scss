@@ -1,5 +1,16 @@
 :host { display: block; min-width: 0; }
 
+/* Etiqueta de contexto do mock, acima do título. */
+.context-chip {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font: var(--mat-sys-label-large);
+}
+
 .page-heading, .toolbar, .toolbar-actions, .search {
   display: flex;
   flex-wrap: wrap;

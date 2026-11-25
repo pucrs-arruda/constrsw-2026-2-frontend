@@ -1,3 +1,5 @@
+<p class="context-chip">Contexto · Salas</p>
+
 <header class="page-header">
   <nav aria-label="Localização" class="breadcrumb">
     <a class="wide-back" routerLink="/salas" [queryParams]="listParams()">Salas de Aula</a>
@@ -10,7 +12,9 @@
   </nav>
   <h1 #heading tabindex="-1">{{ room() ? 'Sala ' + room()?.code : 'Sala' }}</h1>
   <p class="page-caption">
-    Ficha da sala, recursos de acessibilidade e as turmas sediadas nela no semestre em curso.
+    <!-- As chaves viram ICU no template do Angular; por isso o escape. -->
+    Ficha, accessibility-features e turmas sediadas no semestre (classes[] do GET
+    /rooms/{{ '{' }}id{{ '}' }}).
   </p>
   @if (room(); as item) {
     <p class="subtitle">{{ item.name }} · {{ item.building }}</p>
@@ -88,6 +92,10 @@
           <div>
             <dt>Capacidade</dt>
             <dd>{{ capacityLabel(item) }}</dd>
+          </div>
+          <div>
+            <dt>Andar</dt>
+            <dd>{{ floorLabel(item) }}</dd>
           </div>
           <div>
             <dt>Situação</dt>

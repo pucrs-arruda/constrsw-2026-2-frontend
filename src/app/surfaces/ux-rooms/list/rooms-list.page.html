@@ -1,9 +1,10 @@
+<p class="context-chip">Contexto · Salas</p>
+
 <header class="page-heading">
   <div class="page-titles">
     <h1 #heading tabindex="-1">Salas de Aula</h1>
     <p class="page-caption">
-      Salas e seus recursos de acessibilidade. A coluna Turmas semestre vem da composição do BFF
-      no GET de salas.
+      Salas + acessibilidade. Coluna Turmas semestre = classes do GET BFF /rooms (roomId).
     </p>
   </div>
   @if (rooms(); as page) {
@@ -17,14 +18,6 @@
       <mat-label>Buscar salas</mat-label>
       <input matInput type="search" formControlName="q" />
     </mat-form-field>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Buscar por</mat-label>
-      <mat-select formControlName="campo">
-        <mat-option value="code">Código</mat-option>
-        <mat-option value="name">Nome</mat-option>
-        <mat-option value="building">Prédio</mat-option>
-      </mat-select>
-    </mat-form-field>
   </div>
 
   <div class="toolbar-actions">
@@ -36,6 +29,14 @@
   </div>
 
   <div id="room-filters" class="filter-panel" [hidden]="!filtersOpen()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar por</mat-label>
+      <mat-select formControlName="campo">
+        <mat-option value="code">Código</mat-option>
+        <mat-option value="name">Nome</mat-option>
+        <mat-option value="building">Prédio</mat-option>
+      </mat-select>
+    </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Prédio</mat-label>
       <input matInput formControlName="predio" />
@@ -123,6 +124,10 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por prédio">Prédio</th>
           <td mat-cell *matCellDef="let room">{{ room.building }}</td>
         </ng-container>
+        <ng-container matColumnDef="floor">
+          <th mat-header-cell *matHeaderCellDef>Andar</th>
+          <td mat-cell *matCellDef="let room">{{ floorLabel(room) }}</td>
+        </ng-container>
         <ng-container matColumnDef="capacity">
           <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por capacidade">Capacidade</th>
           <td mat-cell *matCellDef="let room">{{ capacityLabel(room) }}</td>
@@ -132,7 +137,7 @@
           <td mat-cell *matCellDef="let room"><mat-chip>{{ room.active ? 'Ativa' : 'Inativa' }}</mat-chip></td>
         </ng-container>
         <ng-container matColumnDef="classes">
-          <th mat-header-cell *matHeaderCellDef>Turmas no semestre</th>
+          <th mat-header-cell *matHeaderCellDef>Turmas semestre</th>
           <td mat-cell *matCellDef="let room">{{ room.classes.length }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">

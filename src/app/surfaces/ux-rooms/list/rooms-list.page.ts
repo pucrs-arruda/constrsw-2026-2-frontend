@@ -21,7 +21,7 @@ import { ApiError } from '../data/api-error';
 import { AlertBanner, EmptyState, SkeletonBlock, openConfirmDialog } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import { Page, Room, RoomFilter, RoomQuery, RoomView } from '../data/rooms.models';
-import { capacityLabel } from '../data/rooms.utils';
+import { capacityLabel, floorLabel } from '../data/rooms.utils';
 import { RoomFormDialog } from './room-form.dialog';
 
 const searchFields = ['code', 'name', 'building'] as const;
@@ -104,6 +104,7 @@ export class RoomsListPage {
   readonly loading = signal(true);
   readonly filtersOpen = signal(false);
   readonly sizes = sizes;
+  protected readonly floorLabel = floorLabel;
   private readonly breakpoints = inject(BreakpointObserver);
   readonly layout = toSignal(this.breakpoints.observe([
     '(max-width: 599px)', '(min-width: 1280px)',
@@ -164,9 +165,11 @@ export class RoomsListPage {
   }
 
   columns(): string[] {
+    // Colunas do frame 12: Código, Capacidade, Andar, Turmas semestre, Ações.
+    // Nome e Situação entram só quando sobra largura; o mock não as desenha.
     return this.layout() === 'expanded'
-      ? ['code', 'name', 'building', 'capacity', 'active', 'classes', 'actions']
-      : ['code', 'building', 'capacity', 'classes', 'actions'];
+      ? ['code', 'name', 'capacity', 'floor', 'active', 'classes', 'actions']
+      : ['code', 'capacity', 'floor', 'classes', 'actions'];
   }
 
   private navigate(queryParams: Record<string, string | number | null>): void {

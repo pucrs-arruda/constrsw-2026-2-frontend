@@ -28,7 +28,7 @@ import {
 } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import type { AccessibilityFeature, Room, RoomView } from '../data/rooms.models';
-import { capacityLabel, currentTermLabel } from '../data/rooms.utils';
+import { capacityLabel, floorLabel, currentTermLabel } from '../data/rooms.utils';
 import { RoomFormDialog } from '../list/room-form.dialog';
 import { FeatureFormDialog } from './feature-form.dialog';
 import { RoomClassesComponent } from './room-classes.component';
@@ -72,6 +72,7 @@ export class RoomDetailPage implements OnInit {
   protected readonly notFound = signal(false);
   protected readonly loadingFeatures = signal(false);
   protected readonly busy = signal(false);
+  protected readonly floorLabel = floorLabel;
   protected readonly listParams = signal<Params | undefined>(undefined);
   protected readonly term = computed(() => currentTermLabel(this.room()?.classes ?? []));
   protected readonly capacityLabel = capacityLabel;
