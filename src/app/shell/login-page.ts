@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
+import { AlertBanner } from '../shared/ui/alert-banner';
 import { AuthSession } from './auth-session';
 import { OauthRequestError } from './oauth-api';
 
@@ -18,6 +19,7 @@ import { OauthRequestError } from './oauth-api';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    AlertBanner,
   ],
   templateUrl: './login-page.html',
   styleUrl: './login-page.scss',

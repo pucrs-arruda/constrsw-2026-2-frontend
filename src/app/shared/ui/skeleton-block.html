@@ -1,0 +1,13 @@
+<div class="skeleton-block" role="status" [attr.aria-label]="label()">
+  @if (showProgress()) {
+    <mat-progress-bar mode="indeterminate" aria-hidden="true"></mat-progress-bar>
+  }
+  <div class="skeleton-block__lines" aria-hidden="true">
+    @for (i of lineIndexes(); track i) {
+      <div
+        class="skeleton-block__line"
+        [class.skeleton-block__line--short]="i % 3 === 2"
+      ></div>
+    }
+  </div>
+</div>

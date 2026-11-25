@@ -1,0 +1,25 @@
+<div class="edit-dialog">
+  <header class="edit-dialog__header">
+    <h2 class="edit-dialog__title" mat-dialog-title>{{ dialogTitle() }}</h2>
+
+    <button
+      type="button"
+      mat-icon-button
+      class="edit-dialog__close"
+      mat-dialog-close
+      [attr.aria-label]="closeLabel()"
+    >
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+        >close</mat-icon
+      >
+    </button>
+  </header>
+
+  <div class="edit-dialog__body" mat-dialog-content>
+    <ng-content></ng-content>
+  </div>
+
+  <footer class="edit-dialog__footer" mat-dialog-actions align="end">
+    <ng-content select="[editActions]"></ng-content>
+  </footer>
+</div>

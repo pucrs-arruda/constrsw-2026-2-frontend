@@ -1,0 +1,65 @@
+.edit-dialog {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  background: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+}
+
+.edit-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+  padding: 0.75rem 0.75rem 0.5rem 1rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.edit-dialog__title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  font: var(--mat-sys-title-large);
+}
+
+.edit-dialog__close {
+  flex: 0 0 auto;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.edit-dialog__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem;
+}
+
+.edit-dialog__footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+/* Sticky footer in fullscreen (compact) — panel class from openEditDialog */
+:host-context(.app-edit-dialog--fullscreen) .edit-dialog {
+  height: 100%;
+}
+
+:host-context(.app-edit-dialog--fullscreen) .edit-dialog__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+:host-context(.app-edit-dialog--fullscreen) .edit-dialog__footer :is(button, a) {
+  min-height: 48px;
+}

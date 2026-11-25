@@ -1,0 +1,9 @@
+<div
+  class="alert-banner"
+  [class.alert-banner--refusal]="kind() === 'refusal'"
+  [class.alert-banner--identity]="kind() === 'identity'"
+  [class.alert-banner--composition]="kind() === 'composition'"
+  role="alert"
+>
+  {{ displayMessage() }}
+</div>
