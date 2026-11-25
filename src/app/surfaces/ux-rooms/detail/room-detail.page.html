@@ -9,6 +9,9 @@
     >
   </nav>
   <h1 #heading tabindex="-1">{{ room() ? 'Sala ' + room()?.code : 'Sala' }}</h1>
+  <p class="page-caption">
+    Ficha da sala, recursos de acessibilidade e as turmas sediadas nela no semestre em curso.
+  </p>
   @if (room(); as item) {
     <p class="subtitle">{{ item.name }} · {{ item.building }}</p>
     <div class="chips">

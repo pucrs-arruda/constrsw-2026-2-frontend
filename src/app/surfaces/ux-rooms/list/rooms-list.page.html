@@ -1,5 +1,11 @@
 <header class="page-heading">
-  <h1 #heading tabindex="-1">Salas de Aula</h1>
+  <div class="page-titles">
+    <h1 #heading tabindex="-1">Salas de Aula</h1>
+    <p class="page-caption">
+      Salas e seus recursos de acessibilidade. A coluna Turmas semestre vem da composição do BFF
+      no GET de salas.
+    </p>
+  </div>
   @if (rooms(); as page) {
     <mat-chip>{{ page.total === 1 ? '1 sala' : page.total + ' salas' }}</mat-chip>
   }
@@ -136,7 +142,7 @@
               <a mat-button [routerLink]="['/salas', room.id]" [attr.aria-label]="'Abrir sala ' + room.code">Abrir</a>
               @if (access.canWrite()) {
                 <button mat-button (click)="openForm(room)" [attr.aria-label]="'Editar sala ' + room.code">Editar</button>
-                <button mat-button (click)="confirmRemove(room)" [attr.aria-label]="'Excluir sala ' + room.code">Excluir</button>
+                <button mat-button class="destructive" (click)="confirmRemove(room)" [attr.aria-label]="'Excluir sala ' + room.code">Excluir</button>
               }
             </div>
           </td>

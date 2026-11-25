@@ -21,18 +21,18 @@ h1 { margin: 0; }
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: var(--color-surface-container-low);
+  background: var(--mat-sys-surface-container-low);
   border-radius: 8px;
 }
 .filter-panel mat-form-field { width: min(100%, 190px); }
-.scope-note { color: var(--color-on-surface-variant); }
+.scope-note { color: var(--mat-sys-on-surface-variant); }
 .room-code { font-family: 'Source Code Pro', monospace; }
 
 table { width: 100%; table-layout: fixed; }
 th, td { overflow-wrap: anywhere; }
 td { padding-block: 4px; }
 tr[mat-row] { cursor: pointer; }
-tr[mat-row]:hover { background: var(--color-surface-container-low); }
+tr[mat-row]:hover { background: var(--mat-sys-surface-container-low); }
 .mat-column-actions { width: 230px; min-width: 230px; }
 /* Em telas médias o espaço é curto: as três ações ficam numa linha, sem quebrar. */
 .row-actions { display: flex; flex-wrap: nowrap; white-space: nowrap; }
@@ -44,8 +44,8 @@ tr[mat-row]:hover { background: var(--color-surface-container-low); }
   display: flex;
   align-items: center;
   min-height: 72px;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-card);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-lowest);
 }
 .compact-room {
   display: grid;
@@ -55,11 +55,11 @@ tr[mat-row]:hover { background: var(--color-surface-container-low); }
   min-width: 0;
   min-height: 72px;
   padding: 8px 12px;
-  color: var(--color-foreground);
+  color: var(--mat-sys-on-surface);
   text-decoration: none;
   overflow-wrap: anywhere;
 }
-.compact-room span + span { color: var(--color-on-surface-variant); }
+.compact-room span + span { color: var(--mat-sys-on-surface-variant); }
 .compact-list button { min-width: 48px; }
 
 @media (min-width: 600px) and (max-width: 1279px) {
@@ -71,4 +71,19 @@ tr[mat-row]:hover { background: var(--color-surface-container-low); }
   .search, .toolbar-actions { width: 100%; }
   .search mat-form-field:first-child { width: 100%; }
   .filter-panel mat-form-field { width: 100%; }
+}
+
+.page-heading { align-items: flex-start; }
+.page-titles { flex: 1 1 auto; }
+.page-caption {
+  margin: 4px 0 0;
+  max-width: 68ch;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+/* Excluir é a ação destrutiva da linha (frame 12 do Figma). */
+.destructive {
+  --mdc-text-button-label-text-color: var(--mat-sys-error);
+  color: var(--mat-sys-error);
 }

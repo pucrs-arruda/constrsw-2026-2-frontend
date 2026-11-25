@@ -55,7 +55,7 @@ import type { ClassSummary } from '../data/rooms.models';
       padding: 0;
     }
     li {
-      border-top: 1px solid var(--color-border);
+      border-top: 1px solid var(--mat-sys-outline-variant);
       padding: 12px 0;
       overflow-wrap: anywhere;
     }
@@ -66,14 +66,14 @@ import type { ClassSummary } from '../data/rooms.models';
       margin: 8px 0 0;
     }
     dt {
-      color: var(--color-on-surface-variant);
+      color: var(--mat-sys-on-surface-variant);
       font-size: 0.875rem;
     }
     dd {
       margin: 0;
     }
     code {
-      font-family: var(--font-family-mono);
+      font-family: 'Source Code Pro', ui-monospace, monospace;
     }
   `,
 })
