@@ -78,14 +78,12 @@ export const routes: Routes = [
       {
         path: 'turmas',
         loadChildren: () =>
-          import('./surfaces/ux-classes/ux-classes.routes').then(
-            (m) => m.UX_CLASSES_ROUTES,
-          ),
+          import('./surfaces/ux-classes/ux-classes.routes').then((m) => m.UX_CLASSES_ROUTES),
       },
       {
         path: 'ocupacao',
-        component: SurfacePlaceholder,
-        data: { title: 'Ocupação' },
+        loadComponent: () =>
+          import('./surfaces/ux-occupancy/occupancy-page').then((m) => m.OccupancyPage),
       },
       {
         path: 'plano-roster',

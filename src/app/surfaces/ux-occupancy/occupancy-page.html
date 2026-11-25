@@ -1,0 +1,87 @@
+<section class="occupancy" aria-labelledby="occupancy-title">
+  <header class="occupancy__page-header">
+    <h1 id="occupancy-title" class="occupancy__title">Ocupação de recursos</h1>
+    <p class="occupancy__caption">
+      Recursos reservados numa data e faixa (só reservas ativas). Não mostra dados de alunos.
+    </p>
+  </header>
+
+  <form
+    class="occupancy__toolbar"
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    aria-label="Consulta de ocupação"
+  >
+    <mat-form-field appearance="outline" class="occupancy__field" subscriptSizing="dynamic">
+      <mat-label>Data</mat-label>
+      <input
+        matInput
+        formControlName="data"
+        [matDatepicker]="picker"
+        placeholder="dd/mm/aaaa"
+        autocomplete="off"
+      />
+      <mat-datepicker-toggle matIconSuffix [for]="picker" />
+      <mat-datepicker #picker />
+      @if (form.controls.data.invalid && form.controls.data.touched) {
+        <mat-error>Informe uma data válida (dd/mm/aaaa).</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field
+      appearance="outline"
+      class="occupancy__field occupancy__field--faixa"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Faixa</mat-label>
+      <mat-select formControlName="faixaId">
+        @for (faixa of faixas; track faixa) {
+          <mat-option [value]="faixa">{{ faixa }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.faixaId.invalid && form.controls.faixaId.touched) {
+        <mat-error>Escolha a faixa.</mat-error>
+      }
+    </mat-form-field>
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      class="occupancy__submit"
+      [disabled]="form.invalid || status() === 'loading'"
+    >
+      Consultar
+    </button>
+  </form>
+
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @switch (status()) {
+    @case ('idle') {
+      @if (!bannerKind()) {
+        <p class="occupancy__hint">Escolha a data e a faixa.</p>
+      }
+    }
+    @case ('loading') {
+      <app-skeleton-block label="Consultando ocupação…" [lines]="4" />
+    }
+    @case ('done') {
+      @if (rows().length === 0) {
+        <app-empty-state [title]="emptyTitle()" message="Tente outra data ou faixa." />
+      } @else {
+        <p class="occupancy__count" aria-live="polite">{{ countLabel() }}</p>
+        <app-responsive-data-table
+          class="occupancy__result"
+          [columns]="columns"
+          [rows]="rows()"
+          [showOpen]="false"
+          [showEdit]="false"
+          [showDelete]="false"
+        />
+      }
+    }
+  }
+</section>
