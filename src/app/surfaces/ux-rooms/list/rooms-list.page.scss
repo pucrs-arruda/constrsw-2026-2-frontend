@@ -75,6 +75,8 @@ tr[mat-row]:hover { background: var(--mat-sys-surface-container-low); }
 
 .page-heading { align-items: flex-start; }
 .page-titles { flex: 1 1 auto; }
+/* O h1 recebe foco ao trocar de rota; sem isto o anel atravessa a linha inteira. */
+.page-titles h1 { width: fit-content; }
 .page-caption {
   margin: 4px 0 0;
   max-width: 68ch;
