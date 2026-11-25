@@ -1,0 +1,11 @@
+node_modules
+dist
+.angular
+.git
+.gitignore
+.vscode
+mockups
+README.md
+**/*.md
+coverage
+.tmp*

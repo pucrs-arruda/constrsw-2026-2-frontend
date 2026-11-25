@@ -2,6 +2,16 @@
 
 SPA Angular Closed CRAS — ConstrSW 2026/2.
 
+Stack: **Angular 22.x** + Angular Material (M3) + CDK + SCSS. Tema: tokens `DESIGN.md` (primary `#0066B3`). Lab local: porta **4200**.
+
+```bash
+npm ci
+npm start          # ng serve --port 4200
+npm run build
+```
+
+Compose (raiz do monorepo): serviço `frontend` → `FRONTEND_EXTERNAL_PORT` (lab **4200**) → container `:80` + `/health`.
+
 ## Contrato
 
 Apontar o pacote SPEC:
