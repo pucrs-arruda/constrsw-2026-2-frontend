@@ -5,6 +5,9 @@ import { guestGuard } from './shell/guest.guard';
 import { HomeLanding } from './shell/home-landing';
 import { LoginPage } from './shell/login-page';
 import { SurfacePlaceholder } from './shell/surface-placeholder';
+import { EmployeesCreateStub } from './surfaces/ux-employees/employees-create-stub';
+import { EmployeesDetailStub } from './surfaces/ux-employees/employees-detail-stub';
+import { EmployeesListPage } from './surfaces/ux-employees/employees-list-page';
 
 export const routes: Routes = [
   {
@@ -29,8 +32,21 @@ export const routes: Routes = [
       },
       {
         path: 'funcionarios',
-        component: SurfacePlaceholder,
-        data: { title: 'Funcionários' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            component: EmployeesListPage,
+          },
+          {
+            path: 'novo',
+            component: EmployeesCreateStub,
+          },
+          {
+            path: ':id',
+            component: EmployeesDetailStub,
+          },
+        ],
       },
       {
         path: 'professores',

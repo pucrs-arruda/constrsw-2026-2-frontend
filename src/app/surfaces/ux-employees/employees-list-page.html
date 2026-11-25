@@ -1,0 +1,79 @@
+<section class="employees-list" aria-labelledby="employees-list-title">
+  <header class="employees-list__page-header">
+    <div class="employees-list__titles">
+      <h1 id="employees-list-title" class="employees-list__title">Funcionários</h1>
+      <p class="employees-list__caption">
+        Consulte o cadastro de funcionários e abra o detalhe de cada registro.
+      </p>
+    </div>
+  </header>
+
+  <div class="employees-list__toolbar">
+    <mat-form-field
+      appearance="outline"
+      class="employees-list__search"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>Buscar</mat-label>
+      <input
+        matInput
+        type="search"
+        name="employees-search"
+        autocomplete="off"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchInput($event)"
+      />
+    </mat-form-field>
+
+    @if (canCreate()) {
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="employees-list__cta"
+        (click)="onCreate()"
+      >
+        Nova
+      </button>
+    }
+  </div>
+
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @if (loading()) {
+    <app-skeleton-block label="Carregando funcionários…" [lines]="5" />
+  } @else if (showEmpty()) {
+    <app-empty-state
+      title="Nenhum funcionário cadastrado ainda."
+      message="Quando houver registros no BFF, eles aparecem nesta lista."
+    >
+      @if (canCreate()) {
+        <button
+          emptyCta
+          mat-flat-button
+          color="primary"
+          type="button"
+          (click)="onCreate()"
+        >
+          Nova
+        </button>
+      }
+    </app-empty-state>
+  } @else if (showNoSearchResults()) {
+    <app-empty-state
+      title="Nenhum resultado para a busca."
+      message="Ajuste o termo ou limpe a busca para ver todos os funcionários."
+    />
+  } @else if (showTable()) {
+    <app-responsive-data-table
+      [columns]="columns"
+      [rows]="filteredRows()"
+      [showOpen]="true"
+      [showEdit]="false"
+      [showDelete]="false"
+      (openRow)="onOpenRow($event)"
+    />
+  }
+</section>
