@@ -157,4 +157,22 @@ describe('authGuard + guestGuard + SessionBootstrap', () => {
     expect(await firstValueFrom(bootstrap.ensureSession())).toBe(false);
     http.expectNone(`${environment.oauthBaseUrl}/refresh`);
   });
+
+  it('SessionBootstrap: sessão limpa depois do boot (token expirado) volta a ser inválida', async () => {
+    const boot = firstValueFrom(bootstrap.ensureSession());
+    http.expectOne(`${environment.oauthBaseUrl}/refresh`).flush({
+      token_type: 'Bearer',
+      access_token: 'boot',
+      expires_in: 60,
+    });
+    expect(await boot).toBe(true);
+
+    // Token expirou e a renovação falhou: quem chamou limpa a sessão em memória.
+    session.clear();
+
+    // Os guards não podem herdar o `true` do boot: /login tem de abrir, e rotas autenticadas
+    // têm de mandar para /login, sem novo refresh.
+    expect(await firstValueFrom(bootstrap.ensureSession())).toBe(false);
+    http.expectNone(`${environment.oauthBaseUrl}/refresh`);
+  });
 });
