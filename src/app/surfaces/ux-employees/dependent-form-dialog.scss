@@ -1,0 +1,11 @@
+.dependent-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.dependent-form mat-form-field {
+  width: 100%;
+}

@@ -1,10 +1,20 @@
 /* Breakpoints: compact <600 | medium 600–1023 | expanded ≥1024 (EXPERIENCE) */
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
 .login-panel {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  min-height: calc(100dvh - 7rem);
   margin: 0 auto;
 }
 
@@ -23,20 +33,12 @@
 }
 
 .login-panel__mark {
-  display: grid;
-  place-items: center;
+  flex: 0 0 auto;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--mat-sys-on-primary) 18%, transparent);
-}
-
-.login-panel__mark-diamond {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
-  background: var(--mat-sys-tertiary);
-  transform: rotate(45deg);
+  border-radius: 8px;
+  object-fit: contain;
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 12%, transparent);
 }
 
 .login-panel__brand-text {
@@ -160,11 +162,6 @@
   .login-panel__mark {
     width: 56px;
     height: 56px;
-  }
-
-  .login-panel__mark-diamond {
-    width: 24px;
-    height: 24px;
   }
 
   .login-panel__product {

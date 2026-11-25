@@ -28,21 +28,12 @@
 }
 
 .app-shell__mark {
-  display: grid;
-  place-items: center;
   flex: 0 0 auto;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: var(--mat-sys-primary-container);
-}
-
-.app-shell__mark-diamond {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  background: var(--mat-sys-primary);
-  transform: rotate(45deg);
+  border-radius: 8px;
+  object-fit: contain;
+  background: var(--mat-sys-surface-container-lowest);
 }
 
 .app-shell__titles {
@@ -155,7 +146,15 @@
 }
 
 .app-shell__nav-item {
-  min-height: 48px;
+  min-height: 56px;
+}
+
+.app-shell__nav-item mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  color: inherit;
+  margin-inline-end: 0.75rem;
 }
 
 .app-shell--compact .app-shell__brand {

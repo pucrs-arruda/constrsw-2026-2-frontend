@@ -1,0 +1,171 @@
+<div class="enrollments">
+  <div class="enrollments__toolbar">
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="enrollments__search"
+    >
+      <mat-icon matPrefix fontSet="material-symbols-outlined" aria-hidden="true">
+        search
+      </mat-icon>
+      <mat-label>Buscar aluno matriculado</mat-label>
+      <input
+        matInput
+        type="search"
+        [value]="enrolledSearch()"
+        (input)="onEnrolledSearch($event)"
+        placeholder="Nome ou matrícula…"
+        aria-label="Buscar aluno matriculado"
+      />
+    </mat-form-field>
+
+    <div class="enrollments__toolbar-right">
+      <span class="enrollments__count-chip">
+        {{ (classItem().studentIds ?? []).length }} de {{ classItem().seats }} vagas
+      </span>
+
+      <button
+        type="button"
+        mat-flat-button
+        class="enrollments__cta"
+        [disabled]="isClosed() || saving()"
+        (click)="togglePicker()"
+      >
+        {{ pickerOpen() ? 'Fechar seleção' : 'Associar aluno existente' }}
+      </button>
+    </div>
+  </div>
+
+  @if (isClosed()) {
+    <p class="enrollments__closed-note" role="status">
+      Turma encerrada: não é possível associar ou desassociar alunos.
+    </p>
+  }
+
+  @if (mutationError(); as err) {
+    <app-alert-banner [kind]="err.kind" [message]="err.message" />
+  }
+
+  @if (pickerOpen()) {
+    <section
+      class="enrollments__picker"
+      aria-labelledby="picker-heading"
+    >
+      <div class="enrollments__picker-header">
+        <div>
+          <h2 id="picker-heading" class="enrollments__picker-title">
+            Escolher aluno já cadastrado
+          </h2>
+          <p class="enrollments__picker-caption">
+            Lista de alunos existentes no sistema — somente alunos já cadastrados podem ser associados nesta tela.
+          </p>
+        </div>
+
+        <mat-form-field
+          appearance="outline"
+          subscriptSizing="dynamic"
+          class="enrollments__picker-search"
+        >
+          <mat-label>Filtrar alunos disponíveis</mat-label>
+          <input
+            matInput
+            type="search"
+            [value]="pickerSearch()"
+            (input)="onPickerSearch($event)"
+            placeholder="Nome, matrícula ou e-mail…"
+            aria-label="Filtrar alunos disponíveis"
+          />
+        </mat-form-field>
+      </div>
+
+      @if (loadingStudents()) {
+        <app-skeleton-block [lines]="3" label="Carregando alunos cadastrados…" />
+      } @else if (studentsError(); as err) {
+        <div class="enrollments__picker-error">
+          <app-alert-banner [kind]="err.kind" [message]="err.message" />
+          <button
+            type="button"
+            mat-stroked-button
+            class="enrollments__retry"
+            (click)="loadStudents()"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      } @else if (availableStudents().length === 0) {
+        <p class="enrollments__picker-empty">
+          Nenhum aluno disponível para associar com o filtro atual.
+        </p>
+      } @else {
+        <ul class="enrollments__picker-list" role="list">
+          @for (student of availableStudents(); track student.id) {
+            <li class="enrollments__picker-item" role="listitem">
+              <div class="enrollments__picker-info">
+                <span class="enrollments__picker-name">{{ student.name }}</span>
+                <span class="enrollments__picker-meta">
+                  {{ student.registration_number }} · {{ student.email }} (não matriculado nesta turma)
+                </span>
+              </div>
+              <button
+                type="button"
+                mat-stroked-button
+                class="enrollments__picker-btn"
+                [disabled]="saving() || isClosed()"
+                (click)="associateStudent(student)"
+              >
+                Associar
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+
+  @if (studentsError() && !pickerOpen()) {
+    <app-alert-banner [kind]="studentsError()!.kind" [message]="studentsError()!.message" />
+  }
+
+  @if ((classItem().studentIds ?? []).length === 0) {
+    <app-empty-state
+      title="Nenhum aluno matriculado nesta turma."
+      message="Associe alunos já cadastrados para compor a lista da turma."
+    >
+      @if (!isClosed()) {
+        <button
+          emptyCta
+          type="button"
+          mat-flat-button
+          class="enrollments__cta"
+          (click)="pickerOpen.set(true)"
+        >
+          Associar aluno existente
+        </button>
+      }
+    </app-empty-state>
+  } @else if (enrolledRows().length === 0) {
+    <app-empty-state
+      title="Nenhum aluno encontrado com essa busca."
+      message="Limpe o filtro para ver todos os alunos matriculados na turma."
+    >
+      <button
+        emptyCta
+        type="button"
+        mat-stroked-button
+        class="enrollments__retry"
+        (click)="enrolledSearch.set('')"
+      >
+        Limpar busca
+      </button>
+    </app-empty-state>
+  } @else {
+    <app-responsive-data-table
+      [columns]="columns"
+      [rows]="enrolledRows()"
+      [showOpen]="false"
+      [showEdit]="false"
+      [showDelete]="!isClosed()"
+      (deleteRow)="onRemoveStudent($event)"
+    />
+  }
+</div>

@@ -1,0 +1,96 @@
+<section class="classes-page" aria-labelledby="classes-heading">
+  <header class="classes-page__header">
+    <span class="classes-page__context-chip">Contexto · Turmas</span>
+    <h1 #pageHeading id="classes-heading" class="classes-page__title" tabindex="-1">
+      Turmas
+    </h1>
+    <p class="classes-page__caption">
+      Turmas do período; abertura, matrículas, aulas e reservas.
+    </p>
+  </header>
+
+  <div class="classes-page__toolbar">
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="classes-page__search"
+    >
+      <mat-icon matPrefix fontSet="material-symbols-outlined" aria-hidden="true">
+        search
+      </mat-icon>
+      <mat-label>Buscar turmas</mat-label>
+      <input
+        matInput
+        type="search"
+        [value]="searchTerm()"
+        (input)="onSearchInput($event)"
+        placeholder="Código, disciplina, período ou sala…"
+        aria-label="Buscar turmas"
+      />
+    </mat-form-field>
+
+    <button
+      type="button"
+      mat-flat-button
+      class="classes-page__cta"
+      (click)="onCreate()"
+    >
+      Nova turma
+    </button>
+  </div>
+
+  @if (actionError(); as err) {
+    <div class="classes-page__banner">
+      <app-alert-banner [kind]="err.kind" [message]="err.message" />
+    </div>
+  }
+
+  @if (loading()) {
+    <app-skeleton-block [lines]="4" label="Carregando turmas…" />
+  } @else if (error(); as err) {
+    <div class="classes-page__error-panel">
+      <app-alert-banner [kind]="err.kind" [message]="err.message" />
+      <button type="button" mat-stroked-button class="classes-page__retry" (click)="load()">
+        Tentar novamente
+      </button>
+    </div>
+  } @else if (classes().length === 0) {
+    <app-empty-state
+      title="Nenhuma turma cadastrada ainda."
+      message="Abra uma nova turma para associar alunos, aulas e reservas do período."
+    >
+      <button
+        emptyCta
+        type="button"
+        mat-flat-button
+        class="classes-page__empty-cta"
+        (click)="onCreate()"
+      >
+        Nova turma
+      </button>
+    </app-empty-state>
+  } @else if (rows().length === 0) {
+    <app-empty-state
+      title="Nenhuma turma encontrada."
+      message="Ajuste a busca ou limpe o filtro para ver todas as turmas."
+    >
+      <button
+        emptyCta
+        type="button"
+        mat-stroked-button
+        class="classes-page__empty-cta"
+        (click)="clearSearch()"
+      >
+        Limpar busca
+      </button>
+    </app-empty-state>
+  } @else {
+    <app-responsive-data-table
+      [columns]="columns"
+      [rows]="rows()"
+      (openRow)="onOpenRow($event)"
+      (editRow)="onEditRow($event)"
+      (deleteRow)="onDeleteRow($event)"
+    />
+  }
+</section>
