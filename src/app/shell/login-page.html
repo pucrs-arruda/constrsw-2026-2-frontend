@@ -1,0 +1,68 @@
+<div class="login-panel" aria-labelledby="login-panel-title">
+  <aside class="login-panel__brand">
+    <div class="login-panel__brand-inner">
+      <span class="login-panel__mark" aria-hidden="true">
+        <span class="login-panel__mark-diamond"></span>
+      </span>
+      <div class="login-panel__brand-text">
+        <span class="login-panel__product">Closed CRAS</span>
+        <span class="login-panel__institution">PUCRS · ConstrSW</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="login-panel__card">
+    <h1 id="login-panel-title" class="login-panel__title">Entrar</h1>
+    <p class="login-panel__subtitle">Use seu usuário e senha institucionais.</p>
+
+    @if (bannerMessage(); as message) {
+      <div
+        class="login-panel__banner"
+        [class.login-panel__banner--refusal]="bannerKind() === 'refusal'"
+        [class.login-panel__banner--identity]="bannerKind() === 'identity'"
+        role="alert"
+      >
+        {{ message }}
+      </div>
+    }
+
+    <form class="login-panel__form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field appearance="outline" class="login-panel__field" subscriptSizing="dynamic">
+        <mat-label>Usuário</mat-label>
+        <input
+          matInput
+          formControlName="username"
+          autocomplete="username"
+          name="username"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="login-panel__field" subscriptSizing="dynamic">
+        <mat-label>Senha</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          name="password"
+        />
+      </mat-form-field>
+
+      <div class="login-panel__actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="login-panel__submit"
+          [disabled]="submitting() || form.invalid"
+        >
+          @if (submitting()) {
+            <mat-spinner diameter="20" aria-label="Entrando"></mat-spinner>
+          } @else {
+            Entrar
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

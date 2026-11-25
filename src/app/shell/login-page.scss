@@ -1,0 +1,205 @@
+/* Breakpoints: compact <600 | medium 600–1023 | expanded ≥1024 (EXPERIENCE) */
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-height: calc(100dvh - 7rem);
+  margin: 0 auto;
+}
+
+.login-panel__brand {
+  flex: 0 0 auto;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  border-radius: 12px 12px 0 0;
+  padding: 1rem 1.25rem;
+}
+
+.login-panel__brand-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.login-panel__mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 18%, transparent);
+}
+
+.login-panel__mark-diamond {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--mat-sys-tertiary);
+  transform: rotate(45deg);
+}
+
+.login-panel__brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.login-panel__product {
+  font: var(--mat-sys-title-medium);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.login-panel__institution {
+  font: var(--mat-sys-label-small);
+  opacity: 0.9;
+}
+
+.login-panel__card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1rem 1.5rem;
+  background: var(--mat-sys-surface-container-lowest);
+  border-radius: 0 0 12px 12px;
+  /* compact: no elevation */
+  box-shadow: none;
+}
+
+.login-panel__title {
+  margin: 0;
+  font: var(--mat-sys-headline-small);
+  color: var(--mat-sys-on-surface);
+}
+
+.login-panel__subtitle {
+  margin: 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.login-panel__banner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font: var(--mat-sys-body-medium);
+  border: 1px solid transparent;
+}
+
+.login-panel__banner--refusal {
+  background: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-error) 35%, transparent);
+  color: var(--mat-sys-error);
+}
+
+.login-panel__banner--identity {
+  background: color-mix(in srgb, var(--mat-sys-secondary) 10%, transparent);
+  border-color: color-mix(in srgb, var(--mat-sys-secondary) 28%, transparent);
+  color: var(--mat-sys-on-surface);
+}
+
+.login-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.login-panel__field {
+  width: 100%;
+}
+
+.login-panel__actions {
+  margin-top: 0.25rem;
+}
+
+.login-panel__submit {
+  width: 100%;
+  height: 40px;
+  /* touch ≥48px compact/medium — visual stays 40dp */
+  min-height: 48px;
+}
+
+.login-panel__submit mat-spinner {
+  display: inline-block;
+  margin-inline: auto;
+}
+
+/* medium: faixa + card ≤440px */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .login-panel {
+    align-items: center;
+    max-width: 440px;
+  }
+
+  .login-panel__brand {
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .login-panel__card {
+    width: 100%;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-on-surface) 14%, transparent);
+    border-radius: 0 0 12px 12px;
+  }
+
+  .login-panel__submit {
+    min-height: 48px;
+  }
+}
+
+/* expanded: marca | card split */
+@media (min-width: 1024px) {
+  .login-panel {
+    flex-direction: row;
+    align-items: stretch;
+    max-width: 880px;
+    min-height: 28rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-on-surface) 14%, transparent);
+  }
+
+  .login-panel__brand {
+    flex: 1 1 45%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    border-radius: 0;
+  }
+
+  .login-panel__brand-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .login-panel__mark {
+    width: 56px;
+    height: 56px;
+  }
+
+  .login-panel__mark-diamond {
+    width: 24px;
+    height: 24px;
+  }
+
+  .login-panel__product {
+    font: var(--mat-sys-headline-small);
+    font-weight: 700;
+  }
+
+  .login-panel__card {
+    flex: 1 1 55%;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .login-panel__submit {
+    min-height: 40px;
+  }
+}
