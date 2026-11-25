@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ShellComponent } from './shell.component';
@@ -12,7 +13,17 @@ describe('ShellComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ShellComponent],
-      providers: [provideRouter([]), provideAnimationsAsync()],
+      providers: [
+        provideRouter([]),
+        provideAnimationsAsync(),
+        {
+          provide: AuthService,
+          useValue: {
+            identity: signal({ sub: 'admin', email: 'admin@pucrs.br', papeis: ['administrator'] }),
+            logout: async () => {},
+          },
+        },
+      ],
     }).compileComponents();
 
     authService = TestBed.inject(AuthService);
@@ -119,5 +130,3 @@ describe('ShellComponent', () => {
     expect(component.drawer.opened).toBe(true);
   });
 });
-
-
