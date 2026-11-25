@@ -1,0 +1,22 @@
+:host, form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+:host { height: 100%; }
+form { flex: 1; }
+
+mat-dialog-content {
+  display: grid;
+  gap: 12px;
+  flex: 1;
+  max-height: none;
+}
+
+mat-form-field { min-width: 0; }
+mat-slide-toggle { margin-bottom: 8px; }
+mat-dialog-actions button { min-height: 48px; }
+mat-spinner { display: inline-block; margin-inline-end: 6px; vertical-align: middle; }
+.room-code { font-family: 'Source Code Pro', monospace; }
+.resource-instruction { margin: 0; color: var(--color-on-surface-variant); }
