@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, map, of, shareReplay } from 'rxjs';
+import { Observable, catchError, finalize, map, of, shareReplay } from 'rxjs';
 import { AuthSession } from './auth-session';
 
 /**
@@ -32,7 +32,12 @@ export class SessionBootstrap {
     this.bootInFlight = this.session.refresh().pipe(
       map(() => true),
       catchError(() => of(false)),
-      // Cache the terminal boolean for all concurrent guards; keep forever for this SPA load.
+      // Concurrent guards share the in-flight boot; once it settles, drop it. Keeping the cached
+      // `true` forever made the guards believe an expired (cleared) session was still valid, so
+      // `/login` bounced back to `/` and the user stayed stuck without a token.
+      finalize(() => {
+        this.bootInFlight = null;
+      }),
       shareReplay({ bufferSize: 1, refCount: false }),
     );
     return this.bootInFlight;

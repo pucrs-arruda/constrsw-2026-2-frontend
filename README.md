@@ -2,7 +2,7 @@
 
 SPA Angular Closed CRAS — ConstrSW 2026/2.
 
-Stack: **Angular 22.x** + Angular Material (M3) + CDK + SCSS. Tema: tokens `DESIGN.md` (primary `#0066B3`). Lab local: porta **4200**.
+Stack: **Angular 22.x** + Angular Material (M3) + CDK + SCSS. Tema: tokens `DESIGN.md` (primary `#0066B3`). Em desenvolvimento (`npm start`): porta **4200**. Pelo Compose: porta de `FRONTEND_EXTERNAL_PORT` (**8080** no `.env` do repositório base).
 
 ```bash
 npm ci
@@ -10,7 +10,7 @@ npm start          # ng serve --port 4200
 npm run build
 ```
 
-Compose (raiz do monorepo): serviço `frontend` → `FRONTEND_EXTERNAL_PORT` (lab **4200**) → container `:80` + `/health`.
+Compose (raiz do monorepo): serviço `frontend` → `FRONTEND_EXTERNAL_PORT` (**8080** no `.env`; o padrão do `docker-compose.yml` sem `.env` é 4200) → container `:80` + `/health`. O `BFF_ORIGIN` do `.env` também é `http://localhost:8080`.
 
 ## Contrato
 
@@ -67,8 +67,15 @@ Sem identidade, a superfície fica em leitura. Como `classes` filtra por papel,
 professor e aluno podem ver menos turmas do que a sala tem, e a tela avisa.
 
 **Kit compartilhado.** A superfície usa `shared/ui` do Prof. Arruda — `AlertBanner`,
-`EmptyState`, `SkeletonBlock` e `openConfirmDialog`. Nada em `shared/` é nosso: os
-helpers de filtro e de erro da UX-ROOMS moram em `surfaces/ux-rooms/data/`.
+`EmptyState`, `SkeletonBlock` e `openConfirmDialog` — e o `BffClient` de `shared/http`
+para as chamadas de item (sala e característica). Só as duas listas usam `HttpClient`
+direto, porque o `BffClient` devolve apenas o corpo e a paginação precisa do header
+`X-Total-Count`. Nada em `shared/` é nosso: os helpers de filtro e de erro da UX-ROOMS
+moram em `surfaces/ux-rooms/data/`.
+
+**Sessão expirada.** O access token do oauth dura 10 min e fica só em memória. Num 401,
+`RoomsApiService` renova uma vez pelo cookie de refresh (`AuthSession.refresh()`) e repete
+a chamada; se a renovação falha ou o 401 persiste, limpa a sessão e volta ao `/login`.
 
 O banner de composição usa a cópia institucional travada pelo kit ("Serviço de
 composição indisponível."), por isso a superfície não escreve essa frase.

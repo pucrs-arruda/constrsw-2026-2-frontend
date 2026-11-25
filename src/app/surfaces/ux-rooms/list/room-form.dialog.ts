@@ -20,8 +20,9 @@ export type RoomFormDialogData = { mode: 'create' } | { mode: 'edit'; room: Room
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const requiredText = (control: AbstractControl<string>) =>
   control.value.trim() ? null : { required: true };
+/** Capacidade é opcional na API (`null` = não informada); quando informada, inteiro >= 1. */
 const validCapacity = (control: AbstractControl<number | null>) =>
-  control.value !== null && Number.isInteger(control.value) && control.value >= 1
+  control.value === null || (Number.isInteger(control.value) && control.value >= 1)
     ? null
     : { capacity: true };
 

@@ -33,8 +33,10 @@ th, td { overflow-wrap: anywhere; }
 td { padding-block: 4px; }
 tr[mat-row] { cursor: pointer; }
 tr[mat-row]:hover { background: var(--color-surface-container-low); }
-.mat-column-actions { width: 230px; }
-.row-actions { display: flex; flex-wrap: wrap; }
+.mat-column-actions { width: 230px; min-width: 230px; }
+/* Em telas médias o espaço é curto: as três ações ficam numa linha, sem quebrar. */
+.row-actions { display: flex; flex-wrap: nowrap; white-space: nowrap; }
+.row-actions button, .row-actions a { min-width: 0; padding-inline: 8px; }
 .row-actions button, .row-actions a, .toolbar button, .compact-list button { min-height: 48px; }
 
 .compact-list { list-style: none; margin: 0; padding: 0; }
