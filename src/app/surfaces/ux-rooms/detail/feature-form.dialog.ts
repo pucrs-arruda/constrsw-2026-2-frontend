@@ -12,8 +12,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { filter, finalize } from 'rxjs';
-import type { ApiError } from '../../../shared/http/api-error';
-import { ConfirmDialogComponent, RefusalBannerComponent } from '../../../shared/ui';
+import type { ApiError } from '../data/api-error';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { AlertBanner, openConfirmDialog } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import { featureCodePattern } from '../data/rooms.utils';
 import type { AccessibilityFeature, FeaturePatch } from '../data/rooms.models';
@@ -31,14 +32,14 @@ export interface FeatureFormData {
     MatFormFieldModule,
     MatInputModule,
     MatSlideToggleModule,
-    RefusalBannerComponent,
+    AlertBanner,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.feature ? 'Editar recurso' : 'Adicionar recurso' }}</h2>
     <form [formGroup]="form" (ngSubmit)="save()">
       <mat-dialog-content>
         @if (error()) {
-          <app-refusal-banner [message]="error()" />
+          <app-alert-banner kind="refusal" [message]="error()" />
         }
         <mat-form-field>
           <mat-label>Código</mat-label>
@@ -93,6 +94,7 @@ export class FeatureFormDialog {
   protected readonly data = inject<FeatureFormData>(MAT_DIALOG_DATA);
   private readonly dialogRef = inject(MatDialogRef<FeatureFormDialog, AccessibilityFeature>);
   private readonly dialogs = inject(MatDialog);
+  private readonly breakpoints = inject(BreakpointObserver);
   private readonly api = inject(RoomsApiService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -143,15 +145,11 @@ export class FeatureFormDialog {
       return;
     }
     this.confirmingDiscard = true;
-    this.dialogs
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: 'Descartar alterações?',
-          message: 'As alterações feitas neste recurso serão perdidas.',
-          confirmLabel: 'Descartar alterações',
-          destructive: true,
-        },
-      })
+    openConfirmDialog(this.dialogs, {
+      title: 'Descartar alterações?',
+      message: 'As alterações feitas neste recurso serão perdidas.',
+      confirmLabel: 'Descartar alterações',
+    }, this.breakpoints)
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((confirmed) => {

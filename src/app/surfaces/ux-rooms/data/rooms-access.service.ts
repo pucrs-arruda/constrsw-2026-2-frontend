@@ -12,7 +12,7 @@ import { IdentityApi } from '../../../shell/identity-api';
  *
  * **Isto não é controle de acesso.** Quem recusa a escrita é o domínio (403), e o AD-6 proíbe o
  * proxy de pré-validar regra de negócio. O papel aqui serve só para não oferecer um botão que o
- * servidor vai negar — a recusa, se vier, aparece no `app-refusal-banner`.
+ * servidor vai negar — a recusa, se vier, aparece no `app-alert-banner`.
  */
 @Injectable({ providedIn: 'root' })
 export class RoomsAccess {

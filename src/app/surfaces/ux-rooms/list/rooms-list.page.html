@@ -59,11 +59,13 @@
 <section aria-label="Resultados da busca" [attr.aria-busy]="loading()">
   @if (error(); as failure) {
     @if (failure.kind === 'forbidden') {
-      <app-refusal-banner message="Você não tem permissão para ver as salas." />
+      <app-alert-banner kind="refusal" message="Você não tem permissão para ver as salas." />
     } @else {
-      <app-error-banner
-        [message]="failure.kind === 'composition-unavailable' ? 'Serviço de composição indisponível.' : failure.message"
-        (retry)="retry()" />
+      <!-- `composition` trava a cópia institucional do kit; `refusal` deixa a mensagem do erro. -->
+      <app-alert-banner
+        [kind]="failure.kind === 'composition-unavailable' ? 'composition' : 'refusal'"
+        [message]="failure.message" />
+      <button mat-stroked-button class="retry-action" (click)="retry()">Tentar novamente</button>
     }
   } @else if (rooms(); as page) {
     @if (loading()) {
@@ -71,11 +73,15 @@
     }
     @if (page.items.length === 0) {
       @if (hasFilters()) {
-        <app-empty-state message="Nenhuma sala encontrada com esses filtros." actionLabel="Limpar filtros"
-                         (action)="clearFilters()" />
+        <app-empty-state title="Nenhuma sala encontrada" message="Nenhuma sala encontrada com esses filtros.">
+          <button emptyCta mat-stroked-button (click)="clearFilters()">Limpar filtros</button>
+        </app-empty-state>
       } @else {
-        <app-empty-state message="Nenhuma sala cadastrada ainda."
-                         [actionLabel]="access.canWrite() ? 'Nova sala' : undefined" (action)="openForm()" />
+        <app-empty-state title="Nenhuma sala cadastrada ainda.">
+          @if (access.canWrite()) {
+            <button emptyCta mat-flat-button (click)="openForm()">Nova sala</button>
+          }
+        </app-empty-state>
       }
     } @else if (layout() === 'compact') {
       <ul class="compact-list">
@@ -144,6 +150,6 @@
                      [pageSize]="state().size" [pageSizeOptions]="sizes" (page)="setPage($event)" />
     }
   } @else if (loading()) {
-    <app-skeleton [variant]="layout() === 'compact' ? 'card' : 'table'" />
+    <app-skeleton-block [lines]="5" label="Carregando salas…" />
   }
 </section>

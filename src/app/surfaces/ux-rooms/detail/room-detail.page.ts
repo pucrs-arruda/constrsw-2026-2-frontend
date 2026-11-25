@@ -19,12 +19,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { EMPTY, Observable, Subscription, expand, finalize, reduce } from 'rxjs';
 import { RoomsAccess } from '../data/rooms-access.service';
-import type { ApiError } from '../../../shared/http/api-error';
+import type { ApiError } from '../data/api-error';
 import {
-  ConfirmDialogComponent,
-  EmptyStateComponent,
-  ErrorBannerComponent,
-  SkeletonComponent,
+  AlertBanner,
+  openConfirmDialog,
+  EmptyState,
+  SkeletonBlock,
 } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import type { AccessibilityFeature, Room, RoomView } from '../data/rooms.models';
@@ -43,9 +43,9 @@ const UUID = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
     MatMenuModule,
     MatSlideToggleModule,
     RoomClassesComponent,
-    EmptyStateComponent,
-    ErrorBannerComponent,
-    SkeletonComponent,
+    AlertBanner,
+    EmptyState,
+    SkeletonBlock,
   ],
   templateUrl: './room-detail.page.html',
   styleUrl: './room-detail.page.scss',
@@ -161,21 +161,16 @@ export class RoomDetailPage implements OnInit {
 
   protected deleteRoom(room: Room, trigger?: MatMenuTrigger): void {
     if (!this.access.canWrite() || this.busy()) return;
-    this.dialogs
-      .open(ConfirmDialogComponent, {
-        width: '400px',
-        data: {
-          title: 'Excluir sala ' + room.code + '?',
-          message:
-            'A sala ' +
-            room.code +
-            ' (' +
-            room.name +
-            ') deixará de aparecer nas listas e os recursos vinculados a ela serão liberados. Esta ação não pode ser desfeita pela interface.',
-          confirmLabel: 'Excluir sala',
-          destructive: true,
-        },
-      })
+    openConfirmDialog(this.dialogs, {
+      title: 'Excluir sala ' + room.code + '?',
+      message:
+      'A sala ' +
+      room.code +
+      ' (' +
+      room.name +
+      ') deixará de aparecer nas listas e os recursos vinculados a ela serão liberados. Esta ação não pode ser desfeita pela interface.',
+      confirmLabel: 'Excluir sala',
+    }, this.breakpoints)
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((confirmed) => {
@@ -219,16 +214,11 @@ export class RoomDetailPage implements OnInit {
   protected deleteFeature(feature: AccessibilityFeature, trigger?: MatMenuTrigger): void {
     if (!this.access.canWrite() || this.busy()) return;
     const roomId = this.id;
-    this.dialogs
-      .open(ConfirmDialogComponent, {
-        width: '400px',
-        data: {
-          title: 'Excluir recurso ' + feature.code + '?',
-          message: 'O recurso ' + feature.code + ' deixará de aparecer nesta sala.',
-          confirmLabel: 'Excluir recurso',
-          destructive: true,
-        },
-      })
+    openConfirmDialog(this.dialogs, {
+      title: 'Excluir recurso ' + feature.code + '?',
+      message: 'O recurso ' + feature.code + ' deixará de aparecer nesta sala.',
+      confirmLabel: 'Excluir recurso',
+    }, this.breakpoints)
       .afterClosed()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((confirmed) => {

@@ -1,5 +1,5 @@
 import { HttpParams, type HttpParameterCodec } from '@angular/common/http';
-import type { FilterOp, RoomQuery } from '../../surfaces/ux-rooms/data/rooms.models';
+import type { FilterOp, RoomQuery } from './rooms.models';
 
 const codec: HttpParameterCodec = {
   encodeKey: encodeURIComponent,

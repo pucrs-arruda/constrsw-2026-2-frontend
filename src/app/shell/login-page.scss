@@ -80,25 +80,6 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-.login-panel__banner {
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font: var(--mat-sys-body-medium);
-  border: 1px solid transparent;
-}
-
-.login-panel__banner--refusal {
-  background: color-mix(in srgb, var(--mat-sys-error) 12%, transparent);
-  border-color: color-mix(in srgb, var(--mat-sys-error) 35%, transparent);
-  color: var(--mat-sys-error);
-}
-
-.login-panel__banner--identity {
-  background: color-mix(in srgb, var(--mat-sys-secondary) 10%, transparent);
-  border-color: color-mix(in srgb, var(--mat-sys-secondary) 28%, transparent);
-  color: var(--mat-sys-on-surface);
-}
-
 .login-panel__form {
   display: flex;
   flex-direction: column;

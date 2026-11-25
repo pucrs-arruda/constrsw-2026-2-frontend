@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { RoomFilter } from '../../surfaces/ux-rooms/data/rooms.models';
+import type { RoomFilter } from './rooms.models';
 import { toHttpParams } from './filter-query';
 
 describe('toHttpParams', () => {

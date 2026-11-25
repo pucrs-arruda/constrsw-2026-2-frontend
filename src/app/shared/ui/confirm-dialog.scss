@@ -1,0 +1,44 @@
+.confirm-dialog__title {
+  margin: 0;
+  font: var(--mat-sys-title-large);
+  color: var(--mat-sys-on-surface);
+}
+
+.confirm-dialog__content {
+  padding-top: 0.5rem;
+}
+
+.confirm-dialog__message {
+  margin: 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.confirm-dialog__actions--stack {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+
+.confirm-dialog__btn {
+  min-height: 48px;
+}
+
+@media (min-width: 600px) {
+  .confirm-dialog__btn {
+    min-height: 40px;
+  }
+}
+
+/* Global panel class when opened via MatDialog */
+:host-context(.app-confirm-dialog--compact) .confirm-dialog__actions,
+:host .confirm-dialog__actions--stack {
+  flex-direction: column-reverse;
+  align-items: stretch;
+}

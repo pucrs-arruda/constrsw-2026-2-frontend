@@ -17,8 +17,8 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { catchError, debounceTime, map, merge, of, Subject, switchMap, tap } from 'rxjs';
 import { RoomsAccess } from '../data/rooms-access.service';
-import { ApiError } from '../../../shared/http/api-error';
-import { ConfirmDialogComponent, EmptyStateComponent, ErrorBannerComponent, RefusalBannerComponent, SkeletonComponent } from '../../../shared/ui';
+import { ApiError } from '../data/api-error';
+import { AlertBanner, EmptyState, SkeletonBlock, openConfirmDialog } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import { Page, Room, RoomFilter, RoomQuery, RoomView } from '../data/rooms.models';
 import { capacityLabel } from '../data/rooms.utils';
@@ -80,8 +80,8 @@ function paginatorLabels(): MatPaginatorIntl {
   imports: [
     ReactiveFormsModule, RouterLink, MatButtonModule, MatChipsModule, MatFormFieldModule,
     MatInputModule, MatMenuModule, MatPaginatorModule, MatProgressBarModule, MatSelectModule,
-    MatSortModule, MatTableModule, EmptyStateComponent, ErrorBannerComponent, RefusalBannerComponent,
-    SkeletonComponent,
+    MatSortModule, MatTableModule, EmptyState, AlertBanner,
+    SkeletonBlock,
   ],
   providers: [{ provide: MatPaginatorIntl, useFactory: paginatorLabels }],
   templateUrl: './rooms-list.page.html',
@@ -104,7 +104,8 @@ export class RoomsListPage {
   readonly loading = signal(true);
   readonly filtersOpen = signal(false);
   readonly sizes = sizes;
-  readonly layout = toSignal(inject(BreakpointObserver).observe([
+  private readonly breakpoints = inject(BreakpointObserver);
+  readonly layout = toSignal(this.breakpoints.observe([
     '(max-width: 599px)', '(min-width: 1280px)',
   ]).pipe(map(({ breakpoints }) => {
     if (breakpoints['(max-width: 599px)']) return 'compact';
@@ -211,15 +212,11 @@ export class RoomsListPage {
 
   confirmRemove(room: Room): void {
     if (!this.access.canWrite()) return;
-    this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: `Excluir sala ${room.code}?`,
-        message: `A sala ${room.code} (${room.name}) deixará de aparecer nas listas e os recursos vinculados a ela serão liberados. Esta ação não pode ser desfeita pela interface.`,
-        confirmLabel: 'Excluir sala',
-        destructive: true,
-      },
-    }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
+    openConfirmDialog(this.dialog, {
+      title: `Excluir sala ${room.code}?`,
+      message: `A sala ${room.code} (${room.name}) deixará de aparecer nas listas e os recursos vinculados a ela serão liberados. Esta ação não pode ser desfeita pela interface.`,
+      confirmLabel: 'Excluir sala',
+    }, this.breakpoints).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       if (confirmed && this.access.canWrite()) this.remove(room);
     });
   }

@@ -37,6 +37,7 @@ describe('RoomsListPage', () => {
         { provide: RoomsApiService, useValue: { list, remove } },
         { provide: MatDialog, useValue: { open } },
         { provide: BreakpointObserver, useValue: {
+          isMatched: (query: string) => query.includes('599') && viewport < 600,
           observe: () => of({ breakpoints: {
             '(max-width: 599px)': viewport < 600,
             '(min-width: 1280px)': viewport >= 1280,

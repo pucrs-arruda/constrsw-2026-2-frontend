@@ -16,14 +16,9 @@
     <p class="login-panel__subtitle">Use seu usuário e senha institucionais.</p>
 
     @if (bannerMessage(); as message) {
-      <div
-        class="login-panel__banner"
-        [class.login-panel__banner--refusal]="bannerKind() === 'refusal'"
-        [class.login-panel__banner--identity]="bannerKind() === 'identity'"
-        role="alert"
-      >
-        {{ message }}
-      </div>
+      @if (bannerKind(); as kind) {
+        <app-alert-banner [kind]="kind" [message]="message" />
+      }
     }
 
     <form class="login-panel__form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>

@@ -10,8 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { finalize } from 'rxjs';
-import { ApiError } from '../../../shared/http/api-error';
-import { ConfirmDialogComponent, RefusalBannerComponent } from '../../../shared/ui';
+import { ApiError } from '../data/api-error';
+import { AlertBanner, openConfirmDialog } from '../../../shared/ui';
 import { RoomsApiService } from '../data/rooms-api.service';
 import { Room, RoomPatch, RoomUpdate } from '../data/rooms.models';
 
@@ -30,7 +30,7 @@ const validCapacity = (control: AbstractControl<number | null>) =>
   imports: [
     ReactiveFormsModule, MatButtonModule, MatChipsModule, MatDialogModule,
     MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatSlideToggleModule,
-    RefusalBannerComponent,
+    AlertBanner,
   ],
   templateUrl: './room-form.dialog.html',
   styleUrl: './room-form.dialog.scss',
@@ -64,13 +64,14 @@ export class RoomFormDialog {
   });
   readonly resources = signal(this.room?.resourceIds ?? []);
   readonly resourceDraft = this.builder.nonNullable.control('');
+  private readonly breakpoints = inject(BreakpointObserver);
   readonly saving = signal(false);
   readonly error = signal('');
   private confirming = false;
 
   constructor() {
     this.ref.disableClose = true;
-    inject(BreakpointObserver).observe('(max-width: 599px)')
+    this.breakpoints.observe('(max-width: 599px)')
       .pipe(takeUntilDestroyed()).subscribe(({ matches }) => {
         this.ref.updateSize(matches ? '100vw' : '560px', matches ? '100dvh' : '');
       });
@@ -136,16 +137,12 @@ export class RoomFormDialog {
       return;
     }
     this.confirming = true;
-    this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Descartar alterações?',
-        message: 'As alterações feitas nesta sala serão perdidas.',
-        confirmLabel: 'Descartar alterações',
-        cancelLabel: 'Continuar editando',
-        destructive: true,
-      },
-    }).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
+    openConfirmDialog(this.dialog, {
+      title: 'Descartar alterações?',
+      message: 'As alterações feitas nesta sala serão perdidas.',
+      confirmLabel: 'Descartar alterações',
+      cancelLabel: 'Continuar editando',
+    }, this.breakpoints).afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(confirmed => {
       this.confirming = false;
       if (confirmed) this.ref.close();
     });

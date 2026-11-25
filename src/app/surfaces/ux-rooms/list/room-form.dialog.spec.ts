@@ -59,7 +59,7 @@ describe('RoomFormDialog', () => {
     fixture.componentInstance.form.controls.code.setValue('A-102');
     fixture.componentInstance.save();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-refusal-banner').textContent).toContain('Já existe uma sala com este código.');
+    expect(fixture.nativeElement.querySelector('app-alert-banner').textContent).toContain('Já existe uma sala com este código.');
     expect(fixture.componentInstance.form.controls.code.value).toBe('A-102');
     expect(close).not.toHaveBeenCalled();
   });

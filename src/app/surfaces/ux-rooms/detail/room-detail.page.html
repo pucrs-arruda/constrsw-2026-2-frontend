@@ -25,19 +25,16 @@
 </header>
 
 @if (notFound()) {
-  <app-empty-state message="Sala não encontrada." />
+  <app-empty-state title="Sala não encontrada." />
   <a class="wide-back" routerLink="/salas" [queryParams]="listParams()"
     >Voltar para Salas de Aula</a
   >
 } @else if (roomError(); as error) {
-  <app-error-banner
-    [message]="
-      error.kind === 'composition-unavailable'
-        ? 'Não foi possível obter as turmas do semestre em curso.'
-        : error.message || 'Não foi possível carregar a sala.'
-    "
-    (retry)="load()"
+  <app-alert-banner
+    [kind]="error.kind === 'composition-unavailable' ? 'composition' : 'refusal'"
+    [message]="error.message || 'Não foi possível carregar a sala.'"
   />
+  <button mat-stroked-button class="retry-action" (click)="load()">Tentar novamente</button>
 } @else if (room(); as item) {
   <div class="detail-grid">
     <div class="main-panels">
@@ -137,12 +134,15 @@
         </span>
       </div>
       @if (loadingFeatures()) {
-        <app-skeleton variant="card" [rows]="2" />
+        <app-skeleton-block [lines]="2" label="Carregando recursos…" />
       } @else if (featuresError(); as error) {
-        <app-error-banner
+        <app-alert-banner
+          kind="refusal"
           [message]="error.message || 'Não foi possível carregar os recursos de acessibilidade.'"
-          (retry)="loadFeatures()"
         />
+        <button mat-stroked-button class="retry-action" (click)="loadFeatures()">
+          Tentar novamente
+        </button>
       } @else {
         @if (access.canWrite()) {
           <button mat-flat-button class="add-feature" [disabled]="busy()" (click)="editFeature()">
@@ -195,11 +195,11 @@
             }
           </ul>
         } @else {
-          <app-empty-state message="Nenhum recurso de acessibilidade cadastrado." />
+          <app-empty-state title="Nenhum recurso de acessibilidade cadastrado." />
         }
       }
     </section>
   </div>
 } @else {
-  <app-skeleton variant="card" [rows]="3" />
+  <app-skeleton-block [lines]="3" label="Carregando sala…" />
 }

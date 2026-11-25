@@ -122,9 +122,10 @@ describe('RoomDetailPage', () => {
       throwError(() => ({ kind: 'composition-unavailable', status: 503 })),
     );
     openRoom();
-    expect(host.textContent).toContain('Não foi possível obter as turmas');
+    // O kit compartilhado trava a cópia institucional do banner de composição.
+    expect(host.textContent).toContain('Serviço de composição indisponível.');
     expect(host.textContent).not.toContain('RAMP');
-    host.querySelector<HTMLButtonElement>('.btn-retry')!.click();
+    host.querySelector<HTMLButtonElement>('.retry-action')!.click();
     fixture.detectChanges();
     expect(api.get).toHaveBeenCalledTimes(2);
     expect(host.textContent).toContain('RAMP');
@@ -137,7 +138,7 @@ describe('RoomDetailPage', () => {
     openRoom();
     expect(host.textContent).toContain('Laboratório');
     expect(host.textContent).toContain('Falha de rede.');
-    host.querySelector<HTMLButtonElement>('.btn-retry')!.click();
+    host.querySelector<HTMLButtonElement>('.retry-action')!.click();
     fixture.detectChanges();
     expect(api.get).toHaveBeenCalledTimes(1);
     expect(host.textContent).toContain('RAMP');

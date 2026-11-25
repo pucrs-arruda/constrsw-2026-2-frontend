@@ -47,7 +47,8 @@ Mapa canônico: `_bmad-output/specs/spec-frontend/ownership.md`.
 Superfície de salas, em `src/app/surfaces/ux-rooms/`:
 
 ```text
-data/    RoomsApiService (BFF /api/v1/rooms), modelos, RoomsAccess (papéis)
+data/    RoomsApiService (BFF /api/v1/rooms), modelos, RoomsAccess (papéis),
+         filter-query (operadores {like}/{gteq}) e error-parser
 list/    lista com filtro, ordenação, paginação e formulário de sala
 detail/  detalhe, recursos de acessibilidade e turmas do semestre (T3)
 ```
@@ -65,10 +66,12 @@ oferecer botão que o servidor vai negar; quem recusa escrita é o domínio (403
 Sem identidade, a superfície fica em leitura. Como `classes` filtra por papel,
 professor e aluno podem ver menos turmas do que a sala tem, e a tela avisa.
 
-**Provisório, não é nosso:** `src/app/shared/ui/` (estados de carregamento,
-vazio, erro, recusa e confirmação). Pela `spec-frontend/contribution.md` o kit
-compartilhado é do Prof. Arruda; está aqui porque a superfície precisava dele e
-sai quando o oficial chegar.
+**Kit compartilhado.** A superfície usa `shared/ui` do Prof. Arruda — `AlertBanner`,
+`EmptyState`, `SkeletonBlock` e `openConfirmDialog`. Nada em `shared/` é nosso: os
+helpers de filtro e de erro da UX-ROOMS moram em `surfaces/ux-rooms/data/`.
+
+O banner de composição usa a cópia institucional travada pelo kit ("Serviço de
+composição indisponível."), por isso a superfície não escreve essa frase.
 
 ## Mockups
 

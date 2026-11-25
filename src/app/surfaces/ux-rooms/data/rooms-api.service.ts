@@ -2,8 +2,8 @@ import { HttpClient, HttpErrorResponse, type HttpResponse } from '@angular/commo
 import { Injectable, inject } from '@angular/core';
 import { catchError, map, of, throwError, type Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { toApiError } from '../../../shared/http/error-parser';
-import { encodeFilterQuery, toHttpParams } from '../../../shared/http/filter-query';
+import { toApiError } from './error-parser';
+import { encodeFilterQuery, toHttpParams } from './filter-query';
 import type {
   AccessibilityFeature,
   FeatureCreate,

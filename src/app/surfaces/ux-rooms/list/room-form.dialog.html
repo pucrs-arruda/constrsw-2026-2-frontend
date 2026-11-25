@@ -2,7 +2,7 @@
 <form [formGroup]="form" (ngSubmit)="save()">
   <mat-dialog-content>
     @if (error()) {
-      <app-refusal-banner [message]="error()" />
+      <app-alert-banner kind="refusal" [message]="error()" />
     }
     <mat-form-field appearance="outline">
       <mat-label>Código</mat-label>
