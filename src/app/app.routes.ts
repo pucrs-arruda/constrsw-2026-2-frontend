@@ -82,8 +82,8 @@ export const routes: Routes = [
       },
       {
         path: 'ocupacao',
-        component: SurfacePlaceholder,
-        data: { title: 'Ocupação' },
+        loadComponent: () =>
+          import('./surfaces/ux-occupancy/occupancy-page').then((m) => m.OccupancyPage),
       },
       {
         path: 'plano-roster',

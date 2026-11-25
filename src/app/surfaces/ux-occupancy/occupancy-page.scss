@@ -1,0 +1,93 @@
+.occupancy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.occupancy__title {
+  margin: 0 0 0.35rem;
+  /*
+   * Propriedades separadas (escala headline-medium): o shorthand `font: var(--mat-sys-headline-*)`
+   * é descartado pelo navegador porque o tema gera `Source Sans 3` sem aspas.
+   */
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.occupancy__caption,
+.occupancy__hint,
+.occupancy__count {
+  margin: 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.occupancy__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem 1rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.occupancy__field {
+  flex: 0 1 12rem;
+  min-width: 0;
+}
+
+.occupancy__field--faixa {
+  flex-basis: 8rem;
+}
+
+.occupancy__submit {
+  /* alinha com a altura do outline field; alvo de toque ≥ 48px */
+  min-height: 56px;
+}
+
+/* ids (UUID) quebram nos hífens em vez de rolar na horizontal */
+.occupancy__result {
+  overflow-wrap: anywhere;
+}
+
+/* DESIGN.md typography.mono ("mono só para faixa/ids"): só as células, não os cabeçalhos */
+.occupancy__result ::ng-deep .rdt-table td,
+.occupancy__result ::ng-deep .rdt-list__primary,
+.occupancy__result ::ng-deep .rdt-list__secondary {
+  font-family: 'Source Code Pro', ui-monospace, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/*
+ * Na lista compacta do kit as linhas cortam com reticências; aqui o fim do id é o que distingue
+ * um recurso do outro, então a linha quebra. Só classes do nosso kit, nada de .mdc-*.
+ */
+.occupancy__result ::ng-deep .rdt-list__primary,
+.occupancy__result ::ng-deep .rdt-list__secondary {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 599.98px) {
+  .occupancy__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .occupancy__field,
+  .occupancy__submit {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
