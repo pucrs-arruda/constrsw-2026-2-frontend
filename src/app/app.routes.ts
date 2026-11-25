@@ -43,9 +43,11 @@ export const routes: Routes = [
         data: { title: 'Alunos' },
       },
       {
+        // UX-ROOMS (Grupo 08). Único ponto de contato da superfície com o shell: um
+        // `loadChildren`, para a rota do dono não precisar conhecer as telas de dentro.
         path: 'salas',
-        component: SurfacePlaceholder,
-        data: { title: 'Salas de Aula' },
+        loadChildren: () =>
+          import('./surfaces/ux-rooms/ux-rooms.routes').then((m) => m.ROOMS_ROUTES),
       },
       {
         path: 'recursos',

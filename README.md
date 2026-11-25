@@ -42,6 +42,34 @@ Companions de UX: EXPERIENCE + DESIGN em `_bmad-output/planning-artifacts/ux-des
 
 Mapa canônico: `_bmad-output/specs/spec-frontend/ownership.md`.
 
+## UX-ROOMS (Grupo 08)
+
+Superfície de salas, em `src/app/surfaces/ux-rooms/`:
+
+```text
+data/    RoomsApiService (BFF /api/v1/rooms), modelos, RoomsAccess (papéis)
+list/    lista com filtro, ordenação, paginação e formulário de sala
+detail/  detalhe, recursos de acessibilidade e turmas do semestre (T3)
+```
+
+Entra no shell por uma linha só em `app.routes.ts`: `/salas` carrega
+`ROOMS_ROUTES` com `loadChildren`. Lista e detalhe saem em chunks próprios.
+
+**Composição T3.** Os dois GETs de sala vêm do BFF já com `classes` do semestre
+em curso; o cliente nunca manda `year`/`semester`. Se o serviço `classes` não
+responde, o BFF devolve 503 e a sala **não** volta pela metade — a tela mostra o
+banner de composição indisponível, com "Tentar novamente".
+
+**Papéis.** `RoomsAccess` lê `GET /v1/identidade/me` pelo BFF só para não
+oferecer botão que o servidor vai negar; quem recusa escrita é o domínio (403).
+Sem identidade, a superfície fica em leitura. Como `classes` filtra por papel,
+professor e aluno podem ver menos turmas do que a sala tem, e a tela avisa.
+
+**Provisório, não é nosso:** `src/app/shared/ui/` (estados de carregamento,
+vazio, erro, recusa e confirmação). Pela `spec-frontend/contribution.md` o kit
+compartilhado é do Prof. Arruda; está aqui porque a superfície precisava dele e
+sai quando o oficial chegar.
+
 ## Mockups
 
 Galeria PNG (25 frames) + amostra responsiva compact/medium:
