@@ -5,7 +5,7 @@ import { guestGuard } from './shell/guest.guard';
 import { HomeLanding } from './shell/home-landing';
 import { LoginPage } from './shell/login-page';
 import { SurfacePlaceholder } from './shell/surface-placeholder';
-import { EmployeesCreateStub } from './surfaces/ux-employees/employees-create-stub';
+import { EmployeesCreatePage } from './surfaces/ux-employees/employees-create-page';
 import { EmployeesDetailPage } from './surfaces/ux-employees/employees-detail-page';
 import { EmployeesListPage } from './surfaces/ux-employees/employees-list-page';
 
@@ -40,7 +40,7 @@ export const routes: Routes = [
           },
           {
             path: 'novo',
-            component: EmployeesCreateStub,
+            component: EmployeesCreatePage,
           },
           {
             path: ':id',

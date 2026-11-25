@@ -231,6 +231,7 @@ describe('EmployeesDetailPage', () => {
       (btn.textContent ?? '').trim().includes('Novo'),
     );
     expect(nova.length).toBeGreaterThan(0);
+    expect(el.textContent).toContain('Editar funcionário');
     expect(el.textContent).toContain('Editar');
     expect(el.textContent).toContain('Excluir');
   });
@@ -246,8 +247,41 @@ describe('EmployeesDetailPage', () => {
       (btn.textContent ?? '').trim().includes('Novo'),
     );
     expect(nova).toHaveLength(0);
+    expect(el.textContent).not.toContain('Editar funcionário');
     expect(el.textContent).not.toContain('Editar');
     expect(el.textContent).not.toContain('Excluir');
+  });
+
+  it('edit employee dialog save refreshes via getById', async () => {
+    const fixture = createPage();
+    const page = fixture.componentInstance;
+    flushPending();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    dialogOpen.mockReturnValue({
+      afterClosed: () => of({ id: 'emp-1' }),
+      componentInstance: {},
+    } as unknown as MatDialogRef<unknown, { id: string } | false>);
+
+    page.onEditEmployee();
+    expect(dialogOpen).toHaveBeenCalled();
+
+    const refresh = http.expectOne(
+      `${environment.bffBaseUrl}/v1/employees/emp-1`,
+    );
+    expect(refresh.request.method).toBe('GET');
+    refresh.flush({
+      ...EMPLOYEE,
+      position: 'Analista Sênior',
+      status: 'Inactive',
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Analista Sênior');
+    expect(el.textContent).toContain('Inativo');
   });
 
   it('shows compact back link below 600px', async () => {

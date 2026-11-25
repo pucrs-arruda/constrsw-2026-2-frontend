@@ -30,6 +30,11 @@ import {
   type DependentFormDialogData,
 } from './dependent-form-dialog';
 import {
+  EmployeeFormDialog,
+  type EmployeeFormDialogData,
+  type EmployeeFormDialogResult,
+} from './employee-form-dialog';
+import {
   EmployeesApi,
   type DependentRead,
   type EmployeeRead,
@@ -190,6 +195,27 @@ export class EmployeesDetailPage implements OnInit {
           dependents: employee.dependents ?? [],
         });
         this.loading.set(false);
+      });
+  }
+
+  onEditEmployee(): void {
+    const emp = this.employee();
+    if (!emp || !this.canWriteDependents()) {
+      return;
+    }
+    openEditDialog<
+      EmployeeFormDialog,
+      EmployeeFormDialogData,
+      EmployeeFormDialogResult
+    >(this.dialog, EmployeeFormDialog, this.breakpoints, {
+      data: { mode: 'edit', employee: emp },
+    })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result && typeof result === 'object' && result.id) {
+          this.refreshEmployee(result.id);
+        }
       });
   }
 

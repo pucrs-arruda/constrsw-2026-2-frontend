@@ -42,9 +42,22 @@
   } @else if (showMaster()) {
     <div class="employees-detail__layout">
       <article class="employees-detail__master" aria-labelledby="employee-master-title">
-        <h2 id="employee-master-title" class="employees-detail__panel-title">
-          {{ employee()!.name }}
-        </h2>
+        <div class="employees-detail__master-header">
+          <h2 id="employee-master-title" class="employees-detail__panel-title">
+            {{ employee()!.name }}
+          </h2>
+          @if (canWriteDependents()) {
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              class="employees-detail__cta"
+              (click)="onEditEmployee()"
+            >
+              Editar funcionário
+            </button>
+          }
+        </div>
         <dl class="employees-detail__fields">
           <div class="employees-detail__field">
             <dt>Nome</dt>

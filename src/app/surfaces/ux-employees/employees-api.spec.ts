@@ -10,6 +10,7 @@ import {
   type DependentRead,
   type DependentWrite,
   type EmployeeRead,
+  type EmployeeWrite,
 } from './employees-api';
 
 const DEPENDENT: DependentRead = {
@@ -60,6 +61,60 @@ describe('EmployeesApi', () => {
     expect(req.request.method).toBe('GET');
     req.flush(EMPLOYEE);
     expect(result).toEqual(EMPLOYEE);
+  });
+
+  it('create POSTs EmployeeWrite to /v1/employees', () => {
+    const body: EmployeeWrite = {
+      registrationNumber: '100',
+      name: 'Helena Costa',
+      salary: 8500.5,
+      hireDate: '2020-01-15',
+      position: 'Analista',
+      status: 'Active',
+      email: 'helena.costa@pucrs.br',
+    };
+    let result: EmployeeRead | undefined;
+    api.create(body).subscribe((value) => {
+      result = value;
+    });
+
+    const req = http.expectOne(`${environment.bffBaseUrl}/v1/employees`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(body);
+    req.flush({ ...EMPLOYEE, dependents: [] });
+    expect(result?.id).toBe('emp-1');
+    expect(result?.name).toBe('Helena Costa');
+  });
+
+  it('replace PUTs EmployeeWrite to /v1/employees/:id', () => {
+    const body: EmployeeWrite = {
+      registrationNumber: '100',
+      name: 'Helena Costa',
+      salary: 9000,
+      hireDate: '2020-01-15',
+      position: 'Analista Sênior',
+      status: 'Inactive',
+      phone: '',
+      email: 'helena.costa@pucrs.br',
+    };
+    let result: EmployeeRead | undefined;
+    api.replace('emp-1', body).subscribe((value) => {
+      result = value;
+    });
+
+    const req = http.expectOne(
+      `${environment.bffBaseUrl}/v1/employees/emp-1`,
+    );
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(body);
+    req.flush({
+      ...EMPLOYEE,
+      salary: 9000,
+      position: 'Analista Sênior',
+      status: 'Inactive',
+    });
+    expect(result?.status).toBe('Inactive');
+    expect(result?.position).toBe('Analista Sênior');
   });
 
   it('listDependents GETs secondary collection', () => {

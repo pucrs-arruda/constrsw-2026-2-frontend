@@ -35,6 +35,18 @@ export interface EmployeeRead {
   email?: string;
 }
 
+/** Corpo de POST/PUT de Employee (OpenAPI EmployeeWrite). */
+export interface EmployeeWrite {
+  registrationNumber: string;
+  name: string;
+  salary: number;
+  hireDate: string;
+  position: string;
+  status: 'Active' | 'Inactive';
+  phone?: string;
+  email?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EmployeesApi {
   private readonly bff = inject(BffClient);
@@ -47,6 +59,16 @@ export class EmployeesApi {
   /** GET `/api/v1/employees/{id}` — aggregate com dependents visíveis. */
   getById(id: string): Observable<EmployeeRead> {
     return this.bff.get<EmployeeRead>(`/v1/employees/${id}`);
+  }
+
+  /** POST `/api/v1/employees` → 201 EmployeeCreated (lido como EmployeeRead sem dependents). */
+  create(body: EmployeeWrite): Observable<EmployeeRead> {
+    return this.bff.post<EmployeeRead>('/v1/employees', body);
+  }
+
+  /** PUT `/api/v1/employees/{id}` — full replace; dependents no servidor permanecem. */
+  replace(id: string, body: EmployeeWrite): Observable<EmployeeRead> {
+    return this.bff.put<EmployeeRead>(`/v1/employees/${id}`, body);
   }
 
   /** GET `/api/v1/employees/{id}/dependents`. */

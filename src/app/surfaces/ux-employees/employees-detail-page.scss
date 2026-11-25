@@ -63,6 +63,14 @@
   background: var(--mat-sys-surface-container-low);
 }
 
+.employees-detail__master-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
 .employees-detail__panel-title {
   margin: 0;
   font: var(--mat-sys-title-medium);
@@ -124,6 +132,7 @@
 }
 
 @media (max-width: 599.98px) {
+  .employees-detail__master-header,
   .employees-detail__dependents-header {
     flex-direction: column;
     align-items: stretch;
