@@ -2,7 +2,7 @@
 
 SPA Angular Closed CRAS — ConstrSW 2026/2.
 
-Stack: **Angular 22.x** + Angular Material (M3) + CDK + SCSS. Tema: tokens `DESIGN.md` (primary `#0066B3`). Em desenvolvimento (`npm start`): porta **4200**. Pelo Compose: porta de `FRONTEND_EXTERNAL_PORT` (**8080** no `.env` do repositório base).
+Stack: **Angular 22.x** + Angular Material (M3) + CDK + SCSS. Tema: tokens `DESIGN.md` (primary `#0066B3`). Em desenvolvimento (`npm start`): porta **4200**. Pelo Compose: porta de `FRONTEND_EXTERNAL_PORT` (**4200** no `.env` do repositório base).
 
 ```bash
 npm ci
@@ -10,7 +10,7 @@ npm start          # ng serve --port 4200
 npm run build
 ```
 
-Compose (raiz do monorepo): serviço `frontend` → `FRONTEND_EXTERNAL_PORT` (**8080** no `.env`; o padrão do `docker-compose.yml` sem `.env` é 4200) → container `:80` + `/health`. O `BFF_ORIGIN` do `.env` também é `http://localhost:8080`.
+Compose (raiz do monorepo): serviço `frontend` → `FRONTEND_EXTERNAL_PORT` (**4200** no `.env` e no padrão do `docker-compose.yml`) → container `:80` + `/health`.
 
 ## Contrato
 
