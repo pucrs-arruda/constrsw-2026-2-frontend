@@ -44,6 +44,10 @@
     <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
   }
 
+  @if (actionError()) {
+    <app-alert-banner kind="refusal" [message]="actionError()" />
+  }
+
   @if (loading()) {
     <app-skeleton-block label="Carregando recursos…" [lines]="5" />
   } @else if (showEmpty()) {
@@ -66,9 +70,10 @@
       [rows]="filteredRows()"
       [showOpen]="true"
       [showEdit]="canWrite()"
-      [showDelete]="false"
+      [showDelete]="canWrite()"
       (openRow)="onOpenRow($event)"
       (editRow)="onEditRow($event)"
+      (deleteRow)="onDeleteRow($event)"
     />
   }
 </section>

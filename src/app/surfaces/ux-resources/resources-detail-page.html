@@ -42,15 +42,27 @@
             {{ current.name }}
           </h2>
           @if (canWrite()) {
-            <button
-              mat-flat-button
-              color="primary"
-              type="button"
-              class="resource-detail__cta"
-              (click)="onEditResource()"
-            >
-              Editar recurso
-            </button>
+            <div class="resource-detail__actions">
+              <button
+                mat-button
+                type="button"
+                class="resource-detail__cta resource-detail__danger"
+                [disabled]="deleting()"
+                (click)="onDeleteResource()"
+              >
+                Excluir recurso
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                class="resource-detail__cta"
+                [disabled]="deleting()"
+                (click)="onEditResource()"
+              >
+                Editar recurso
+              </button>
+            </div>
           }
         </div>
 
@@ -176,18 +188,34 @@
                     </span>
                   }
                 </div>
-                @if (item.isOpen && canWrite()) {
-                  <button
-                    mat-button
-                    type="button"
-                    class="resource-detail__occurrence-action"
-                    [attr.aria-label]="
-                      'Resolver ocorrência ' + item.occurrence.description
-                    "
-                    (click)="onResolveOccurrence(item.occurrence)"
-                  >
-                    Resolver
-                  </button>
+                @if (canWrite()) {
+                  <div class="resource-detail__occurrence-actions">
+                    @if (item.isOpen) {
+                      <button
+                        mat-button
+                        type="button"
+                        class="resource-detail__occurrence-action"
+                        [attr.aria-label]="
+                          'Resolver ocorrência ' + item.occurrence.description
+                        "
+                        (click)="onResolveOccurrence(item.occurrence)"
+                      >
+                        Resolver
+                      </button>
+                    }
+                    <button
+                      mat-button
+                      type="button"
+                      class="resource-detail__occurrence-action resource-detail__danger"
+                      [disabled]="deleting()"
+                      [attr.aria-label]="
+                        'Excluir ocorrência ' + item.occurrence.description
+                      "
+                      (click)="onDeleteOccurrence(item.occurrence)"
+                    >
+                      Excluir
+                    </button>
+                  </div>
                 }
               </li>
             }

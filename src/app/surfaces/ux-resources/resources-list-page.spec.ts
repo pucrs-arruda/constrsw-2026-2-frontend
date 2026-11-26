@@ -11,6 +11,7 @@ import { provideRouter, Router } from '@angular/router';
 import { BehaviorSubject, Observable, map, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthSession } from '../../shell/auth-session';
+import { ConfirmDialog } from '../../shared/ui';
 import { ResourceFormDialog } from './resource-form-dialog';
 import type { FutureReservation, ResourceView } from './resources-api';
 import { ResourcesListPage } from './resources-list-page';
@@ -196,7 +197,7 @@ describe('ResourcesListPage', () => {
     expect(text.toLowerCase()).not.toContain('sala');
   });
 
-  it('shows Novo recurso and Editar for write roles, never Excluir', async () => {
+  it('shows Novo recurso, Editar and Excluir for write roles', async () => {
     const fixture = await renderWith((req) => req.flush(SAMPLE), [
       'funcionario',
     ]);
@@ -204,7 +205,7 @@ describe('ResourcesListPage', () => {
     expect(labels).toContain('Novo recurso');
     expect(labels).toContain('Abrir');
     expect(labels).toContain('Editar');
-    expect(labels).not.toContain('Excluir');
+    expect(labels).toContain('Excluir');
   });
 
   it('treats administrator as a write role too', async () => {
@@ -221,6 +222,7 @@ describe('ResourcesListPage', () => {
     const labels = buttonLabels(fixture);
     expect(labels).toContain('Abrir');
     expect(labels).not.toContain('Editar');
+    expect(labels).not.toContain('Excluir');
     expect(labels.some((label) => label.includes('Novo recurso'))).toBe(false);
   });
 
@@ -238,6 +240,75 @@ describe('ResourcesListPage', () => {
       expect.objectContaining({ data: { mode: 'create' } }),
     );
     http.expectOne(LIST_URL).flush(SAMPLE);
+  });
+
+  function mockConfirm(answer: boolean) {
+    return vi.spyOn(TestBed.inject(MatDialog), 'open').mockReturnValue({
+      afterClosed: () => of(answer),
+    } as unknown as MatDialogRef<unknown>);
+  }
+
+  it('Excluir confirms, DELETEs the resource and reloads the list', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE));
+    const openSpy = mockConfirm(true);
+
+    fixture.componentInstance.onDeleteRow({ id: 'res-2' });
+
+    expect(openSpy).toHaveBeenCalledWith(
+      ConfirmDialog,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          title: 'Excluir Kit primeiros socorros?',
+          confirmLabel: 'Excluir',
+        }),
+      }),
+    );
+    const del = http.expectOne(`${LIST_URL}/res-2`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush(null, { status: 204, statusText: 'No Content' });
+    http.expectOne(LIST_URL).flush([SAMPLE[0]]);
+  });
+
+  it('does nothing when the confirm dialog is cancelled', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE));
+    mockConfirm(false);
+
+    fixture.componentInstance.onDeleteRow({ id: 'res-2' });
+
+    http.expectNone(`${LIST_URL}/res-2`);
+  });
+
+  it('keeps the table and shows a refusal when DELETE is forbidden', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE));
+    mockConfirm(true);
+
+    fixture.componentInstance.onDeleteRow({ id: 'res-1' });
+    http
+      .expectOne(`${LIST_URL}/res-1`)
+      .flush({}, { status: 403, statusText: 'Forbidden' });
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'Você não tem permissão para excluir.',
+    );
+    expect(el.querySelector('app-responsive-data-table')).not.toBeNull();
+  });
+
+  it('treats 404 on DELETE as already removed and refreshes', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE));
+    mockConfirm(true);
+
+    fixture.componentInstance.onDeleteRow({ id: 'res-1' });
+    http
+      .expectOne(`${LIST_URL}/res-1`)
+      .flush({}, { status: 404, statusText: 'Not Found' });
+    http.expectOne(LIST_URL).flush([SAMPLE[1]]);
+    fixture.detectChanges();
+
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]'),
+    ).toBeNull();
   });
 
   it('opens the edit dialog with the row resource and skips reload on cancel', async () => {

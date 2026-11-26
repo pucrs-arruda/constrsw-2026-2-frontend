@@ -36,6 +36,11 @@ import {
   resourceStatusLabel,
   resourceTypeLabel,
 } from './resource-labels';
+import {
+  confirmResourceDelete,
+  deleteRefusalMessage,
+  isUnauthorized,
+} from './resource-delete';
 import { hasResourceWriteRole } from './resource-permissions';
 import { ResourcesApi, type ResourceView } from './resources-api';
 
@@ -106,6 +111,9 @@ export class ResourcesListPage implements OnInit {
   readonly bannerMessage = signal('');
   /** UI hint only; the resources service still enforces WRITE_ROLES (403). */
   readonly canWrite = signal(false);
+  readonly deleting = signal(false);
+  /** Refused row action (e.g. delete): shown above the table, keeps the list. */
+  readonly actionError = signal('');
 
   readonly filteredRows = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();
@@ -151,6 +159,46 @@ export class ResourcesListPage implements OnInit {
     if (resource) {
       this.openForm({ mode: 'edit', resource });
     }
+  }
+
+  onDeleteRow(row: DataTableRow): void {
+    const resource = this.resources().find((item) => item.id === row.id);
+    if (!resource || !this.canWrite() || this.deleting()) {
+      return;
+    }
+    confirmResourceDelete(this.dialog, this.breakpoints, resource.name)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (!confirmed || this.deleting()) {
+          return;
+        }
+        this.deleting.set(true);
+        this.actionError.set('');
+        this.resourcesApi
+          .remove(resource.id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.deleting.set(false);
+              this.loadResources();
+            },
+            error: (err: unknown) => {
+              this.deleting.set(false);
+              if (isUnauthorized(err)) {
+                this.session.clear();
+                void this.router.navigateByUrl('/login');
+                return;
+              }
+              const message = deleteRefusalMessage(err);
+              if (message === null) {
+                // Already gone (404): just refresh.
+                this.loadResources();
+                return;
+              }
+              this.actionError.set(message);
+            },
+          });
+      });
   }
 
   private openForm(data: ResourceFormDialogData): void {

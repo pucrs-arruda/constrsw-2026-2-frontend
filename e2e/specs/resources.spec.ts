@@ -140,6 +140,54 @@ test.describe('UX-RESOURCES', () => {
     await expect(occurrences.locator('.resource-detail__count')).toHaveText('0');
   });
 
+  test('Excluir: ocorrência no detalhe e recurso na lista', async ({ page }) => {
+    const { access_token } = await loginOauth();
+    const doomed = await createResource(access_token, {
+      code: code('DEL', runId),
+      name: `E2E Excluir ${runId}`,
+      type: 'CABLE',
+    });
+
+    await page.goto(`/recursos/${doomed.id}`);
+    await expect(page.getByRole('heading', { name: doomed.name, level: 1 })).toBeVisible();
+    const occurrences = page.locator('.resource-detail__occurrences');
+    await page.getByRole('button', { name: 'Registrar ocorrência' }).click();
+    const dialog = dialogRoot(page);
+    await dialog.getByLabel('Descrição').fill('Conector solto');
+    await selectMatOption(page, 'Tipo', 'Dano');
+    await dialog.getByRole('button', { name: 'Registrar', exact: true }).click();
+    await expect(occurrences).toContainText('Conector solto — Aberta');
+
+    await occurrences
+      .getByRole('button', { name: 'Excluir ocorrência Conector solto' })
+      .click();
+    await expect(dialogRoot(page).getByRole('heading', { name: 'Excluir ocorrência?' })).toBeVisible();
+    await dialogRoot(page).getByRole('button', { name: 'Excluir', exact: true }).click();
+    await expect(occurrences).toContainText('Nenhuma ocorrência registrada.');
+
+    await page.getByRole('link', { name: 'Voltar para Recursos' }).click();
+    const row = page.getByRole('row').filter({ hasText: doomed.name });
+    await expect(row).toBeVisible();
+    await row.getByRole('button', { name: 'Excluir' }).click();
+    await expect(
+      dialogRoot(page).getByRole('heading', { name: `Excluir ${doomed.name}?` }),
+    ).toBeVisible();
+    // The DELETE is sent after the dialog finishes closing; wait for it before
+    // asserting (rows behind an open dialog are aria-hidden and match 0 anyway).
+    const deleted = page.waitForResponse(
+      (res) =>
+        res.request().method() === 'DELETE' &&
+        res.url().endsWith(`/api/v1/resources/${doomed.id}`),
+    );
+    await dialogRoot(page).getByRole('button', { name: 'Excluir', exact: true }).click();
+    expect((await deleted).status()).toBe(204);
+    await expect(page.locator('mat-dialog-container')).toHaveCount(0);
+    await expect(page.getByText(doomed.name, { exact: true })).toHaveCount(0);
+
+    await page.goto(`/recursos/${doomed.id}`);
+    await expect(page.getByText('Recurso não encontrado.')).toBeVisible();
+  });
+
   for (const viewport of [
     { width: 360, height: 780 },
     { width: 768, height: 1024 },

@@ -1,4 +1,4 @@
-import { E2E_BFF_URL, E2E_PREFIX, E2E_RESOURCES_URL } from './env';
+import { E2E_BFF_URL, E2E_PREFIX } from './env';
 
 export interface ResourceSeed {
   code: string;
@@ -39,12 +39,9 @@ export async function createResource(
   return (await res.json()) as ResourceSeeded;
 }
 
-/**
- * Soft-deletes every `E2E-` resource. The BFF has no DELETE route yet, so this
- * calls the resources service directly (DELETE sets enabled=false).
- */
+/** Soft-deletes every `E2E-` resource through the BFF (DELETE sets enabled=false). */
 export async function purgeE2eResources(token: string): Promise<void> {
-  const res = await fetch(`${E2E_RESOURCES_URL}/api/v1/resources`, {
+  const res = await fetch(`${E2E_BFF_URL}/api/v1/resources`, {
     headers: authHeaders(token),
   });
   if (!res.ok) {
@@ -56,7 +53,7 @@ export async function purgeE2eResources(token: string): Promise<void> {
       continue;
     }
     const del = await fetch(
-      `${E2E_RESOURCES_URL}/api/v1/resources/${resource.id}`,
+      `${E2E_BFF_URL}/api/v1/resources/${resource.id}`,
       { method: 'DELETE', headers: authHeaders(token) },
     );
     if (!del.ok && del.status !== 404) {

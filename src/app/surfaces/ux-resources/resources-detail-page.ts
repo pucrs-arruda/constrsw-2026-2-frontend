@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
 import { BffRequestError, type AlertBannerKind } from '../../shared/http';
 import {
   AlertBanner,
@@ -43,6 +44,12 @@ import {
   resourceStatusLabel,
   resourceTypeLabel,
 } from './resource-labels';
+import {
+  confirmOccurrenceDelete,
+  confirmResourceDelete,
+  deleteRefusalMessage,
+  isUnauthorized,
+} from './resource-delete';
 import { hasResourceWriteRole } from './resource-permissions';
 import {
   ResourcesApi,
@@ -157,6 +164,7 @@ export class ResourcesDetailPage implements OnInit {
   readonly bannerMessage = signal('');
   /** UI hint only; the resources service still enforces WRITE_ROLES (403). */
   readonly canWrite = signal(false);
+  readonly deleting = signal(false);
 
   readonly typeLabel = computed(() => {
     const resource = this.resource();
@@ -245,6 +253,69 @@ export class ResourcesDetailPage implements OnInit {
       mode: 'resolve',
       resourceId: resource.id,
       occurrence,
+    });
+  }
+
+  onDeleteResource(): void {
+    const resource = this.resource();
+    if (!resource || !this.canWrite() || this.deleting()) {
+      return;
+    }
+    confirmResourceDelete(this.dialog, this.breakpoints, resource.name)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (!confirmed || this.deleting()) {
+          return;
+        }
+        this.runDelete(this.resourcesApi.remove(resource.id), () => {
+          void this.router.navigateByUrl('/recursos');
+        });
+      });
+  }
+
+  onDeleteOccurrence(occurrence: Occurrence): void {
+    const resource = this.resource();
+    if (!resource || !this.canWrite() || this.deleting()) {
+      return;
+    }
+    confirmOccurrenceDelete(this.dialog, this.breakpoints, occurrence.description)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((confirmed) => {
+        if (!confirmed || this.deleting()) {
+          return;
+        }
+        this.runDelete(
+          this.resourcesApi.removeOccurrence(resource.id, occurrence.id),
+          () => this.loadResource(this.resourceId()),
+        );
+      });
+  }
+
+  /** 404 counts as done (already removed); other refusals keep the page and show the banner. */
+  private runDelete(request: Observable<void>, done: () => void): void {
+    this.deleting.set(true);
+    this.bannerKind.set(null);
+    this.bannerMessage.set('');
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.deleting.set(false);
+        done();
+      },
+      error: (err: unknown) => {
+        this.deleting.set(false);
+        if (isUnauthorized(err)) {
+          this.session.clear();
+          void this.router.navigateByUrl('/login');
+          return;
+        }
+        const message = deleteRefusalMessage(err);
+        if (message === null) {
+          done();
+          return;
+        }
+        this.bannerKind.set('refusal');
+        this.bannerMessage.set(message);
+      },
     });
   }
 

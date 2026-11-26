@@ -113,6 +113,17 @@
   width: 100%;
 }
 
+.resource-detail__actions,
+.resource-detail__occurrence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.resource-detail__danger {
+  --mat-button-text-label-text-color: var(--mat-sys-error);
+}
+
 .resource-detail__count {
   min-width: 2.5rem;
   padding: 0.25rem 0.75rem;
@@ -201,7 +212,8 @@
     flex-wrap: wrap;
   }
 
+  .resource-detail__actions,
   .resource-detail__master .resource-detail__cta {
-    width: 100%;
+    flex: 1 1 100%;
   }
 }

@@ -122,6 +122,24 @@ describe('ResourcesApi', () => {
     req.flush({});
   });
 
+  it('soft-deletes a resource with DELETE /api/v1/resources/{id}', () => {
+    api.remove(RESOURCE.id).subscribe();
+    const req = http.expectOne(
+      `${environment.bffBaseUrl}/v1/resources/${RESOURCE.id}`,
+    );
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
+  it('soft-deletes an occurrence with DELETE .../occurrences/{id}', () => {
+    api.removeOccurrence(RESOURCE.id, 'occ-1').subscribe();
+    const req = http.expectOne(
+      `${environment.bffBaseUrl}/v1/resources/${RESOURCE.id}/occurrences/occ-1`,
+    );
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
   it('maps a 503 composition failure to a composition BffRequestError', () => {
     let error: unknown;
     api.list().subscribe({ error: (err) => (error = err) });

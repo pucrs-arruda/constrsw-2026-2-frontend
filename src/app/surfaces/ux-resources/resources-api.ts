@@ -135,6 +135,21 @@ export class ResourcesApi {
     );
   }
 
+  /**
+   * DELETE `/api/v1/resources/{id}` → 204. Logical delete: the service sets
+   * enabled=false on the resource and its occurrences; reads stop returning it.
+   */
+  remove(id: string): Observable<void> {
+    return this.bff.delete<void>(`/v1/resources/${encodeURIComponent(id)}`);
+  }
+
+  /** DELETE `.../occurrences/{occurrenceId}` → 204 (logical delete). */
+  removeOccurrence(resourceId: string, occurrenceId: string): Observable<void> {
+    return this.bff.delete<void>(
+      `/v1/resources/${encodeURIComponent(resourceId)}/occurrences/${encodeURIComponent(occurrenceId)}`,
+    );
+  }
+
   /** POST `/api/v1/resources/{id}/occurrences` → 201 Occurrence (status OPEN). */
   createOccurrence(
     resourceId: string,

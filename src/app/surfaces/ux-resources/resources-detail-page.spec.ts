@@ -233,17 +233,24 @@ describe('ResourcesDetailPage', () => {
     const writer = await render((req) => req.flush(AGGREGATE));
     expect(text(writer)).toContain('Editar recurso');
     expect(text(writer)).toContain('Registrar ocorrência');
-    expect(
+    expect(text(writer)).toContain('Excluir recurso');
+    const actions = Array.from(
       (writer.nativeElement as HTMLElement).querySelectorAll(
         '.resource-detail__occurrence-action',
-      ).length,
-    ).toBe(1);
+      ),
+    ).map((btn) => btn.getAttribute('aria-label'));
+    // Resolver only on the open one; Excluir on both.
+    expect(actions.filter((a) => a?.startsWith('Resolver'))).toEqual([
+      'Resolver ocorrência Lâmpada fraca',
+    ]);
+    expect(actions.filter((a) => a?.startsWith('Excluir')).length).toBe(2);
   });
 
   it('hides write actions for read-only roles', async () => {
     const reader = await render((req) => req.flush(AGGREGATE), ['professor']);
     expect(text(reader)).not.toContain('Editar recurso');
     expect(text(reader)).not.toContain('Registrar ocorrência');
+    expect(text(reader)).not.toContain('Excluir');
     expect(
       (reader.nativeElement as HTMLElement).querySelector(
         '.resource-detail__occurrence-action',
@@ -291,6 +298,62 @@ describe('ResourcesDetailPage', () => {
       }),
     );
     http.expectOne(DETAIL_URL).flush(AGGREGATE);
+  });
+
+  function mockConfirm(answer: boolean) {
+    return vi.spyOn(TestBed.inject(MatDialog), 'open').mockReturnValue({
+      afterClosed: () => of(answer),
+    } as unknown as MatDialogRef<unknown>);
+  }
+
+  it('Excluir recurso confirms, DELETEs and returns to the list', async () => {
+    const fixture = await render((req) => req.flush(AGGREGATE));
+    const navigateSpy = vi
+      .spyOn(TestBed.inject(Router), 'navigateByUrl')
+      .mockResolvedValue(true);
+    mockConfirm(true);
+
+    fixture.componentInstance.onDeleteResource();
+    const del = http.expectOne(DETAIL_URL);
+    expect(del.request.method).toBe('DELETE');
+    del.flush(null, { status: 204, statusText: 'No Content' });
+
+    expect(navigateSpy).toHaveBeenCalledWith('/recursos');
+  });
+
+  it('Excluir on an occurrence DELETEs it and reloads the aggregate', async () => {
+    const fixture = await render((req) => req.flush(AGGREGATE));
+    mockConfirm(true);
+    const resolved = AGGREGATE.occurrences.find((o) => o.status === 'RESOLVED')!;
+
+    fixture.componentInstance.onDeleteOccurrence(resolved);
+    const del = http.expectOne(`${DETAIL_URL}/occurrences/${resolved.id}`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush(null, { status: 204, statusText: 'No Content' });
+    http.expectOne(DETAIL_URL).flush(AGGREGATE);
+  });
+
+  it('keeps the page and shows a refusal when delete is forbidden', async () => {
+    const fixture = await render((req) => req.flush(AGGREGATE));
+    mockConfirm(true);
+
+    fixture.componentInstance.onDeleteResource();
+    http.expectOne(DETAIL_URL).flush({}, { status: 403, statusText: 'Forbidden' });
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'Você não tem permissão para excluir.',
+    );
+    expect(el.querySelector('.resource-detail__layout')).not.toBeNull();
+  });
+
+  it('does not delete when the confirm dialog is cancelled', async () => {
+    const fixture = await render((req) => req.flush(AGGREGATE));
+    mockConfirm(false);
+
+    fixture.componentInstance.onDeleteResource();
+    http.expectNone(DETAIL_URL);
   });
 
   it('never opens resolve for an already resolved occurrence', async () => {
