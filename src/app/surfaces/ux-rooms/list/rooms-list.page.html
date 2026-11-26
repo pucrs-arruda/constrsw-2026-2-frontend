@@ -1,0 +1,166 @@
+<p class="context-chip">Contexto · Salas</p>
+
+<header class="page-heading">
+  <div class="page-titles">
+    <h1 #heading tabindex="-1">Salas de Aula</h1>
+    <p class="page-caption">
+      Salas + acessibilidade. Coluna Turmas semestre = classes do GET BFF /rooms (roomId).
+    </p>
+  </div>
+  @if (rooms(); as page) {
+    <mat-chip>{{ page.total === 1 ? '1 sala' : page.total + ' salas' }}</mat-chip>
+  }
+</header>
+
+<form [formGroup]="filters" class="toolbar" (submit)="$event.preventDefault()">
+  <div class="search">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar salas</mat-label>
+      <input matInput type="search" formControlName="q" />
+    </mat-form-field>
+  </div>
+
+  <div class="toolbar-actions">
+    <button mat-stroked-button type="button" (click)="filtersOpen.set(!filtersOpen())"
+            [attr.aria-expanded]="filtersOpen()" aria-controls="room-filters">Filtros</button>
+    @if (access.canWrite()) {
+      <button mat-flat-button type="button" (click)="openForm()">Nova sala</button>
+    }
+  </div>
+
+  <div id="room-filters" class="filter-panel" [hidden]="!filtersOpen()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Buscar por</mat-label>
+      <mat-select formControlName="campo">
+        <mat-option value="code">Código</mat-option>
+        <mat-option value="name">Nome</mat-option>
+        <mat-option value="building">Prédio</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Prédio</mat-label>
+      <input matInput formControlName="predio" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Capacidade mínima</mat-label>
+      <input matInput type="number" min="1" step="1" formControlName="capMin" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Situação</mat-label>
+      <mat-select formControlName="ativa">
+        <mat-option value="">Todas</mat-option>
+        <mat-option value="true">Ativas</mat-option>
+        <mat-option value="false">Inativas</mat-option>
+      </mat-select>
+    </mat-form-field>
+    @if (hasFilters()) {
+      <button mat-button type="button" (click)="clearFilters()">Limpar filtros</button>
+    }
+  </div>
+</form>
+
+@if (!access.seesAllClasses()) {
+  <p class="scope-note">Você vê apenas as turmas vinculadas a você.</p>
+}
+
+<section aria-label="Resultados da busca" [attr.aria-busy]="loading()">
+  @if (error(); as failure) {
+    @if (failure.kind === 'forbidden') {
+      <app-alert-banner kind="refusal" message="Você não tem permissão para ver as salas." />
+    } @else {
+      <!-- `composition` trava a cópia institucional do kit; `refusal` deixa a mensagem do erro. -->
+      <app-alert-banner
+        [kind]="failure.kind === 'composition-unavailable' ? 'composition' : 'refusal'"
+        [message]="failure.message" />
+      <button mat-stroked-button class="retry-action" (click)="retry()">Tentar novamente</button>
+    }
+  } @else if (rooms(); as page) {
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate" aria-label="Atualizando salas" />
+    }
+    @if (page.items.length === 0) {
+      @if (hasFilters()) {
+        <app-empty-state title="Nenhuma sala encontrada" message="Nenhuma sala encontrada com esses filtros.">
+          <button emptyCta mat-stroked-button (click)="clearFilters()">Limpar filtros</button>
+        </app-empty-state>
+      } @else {
+        <app-empty-state title="Nenhuma sala cadastrada ainda.">
+          @if (access.canWrite()) {
+            <button emptyCta mat-flat-button (click)="openForm()">Nova sala</button>
+          }
+        </app-empty-state>
+      }
+    } @else if (layout() === 'compact') {
+      <ul class="compact-list">
+        @for (room of page.items; track room.id) {
+          <li>
+            <a class="compact-room" [routerLink]="['/salas', room.id]">
+              <span><strong class="room-code">{{ room.code }}</strong> · {{ room.building }}</span>
+              <span>{{ capacityLabel(room) }} · {{ room.classes.length }} {{ room.classes.length === 1 ? 'turma' : 'turmas' }}</span>
+            </a>
+            @if (access.canWrite()) {
+              <button mat-icon-button [matMenuTriggerFor]="actions"
+                      [attr.aria-label]="'Mais ações para ' + room.code">⋮</button>
+              <mat-menu #actions="matMenu">
+                <button mat-menu-item (click)="openForm(room)">Editar</button>
+                <button mat-menu-item (click)="confirmRemove(room)">Excluir</button>
+              </mat-menu>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <table mat-table matSort [dataSource]="page.items" [matSortActive]="state().sort.active"
+             [matSortDirection]="state().sort.direction" (matSortChange)="setSort($event)" aria-label="Salas de Aula">
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por código">Código</th>
+          <td mat-cell *matCellDef="let room" class="room-code">{{ room.code }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por nome">Nome</th>
+          <td mat-cell *matCellDef="let room">{{ room.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="building">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por prédio">Prédio</th>
+          <td mat-cell *matCellDef="let room">{{ room.building }}</td>
+        </ng-container>
+        <ng-container matColumnDef="floor">
+          <th mat-header-cell *matHeaderCellDef>Andar</th>
+          <td mat-cell *matCellDef="let room">{{ floorLabel(room) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="capacity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por capacidade">Capacidade</th>
+          <td mat-cell *matCellDef="let room">{{ capacityLabel(room) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por situação">Situação</th>
+          <td mat-cell *matCellDef="let room"><mat-chip>{{ room.active ? 'Ativa' : 'Inativa' }}</mat-chip></td>
+        </ng-container>
+        <ng-container matColumnDef="classes">
+          <th mat-header-cell *matHeaderCellDef>Turmas semestre</th>
+          <td mat-cell *matCellDef="let room">{{ room.classes.length }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let room" (click)="$event.stopPropagation()">
+            <div class="row-actions">
+              <a mat-button [routerLink]="['/salas', room.id]" [attr.aria-label]="'Abrir sala ' + room.code">Abrir</a>
+              @if (access.canWrite()) {
+                <button mat-button (click)="openForm(room)" [attr.aria-label]="'Editar sala ' + room.code">Editar</button>
+                <button mat-button class="destructive" (click)="confirmRemove(room)" [attr.aria-label]="'Excluir sala ' + room.code">Excluir</button>
+              }
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+        <tr mat-row *matRowDef="let room; columns: columns()" (click)="openRoom(room)"></tr>
+      </table>
+    }
+    @if (page.total || state().page > 0) {
+      <mat-paginator aria-label="Paginação das salas" [length]="page.total" [pageIndex]="state().page"
+                     [pageSize]="state().size" [pageSizeOptions]="sizes" (page)="setPage($event)" />
+    }
+  } @else if (loading()) {
+    <app-skeleton-block [lines]="5" label="Carregando salas…" />
+  }
+</section>

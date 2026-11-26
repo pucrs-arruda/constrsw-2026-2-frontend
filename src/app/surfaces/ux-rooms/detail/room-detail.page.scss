@@ -1,0 +1,170 @@
+.context-chip {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font: var(--mat-sys-label-large);
+}
+
+:host {
+  display: block;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+.breadcrumb {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+a {
+  color: var(--mat-sys-primary);
+}
+h1 {
+  margin: 0;
+}
+h2 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+.subtitle {
+  margin: 4px 0 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+.chips,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-size: 0.875rem;
+}
+
+.chip:empty {
+  display: none;
+}
+.warning {
+  // O par `gold` do DESIGN.md é o aviso informativo. O tema do shell não o publica
+  // como variável de sistema, então os valores vêm do próprio DESIGN.md, aqui.
+  background-color: #f7ebc7;
+  color: #4a3a00;
+}
+.destructive {
+  --mdc-text-button-label-text-color: var(--mat-sys-error);
+  color: var(--mat-sys-error);
+}
+
+.detail-grid,
+.main-panels {
+  display: grid;
+  align-items: start;
+  gap: var(--spacing-gutter);
+}
+
+.panel {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-large);
+  background: var(--mat-sys-surface-container-lowest);
+  overflow-wrap: anywhere;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.accessibility-panel {
+  border-inline-start: 4px solid var(--mat-sys-tertiary);
+}
+.add-feature {
+  margin-top: 12px;
+}
+.room-data {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 0;
+}
+.linked-resources {
+  grid-column: 1 / -1;
+}
+dt {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.875rem;
+}
+dd {
+  margin: 0;
+}
+code {
+  font-family: 'Source Code Pro', ui-monospace, monospace;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+.features li {
+  padding: 12px 0;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+.features p {
+  margin: 4px 0 8px;
+}
+.compact-back,
+.compact-actions {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .detail-grid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .detail-grid,
+  .main-panels {
+    gap: var(--spacing-gutter-compact);
+  }
+  .panel {
+    padding: 16px;
+  }
+  .wide-back,
+  .wide-actions {
+    display: none;
+  }
+  .compact-back,
+  .compact-actions {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+  }
+  .room-data {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.page-caption {
+  margin: 4px 0 12px;
+  max-width: 68ch;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+/* Mesmo motivo da lista: o h1 recebe foco ao trocar de rota. */
+h1 { width: fit-content; }

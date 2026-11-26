@@ -1,0 +1,216 @@
+<p class="context-chip">Contexto · Salas</p>
+
+<header class="page-header">
+  <nav aria-label="Localização" class="breadcrumb">
+    <a class="wide-back" routerLink="/salas" [queryParams]="listParams()">Salas de Aula</a>
+    @if (room(); as item) {
+      <span class="wide-back" aria-current="page"> › {{ item.code }}</span>
+    }
+    <a class="compact-back" routerLink="/salas" [queryParams]="listParams()"
+      >← Voltar para Salas de Aula</a
+    >
+  </nav>
+  <h1 #heading tabindex="-1">{{ room() ? 'Sala ' + room()?.code : 'Sala' }}</h1>
+  <p class="page-caption">
+    <!-- As chaves viram ICU no template do Angular; por isso o escape. -->
+    Ficha, accessibility-features e turmas sediadas no semestre (classes[] do GET
+    /rooms/{{ '{' }}id{{ '}' }}).
+  </p>
+  @if (room(); as item) {
+    <p class="subtitle">{{ item.name }} · {{ item.building }}</p>
+    <div class="chips">
+      <span class="chip">{{ capacityLabel(item) }}</span>
+      <span class="chip"
+        >{{ item.classes.length }} {{ item.classes.length === 1 ? 'turma' : 'turmas' }} em
+        {{ term() }}</span
+      >
+      @if (!item.active) {
+        <span class="chip warning">Inativa</span>
+      }
+    </div>
+  }
+</header>
+
+@if (notFound()) {
+  <app-empty-state title="Sala não encontrada." />
+  <a class="wide-back" routerLink="/salas" [queryParams]="listParams()"
+    >Voltar para Salas de Aula</a
+  >
+} @else if (roomError(); as error) {
+  <app-alert-banner
+    [kind]="error.kind === 'composition-unavailable' ? 'composition' : 'refusal'"
+    [message]="error.message || 'Não foi possível carregar a sala.'"
+  />
+  <button mat-stroked-button class="retry-action" (click)="load()">Tentar novamente</button>
+} @else if (room(); as item) {
+  <div class="detail-grid">
+    <div class="main-panels">
+      <section class="panel" aria-labelledby="room-data">
+        <div class="panel-heading">
+          <h2 id="room-data">Dados da sala</h2>
+          @if (access.canWrite()) {
+            <div class="actions wide-actions">
+              <button mat-stroked-button [disabled]="busy()" (click)="editRoom(item)">
+                Editar sala
+              </button>
+              <button mat-button class="destructive" [disabled]="busy()" (click)="deleteRoom(item)">
+                Excluir sala
+              </button>
+            </div>
+            <button
+              mat-icon-button
+              class="compact-actions"
+              aria-label="Mais ações da sala"
+              [disabled]="busy()"
+              #roomTrigger="matMenuTrigger"
+              [matMenuTriggerFor]="roomMenu"
+            >
+              ⋮
+            </button>
+            <mat-menu #roomMenu="matMenu">
+              <button mat-menu-item (click)="editRoom(item, roomTrigger)">Editar sala</button>
+              <button mat-menu-item (click)="deleteRoom(item, roomTrigger)">Excluir sala</button>
+            </mat-menu>
+          }
+        </div>
+
+        <dl class="room-data">
+          <div>
+            <dt>Código</dt>
+            <dd>
+              <code>{{ item.code }}</code>
+            </dd>
+          </div>
+          <div>
+            <dt>Nome</dt>
+            <dd>{{ item.name }}</dd>
+          </div>
+          <div>
+            <dt>Prédio</dt>
+            <dd>{{ item.building }}</dd>
+          </div>
+          <div>
+            <dt>Capacidade</dt>
+            <dd>{{ capacityLabel(item) }}</dd>
+          </div>
+          <div>
+            <dt>Andar</dt>
+            <dd>{{ floorLabel(item) }}</dd>
+          </div>
+          <div>
+            <dt>Situação</dt>
+            <dd>{{ item.active ? 'Ativa' : 'Inativa' }}</dd>
+          </div>
+          <div class="linked-resources">
+            <dt>Recursos vinculados</dt>
+            <dd>
+              {{ item.resourceIds.length }}
+              {{ item.resourceIds.length === 1 ? 'recurso' : 'recursos' }}
+              @if (item.resourceIds.length) {
+                <ul>
+                  @for (id of item.resourceIds; track id) {
+                    <li>
+                      <code>{{ id }}</code>
+                      <button
+                        mat-button
+                        (click)="copy(id)"
+                        [attr.aria-label]="'Copiar identificador ' + id"
+                      >
+                        Copiar
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section class="panel">
+        <app-room-classes
+          [term]="term()"
+          [classes]="item.classes"
+          [seesAllClasses]="access.seesAllClasses()"
+        />
+      </section>
+    </div>
+
+    <section class="panel accessibility-panel" aria-labelledby="accessibility-title">
+      <div class="panel-heading">
+        <h2 id="accessibility-title">Recursos de acessibilidade</h2>
+        <span class="chip" aria-live="polite">
+          @if (!loadingFeatures() && !featuresError()) {
+            {{ features().length }} {{ features().length === 1 ? 'recurso' : 'recursos' }}
+          }
+        </span>
+      </div>
+      @if (loadingFeatures()) {
+        <app-skeleton-block [lines]="2" label="Carregando recursos…" />
+      } @else if (featuresError(); as error) {
+        <app-alert-banner
+          kind="refusal"
+          [message]="error.message || 'Não foi possível carregar os recursos de acessibilidade.'"
+        />
+        <button mat-stroked-button class="retry-action" (click)="loadFeatures()">
+          Tentar novamente
+        </button>
+      } @else {
+        @if (access.canWrite()) {
+          <button mat-flat-button class="add-feature" [disabled]="busy()" (click)="editFeature()">
+            Adicionar recurso
+          </button>
+        }
+        @if (features().length) {
+          <ul class="features" aria-label="Recursos de acessibilidade">
+            @for (feature of features(); track feature.id) {
+              <li>
+                <div class="panel-heading">
+                  <strong
+                    ><code>{{ feature.code }}</code></strong
+                  >
+                  @if (access.canWrite()) {
+                    <button
+                      mat-icon-button
+                      [attr.aria-label]="'Mais ações de ' + feature.code"
+                      [disabled]="busy()"
+                      #featureTrigger="matMenuTrigger"
+                      [matMenuTriggerFor]="featureMenu"
+                    >
+                      ⋮
+                    </button>
+                    <mat-menu #featureMenu="matMenu">
+                      <button mat-menu-item (click)="editFeature(feature, featureTrigger)">
+                        Editar
+                      </button>
+                      <button mat-menu-item (click)="deleteFeature(feature, featureTrigger)">
+                        Excluir
+                      </button>
+                    </mat-menu>
+                  }
+                </div>
+                <p>{{ feature.description || 'Sem descrição' }}</p>
+                <div class="actions">
+                  <span class="chip" [class.warning]="!feature.present">{{
+                    feature.present ? 'Presente' : 'Ausente'
+                  }}</span>
+                  @if (access.canWrite()) {
+                    <mat-slide-toggle
+                      [checked]="feature.present"
+                      [disabled]="busy()"
+                      [aria-label]="'Presença de ' + feature.code"
+                      (change)="toggleFeature(feature, $event)"
+                    />
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <app-empty-state title="Nenhum recurso de acessibilidade cadastrado." />
+        }
+      }
+    </section>
+  </div>
+} @else {
+  <app-skeleton-block [lines]="3" label="Carregando sala…" />
+}

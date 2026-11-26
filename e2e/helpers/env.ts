@@ -4,6 +4,8 @@ export const E2E_OAUTH_URL = process.env.E2E_OAUTH_URL ?? 'http://127.0.0.1:8181
 export const E2E_BFF_URL = process.env.E2E_BFF_URL ?? 'http://127.0.0.1:8180';
 export const E2E_EMPLOYEES_URL =
   process.env.E2E_EMPLOYEES_URL ?? 'http://127.0.0.1:8184';
+export const E2E_CLASSES_URL =
+  process.env.E2E_CLASSES_URL ?? 'http://127.0.0.1:8182';
 export const E2E_KEYCLOAK_URL =
   process.env.E2E_KEYCLOAK_URL ?? 'http://127.0.0.1:8081';
 export const E2E_KEYCLOAK_REALM = process.env.E2E_KEYCLOAK_REALM ?? 'constrsw';

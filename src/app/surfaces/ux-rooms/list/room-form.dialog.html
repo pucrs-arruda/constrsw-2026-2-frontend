@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nova sala' : 'Editar sala' }}</h2>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content>
+    @if (error()) {
+      <app-alert-banner kind="refusal" [message]="error()" />
+    }
+    <mat-form-field appearance="outline">
+      <mat-label>Código</mat-label>
+      <input matInput class="room-code" formControlName="code" required maxlength="20" />
+      <mat-error>Informe um código de 1 a 20 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name" required maxlength="100" />
+      <mat-error>Informe um nome de 1 a 100 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Prédio</mat-label>
+      <input matInput formControlName="building" required maxlength="50" />
+      <mat-error>Informe um prédio de 1 a 50 caracteres.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Capacidade</mat-label>
+      <input matInput formControlName="capacity" type="number" min="1" step="1" />
+      <mat-hint>Opcional</mat-hint>
+      <mat-error>Informe uma capacidade inteira de pelo menos 1 ou deixe em branco.</mat-error>
+    </mat-form-field>
+    <mat-slide-toggle formControlName="active">Ativa</mat-slide-toggle>
+    <mat-form-field appearance="outline">
+      <mat-label>Recursos</mat-label>
+      <mat-chip-grid #resourceGrid aria-label="Recursos" [disabled]="saving()">
+        @for (id of resources(); track id) {
+          <mat-chip-row (removed)="removeResource(id)">
+            {{ id }}
+            <button matChipRemove type="button" [attr.aria-label]="'Remover recurso ' + id">×</button>
+          </mat-chip-row>
+        }
+        <input [formControl]="resourceDraft" [matChipInputFor]="resourceGrid"
+               (matChipInputTokenEnd)="addResource($event)" aria-label="Adicionar recurso" />
+      </mat-chip-grid>
+      <mat-hint>Identificadores dos recursos do Grupo 06</mat-hint>
+    </mat-form-field>
+    @if (resourceDraft.value.trim()) {
+      <p class="resource-instruction" aria-live="polite">
+        {{ validResourceDraft() ? 'Pressione Enter para adicionar o recurso.' : 'Informe um UUID válido.' }}
+      </p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit"
+            [disabled]="saving() || form.invalid || !!resourceDraft.value.trim() || (data.mode === 'edit' && !hasChanges())">
+      @if (saving()) {
+        <mat-spinner diameter="18" aria-label="Salvando sala" />
+      }
+      {{ data.mode === 'create' ? 'Criar sala' : 'Salvar alterações' }}
+    </button>
+  </mat-dialog-actions>
+</form>
