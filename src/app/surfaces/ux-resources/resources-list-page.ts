@@ -33,10 +33,8 @@ import {
   type ResourceFormDialogResult,
 } from './resource-form-dialog';
 import { resourceStatusLabel, resourceTypeLabel } from './resource-labels';
+import { hasResourceWriteRole } from './resource-permissions';
 import { ResourcesApi, type ResourceView } from './resources-api';
-
-/** Default WRITE_ROLES of the resources service (backend/resources env.config). */
-const WRITE_ROLES = ['funcionario', 'administrator'];
 
 /**
  * Figma 14 order is Nome · Tipo · Status · Reservas futuras. Status is the 2nd
@@ -176,10 +174,7 @@ export class ResourcesListPage implements OnInit {
       .me()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (me) => {
-          const roles = me.papeis ?? [];
-          this.canWrite.set(WRITE_ROLES.some((role) => roles.includes(role)));
-        },
+        next: (me) => this.canWrite.set(hasResourceWriteRole(me.papeis)),
         error: () => this.canWrite.set(false),
       });
   }

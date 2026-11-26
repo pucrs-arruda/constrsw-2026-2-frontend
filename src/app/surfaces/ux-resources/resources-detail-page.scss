@@ -1,0 +1,225 @@
+.resource-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.resource-detail__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  width: fit-content;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+}
+
+.resource-detail__back:hover,
+.resource-detail__back:focus-visible {
+  text-decoration: underline;
+}
+
+.resource-detail__page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.resource-detail__titles {
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.resource-detail__title {
+  margin: 0 0 0.35rem;
+  font: var(--mat-sys-headline-small);
+  color: var(--mat-sys-on-surface);
+  word-break: break-word;
+}
+
+.resource-detail__caption {
+  margin: 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.resource-detail__panel {
+  min-width: 0;
+  padding: 1rem 1.125rem;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.resource-detail__panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.resource-detail__panel-title {
+  margin: 0;
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-on-surface);
+  word-break: break-word;
+}
+
+.resource-detail__fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.85rem 1.25rem;
+  margin: 1rem 0 0;
+}
+
+.resource-detail__field {
+  min-width: 0;
+}
+
+.resource-detail__field dt {
+  margin: 0 0 0.2rem;
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__field dd {
+  margin: 0;
+  font: var(--mat-sys-body-large);
+  color: var(--mat-sys-on-surface);
+  word-break: break-word;
+}
+
+.resource-detail__status--inactive {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__status-note {
+  display: block;
+  margin: 0.35rem 0 0;
+  font: var(--mat-sys-body-small);
+  font-weight: 400;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__cta {
+  flex: 0 0 auto;
+  min-height: 48px;
+}
+
+/* Figma 15: counter pill next to "Ocorrências". */
+.resource-detail__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-secondary-container);
+  background: var(--mat-sys-secondary-container);
+}
+
+.resource-detail__empty {
+  margin: 1rem 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__occurrence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Figma 15: tinted card with a left accent for open occurrences. */
+.resource-detail__occurrence {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border-inline-start: 3px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container);
+}
+
+.resource-detail__occurrence--open {
+  border-inline-start-color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+}
+
+.resource-detail__occurrence-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.resource-detail__occurrence-title {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface);
+  word-break: break-word;
+}
+
+.resource-detail__occurrence-meta,
+.resource-detail__occurrence-resolution {
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+  word-break: break-word;
+}
+
+.resource-detail__occurrence-action {
+  flex: 0 0 auto;
+  min-height: 48px;
+}
+
+.resource-detail__occurrence-cta {
+  width: 100%;
+}
+
+/* UX-DR9 master-detail: 2 columns at ≥1280, stacked below. */
+@media (min-width: 1280px) {
+  .resource-detail__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .resource-detail__panel-header {
+    align-items: center;
+  }
+
+  .resource-detail__master .resource-detail__panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .resource-detail__master .resource-detail__cta {
+    width: 100%;
+  }
+
+  .resource-detail__occurrence {
+    flex-wrap: wrap;
+  }
+}

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { SurfacePlaceholder } from '../../shell/surface-placeholder';
+import { ResourcesDetailPage } from './resources-detail-page';
 import { ResourcesListPage } from './resources-list-page';
 
 export const UX_RESOURCES_ROUTES: Routes = [
@@ -8,9 +8,7 @@ export const UX_RESOURCES_ROUTES: Routes = [
     component: ResourcesListPage,
   },
   {
-    // Detail page (Figma 15) lands with stories 6.3/6.4.
     path: ':id',
-    component: SurfacePlaceholder,
-    data: { title: 'Recurso' },
+    component: ResourcesDetailPage,
   },
 ];

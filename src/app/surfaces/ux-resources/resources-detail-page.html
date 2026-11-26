@@ -1,0 +1,160 @@
+<section class="resource-detail" aria-labelledby="resource-detail-title">
+  @if (isCompact()) {
+    <a class="resource-detail__back" routerLink="/recursos">
+      ← Voltar para Recursos
+    </a>
+  }
+
+  <header class="resource-detail__page-header">
+    <div class="resource-detail__titles">
+      <h1 id="resource-detail-title" class="resource-detail__title">
+        {{ resource()?.name ?? 'Detalhe do recurso' }}
+      </h1>
+      <p class="resource-detail__caption">Ficha do recurso e ocorrências.</p>
+    </div>
+  </header>
+
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @if (loading()) {
+    <app-skeleton-block label="Carregando recurso…" [lines]="6" />
+  } @else if (notFound()) {
+    <app-empty-state
+      title="Recurso não encontrado."
+      message="O recurso solicitado não existe ou não está mais disponível."
+    >
+      <a emptyCta mat-flat-button color="primary" routerLink="/recursos">
+        Voltar para Recursos
+      </a>
+    </app-empty-state>
+  } @else if (resource(); as current) {
+    <div class="resource-detail__layout">
+      <article
+        class="resource-detail__panel resource-detail__master"
+        aria-labelledby="resource-master-title"
+      >
+        <div class="resource-detail__panel-header">
+          <h2 id="resource-master-title" class="resource-detail__panel-title">
+            {{ current.name }}
+          </h2>
+          @if (canWrite()) {
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              class="resource-detail__cta"
+              (click)="onEditResource()"
+            >
+              Editar recurso
+            </button>
+          }
+        </div>
+
+        <dl class="resource-detail__fields">
+          <div class="resource-detail__field">
+            <dt>Código</dt>
+            <dd>{{ current.code }}</dd>
+          </div>
+          <div class="resource-detail__field">
+            <dt>Tipo</dt>
+            <dd>{{ typeLabel() }}</dd>
+          </div>
+          <div class="resource-detail__field">
+            <dt>Status</dt>
+            <dd
+              class="resource-detail__status"
+              [class.resource-detail__status--inactive]="isInactive()"
+            >
+              {{ statusLabel() }}
+              @if (isInactive()) {
+                <span class="resource-detail__status-note">
+                  Recurso inativo — não pode ser reservado.
+                </span>
+              }
+            </dd>
+          </div>
+          <div class="resource-detail__field">
+            <dt>Etiquetas</dt>
+            <dd>{{ tagsDisplay() }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <section
+        class="resource-detail__panel resource-detail__occurrences"
+        aria-labelledby="resource-occurrences-title"
+      >
+        <div class="resource-detail__panel-header">
+          <h2
+            id="resource-occurrences-title"
+            class="resource-detail__panel-title"
+          >
+            Ocorrências
+          </h2>
+          <span
+            class="resource-detail__count"
+            [attr.aria-label]="openOccurrenceCount() + ' ocorrências abertas'"
+            title="Ocorrências abertas"
+            >{{ openOccurrenceCount() }}</span
+          >
+        </div>
+
+        @if (occurrenceItems().length === 0) {
+          <p class="resource-detail__empty">Nenhuma ocorrência registrada.</p>
+        } @else {
+          <ul class="resource-detail__occurrence-list" role="list">
+            @for (item of occurrenceItems(); track item.occurrence.id) {
+              <li
+                class="resource-detail__occurrence"
+                [class.resource-detail__occurrence--open]="item.isOpen"
+              >
+                <div class="resource-detail__occurrence-text">
+                  <span class="resource-detail__occurrence-title">{{
+                    item.title
+                  }}</span>
+                  <span class="resource-detail__occurrence-meta">{{
+                    item.meta
+                  }}</span>
+                  @if (item.occurrence.resolution) {
+                    <span class="resource-detail__occurrence-resolution">
+                      Resolução: {{ item.occurrence.resolution }}
+                    </span>
+                  }
+                </div>
+                @if (item.isOpen && canWrite()) {
+                  <button
+                    mat-button
+                    type="button"
+                    class="resource-detail__occurrence-action"
+                    [attr.aria-label]="
+                      'Resolver ocorrência ' + item.occurrence.description
+                    "
+                    (click)="onResolveOccurrence(item.occurrence)"
+                  >
+                    Resolver
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+
+        @if (canWrite()) {
+          <button
+            mat-stroked-button
+            type="button"
+            class="resource-detail__cta resource-detail__occurrence-cta"
+            (click)="onRegisterOccurrence()"
+          >
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+              >add</mat-icon
+            >
+            Registrar ocorrência
+          </button>
+        }
+      </section>
+    </div>
+  }
+</section>

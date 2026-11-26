@@ -87,6 +87,13 @@ export interface ResourcePatch {
   tags?: string[];
 }
 
+/** grupo06 OccurrenceCreate — priority defaults to MEDIUM on the service. */
+export interface OccurrenceCreate {
+  description: string;
+  type: OccurrenceType;
+  priority?: OccurrencePriority;
+}
+
 /** Write responses are the plain domain Resource: the BFF never adds `reservations` on writes. */
 export type ResourceRead = Omit<
   ResourceView,
@@ -120,6 +127,29 @@ export class ResourcesApi {
     return this.bff.patch<ResourceRead>(
       `/v1/resources/${encodeURIComponent(id)}`,
       body,
+    );
+  }
+
+  /** POST `/api/v1/resources/{id}/occurrences` → 201 Occurrence (status OPEN). */
+  createOccurrence(
+    resourceId: string,
+    body: OccurrenceCreate,
+  ): Observable<Occurrence> {
+    return this.bff.post<Occurrence>(
+      `/v1/resources/${encodeURIComponent(resourceId)}/occurrences`,
+      body,
+    );
+  }
+
+  /** PATCH `.../occurrences/{occurrenceId}` with `resolution` — supplying it resolves the occurrence. */
+  resolveOccurrence(
+    resourceId: string,
+    occurrenceId: string,
+    resolution: string,
+  ): Observable<Occurrence> {
+    return this.bff.patch<Occurrence>(
+      `/v1/resources/${encodeURIComponent(resourceId)}/occurrences/${encodeURIComponent(occurrenceId)}`,
+      { resolution },
     );
   }
 }

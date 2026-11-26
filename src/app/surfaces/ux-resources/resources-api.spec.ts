@@ -92,6 +92,36 @@ describe('ResourcesApi', () => {
     req.flush({ ...RESOURCE, active: false });
   });
 
+  it('registers an occurrence with POST .../occurrences', () => {
+    api
+      .createOccurrence(RESOURCE.id, {
+        description: 'Lâmpada fraca',
+        type: 'MALFUNCTION',
+      })
+      .subscribe();
+
+    const req = http.expectOne(
+      `${environment.bffBaseUrl}/v1/resources/${RESOURCE.id}/occurrences`,
+    );
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      description: 'Lâmpada fraca',
+      type: 'MALFUNCTION',
+    });
+    req.flush({}, { status: 201, statusText: 'Created' });
+  });
+
+  it('resolves an occurrence with PATCH { resolution }', () => {
+    api.resolveOccurrence(RESOURCE.id, 'occ-1', 'Trocada').subscribe();
+
+    const req = http.expectOne(
+      `${environment.bffBaseUrl}/v1/resources/${RESOURCE.id}/occurrences/occ-1`,
+    );
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ resolution: 'Trocada' });
+    req.flush({});
+  });
+
   it('maps a 503 composition failure to a composition BffRequestError', () => {
     let error: unknown;
     api.list().subscribe({ error: (err) => (error = err) });
