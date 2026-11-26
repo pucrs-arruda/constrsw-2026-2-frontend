@@ -20,9 +20,10 @@ reservas. A integração em `ux-classes` substitui somente o slot reservado à a
 Aulas e registra o detalhe. O link de reservas retorna à aba Reservas da turma.
 
 Validação: Node 24 compatível, `npm ci`, `npm test -- --watch=false`, `npm run build`.
-Com o servidor frontend em execução e Chromium instalado, `npm run e2e:lessons:ui`
+Com o build gerado e Chromium instalado, `npm run e2e:lessons:ui`
 verifica a jornada com fixtures HTTP, inclusive larguras 360/768/1280 e fullscreen
-compact. Essa suíte não usa o seed de funcionários e não substitui E2E com a stack
+compact. A suíte inicia um servidor local do build; `E2E_BASE_URL` permite usar um
+servidor existente. Essa suíte não usa o seed de funcionários e não substitui E2E com a stack
 real. O fluxo real de criação/geração continua dependendo do alinhamento entre
 Lessons e Classes e da disponibilidade do módulo Lessons no BFF em execução.
 
