@@ -7,12 +7,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { map } from 'rxjs';
 import { BffRequestError, type AlertBannerKind } from '../../shared/http';
 import {
   AlertBanner,
@@ -51,8 +50,6 @@ import {
   type Occurrence,
   type ResourceAggregateView,
 } from './resources-api';
-
-const COMPACT_QUERY = '(max-width: 599.98px)';
 
 const DATE_FORMAT = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -151,11 +148,6 @@ export class ResourcesDetailPage implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly breakpoints = inject(BreakpointObserver);
   private readonly destroyRef = inject(DestroyRef);
-
-  readonly isCompact = toSignal(
-    this.breakpoints.observe(COMPACT_QUERY).pipe(map((r) => r.matches)),
-    { initialValue: this.breakpoints.isMatched(COMPACT_QUERY) },
-  );
 
   readonly resourceId = signal('');
   readonly resource = signal<ResourceAggregateView | null>(null);

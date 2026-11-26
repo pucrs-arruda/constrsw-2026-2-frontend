@@ -339,10 +339,22 @@ describe('ResourcesDetailPage', () => {
     expect(navigateSpy).toHaveBeenCalledWith('/login');
   });
 
-  it('shows the back link only on compact', async () => {
-    compact$.next(true);
+  it('always shows a back button to /recursos', async () => {
     const fixture = await render((req) => req.flush(AGGREGATE));
-    expect(text(fixture)).toContain('← Voltar para Recursos');
+    const back = (fixture.nativeElement as HTMLElement).querySelector(
+      'a.resource-detail__back',
+    );
+    expect(back?.textContent).toContain('Voltar para Recursos');
+    expect(back?.getAttribute('href')).toBe('/recursos');
+  });
+
+  it('keeps the back button when the resource is not found', async () => {
+    const fixture = await render((req) =>
+      req.flush({}, { status: 404, statusText: 'Not Found' }),
+    );
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('a.resource-detail__back'),
+    ).not.toBeNull();
   });
 
   it('formats dates in pt-BR (America/Sao_Paulo)', () => {

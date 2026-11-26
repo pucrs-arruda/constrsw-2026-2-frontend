@@ -1,9 +1,10 @@
 <section class="resource-detail" aria-labelledby="resource-detail-title">
-  @if (isCompact()) {
-    <a class="resource-detail__back" routerLink="/recursos">
-      ← Voltar para Recursos
-    </a>
-  }
+  <a mat-button class="resource-detail__back" routerLink="/recursos">
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+      >arrow_back</mat-icon
+    >
+    Voltar para Recursos
+  </a>
 
   <header class="resource-detail__page-header">
     <div class="resource-detail__titles">
