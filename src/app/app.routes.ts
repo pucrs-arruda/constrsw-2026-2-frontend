@@ -67,8 +67,10 @@ export const routes: Routes = [
       },
       {
         path: 'recursos',
-        component: SurfacePlaceholder,
-        data: { title: 'Recursos' },
+        loadChildren: () =>
+          import('./surfaces/ux-resources/ux-resources.routes').then(
+            (m) => m.UX_RESOURCES_ROUTES,
+          ),
       },
       {
         path: 'disciplinas',

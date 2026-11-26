@@ -1,0 +1,109 @@
+<app-edit-dialog-layout
+  [dialogTitle]="dialogTitle"
+  [closeDisabled]="saving()"
+>
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  @if (data.mode === 'register') {
+    <p class="occurrence-form__context">Recurso: {{ data.resourceName }}</p>
+
+    <form
+      class="occurrence-form"
+      [formGroup]="registerForm"
+      (ngSubmit)="save()"
+    >
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Descrição</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          required
+          rows="3"
+        ></textarea>
+        @if (
+          registerForm.controls.description.touched &&
+          registerForm.controls.description.invalid
+        ) {
+          <mat-error>Descreva a ocorrência.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="type">
+          @for (option of typeOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+        @if (
+          registerForm.controls.type.touched &&
+          registerForm.controls.type.invalid
+        ) {
+          <mat-error>Selecione o tipo.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Prioridade</mat-label>
+        <mat-select formControlName="priority">
+          @for (option of priorityOptions; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </form>
+  } @else if (occurrence; as current) {
+    <dl class="occurrence-form__summary">
+      <div>
+        <dt>Ocorrência</dt>
+        <dd>{{ current.description }}</dd>
+      </div>
+      <div>
+        <dt>Tipo · Prioridade</dt>
+        <dd>
+          {{ typeLabel(current.type) }} · {{ priorityLabel(current.priority) }}
+        </dd>
+      </div>
+    </dl>
+
+    <form
+      class="occurrence-form"
+      [formGroup]="resolveForm"
+      (ngSubmit)="save()"
+    >
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Resolução</mat-label>
+        <textarea
+          matInput
+          formControlName="resolution"
+          required
+          rows="3"
+        ></textarea>
+        <mat-hint>Descreva o que foi feito. A ocorrência passa a Resolvida.</mat-hint>
+        @if (
+          resolveForm.controls.resolution.touched &&
+          resolveForm.controls.resolution.invalid
+        ) {
+          <mat-error>Informe a resolução.</mat-error>
+        }
+      </mat-form-field>
+    </form>
+  }
+
+  <div editActions>
+    <button type="button" mat-button [disabled]="saving()" (click)="cancel()">
+      Cancelar
+    </button>
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      {{ mode === 'register' ? 'Registrar' : 'Resolver' }}
+    </button>
+  </div>
+</app-edit-dialog-layout>

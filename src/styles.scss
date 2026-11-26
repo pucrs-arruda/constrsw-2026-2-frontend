@@ -11,9 +11,12 @@ html {
         primary: brand.$primary-palette,
         tertiary: brand.$tertiary-palette,
       ),
+      // One quoted string, not a Sass list: Material interpolates the family into
+      // `font:` shorthands and drops list quotes, and an unquoted `Source Sans 3`
+      // makes every --mat-sys-* font token invalid (titles fell back to 16px).
       typography: (
-        plain-family: ('Source Sans 3', system-ui, sans-serif),
-        brand-family: ('Source Sans 3', system-ui, sans-serif),
+        plain-family: "'Source Sans 3', system-ui, sans-serif",
+        brand-family: "'Source Sans 3', system-ui, sans-serif",
       ),
       density: 0,
     )
@@ -81,4 +84,18 @@ app-root {
 .cdk-overlay-pane.app-edit-dialog--standard {
   width: 560px;
   max-width: min(560px, calc(100vw - 2rem));
+}
+
+/* Figma "Contexto · <superfície>" chip above page titles (frames 04–25). */
+.app-page-context {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  margin-bottom: 0.75rem;
+  padding: 0 0.75rem;
+  border-radius: 8px;
+  font: var(--mat-sys-label-medium);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  background: #e3f4fc;
 }

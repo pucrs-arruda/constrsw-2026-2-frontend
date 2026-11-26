@@ -66,27 +66,77 @@
   min-width: 48px;
 }
 
-/* Medium / expanded: columnar table */
+/* Medium / expanded: columnar table inside a bordered card (Figma 14 / mockup .card) */
 .rdt-table-wrap {
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-lowest);
 }
 
 .rdt-table {
   width: 100%;
-  background: var(--mat-sys-surface-container-lowest);
+  --mat-table-background-color: var(--mat-sys-surface-container-lowest);
+  --mat-table-header-container-height: 48px;
+  --mat-table-row-item-container-height: 52px;
+  --mat-table-header-headline-size: 0.75rem;
+  --mat-table-header-headline-weight: 600;
+  --mat-table-header-headline-tracking: 0.03em;
+  --mat-table-header-headline-color: var(--mat-sys-on-surface-variant);
+  --mat-table-row-item-label-text-color: var(--mat-sys-on-surface);
+  --mat-table-row-item-outline-color: var(--mat-sys-outline-variant);
+}
+
+.rdt-table th {
+  background: var(--mat-sys-surface-container);
+  text-transform: uppercase;
+}
+
+.rdt-table tr:nth-child(even) td {
+  background: #fafcfe;
+}
+
+.rdt-table__actions-head {
+  text-align: end;
 }
 
 .rdt-table__actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 0.25rem;
   justify-content: flex-end;
+  white-space: nowrap;
+}
+
+/* < 1280: Editar/Excluir live behind this button (UX-DR8 TableRowActions). */
+.rdt-table__more {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.rdt-menu__danger {
+  --mat-menu-item-label-text-color: var(--mat-sys-error);
+  color: var(--mat-sys-error);
 }
 
 .rdt-table__action {
   min-height: 40px;
+  font-weight: 600;
+}
+
+.rdt-table__action--neutral {
+  --mat-button-text-label-text-color: var(--mat-sys-on-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.rdt-table__action--danger {
+  --mat-button-text-label-text-color: var(--mat-sys-error);
+  color: var(--mat-sys-error);
 }
 
 @media (max-width: 1023px) {

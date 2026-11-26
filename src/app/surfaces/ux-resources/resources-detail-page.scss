@@ -1,0 +1,236 @@
+// Figma 15 + mockup .panel / .panel.secondary / .fields
+.resource-detail,
+.resource-detail__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.resource-detail * {
+  overflow-wrap: break-word;
+}
+
+.resource-detail__back {
+  align-self: flex-start;
+  margin-inline-start: -0.75rem;
+}
+
+.resource-detail__title {
+  margin: 0 0 0.25rem;
+  font: var(--mat-sys-headline-small);
+  font-weight: 700;
+  color: var(--mat-sys-secondary);
+}
+
+.resource-detail__caption {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__panel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.resource-detail__panel--secondary {
+  border-inline-start: 4px solid var(--mat-sys-tertiary);
+}
+
+.resource-detail__panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  min-height: 64px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.resource-detail__panel--secondary .resource-detail__panel-header {
+  background: var(--mat-sys-primary-container);
+}
+
+.resource-detail__panel-title {
+  flex: 1;
+  margin: 0;
+  font: var(--mat-sys-title-medium);
+  font-weight: 600;
+}
+
+.resource-detail__body {
+  margin: 0;
+  padding: 1rem;
+}
+
+.resource-detail__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.resource-detail__field dt {
+  margin-bottom: 0.15rem;
+  font: var(--mat-sys-label-medium);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__field dd {
+  margin: 0;
+  font: var(--mat-sys-body-large);
+}
+
+.resource-detail__status--inactive {
+  font-weight: 600;
+}
+
+.resource-detail__status-note,
+.resource-detail__empty,
+.resource-detail__note,
+.resource-detail__occurrence-meta,
+.resource-detail__occurrence-resolution,
+.resource-detail__reservation-meta {
+  display: block;
+  margin: 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.resource-detail__empty {
+  margin-bottom: 0.75rem;
+  font: var(--mat-sys-body-medium);
+}
+
+.resource-detail__cta {
+  flex: none;
+  height: 40px;
+}
+
+.resource-detail__occurrence-cta {
+  width: 100%;
+}
+
+.resource-detail__actions,
+.resource-detail__occurrence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+}
+
+.resource-detail__danger {
+  --mat-button-text-label-text-color: var(--mat-sys-error);
+}
+
+.resource-detail__count {
+  min-width: 2.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-align: center;
+  font: var(--mat-sys-label-large);
+  font-weight: 600;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+.resource-detail__occurrence-list,
+.resource-detail__reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.resource-detail__occurrence,
+.resource-detail__reservation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-inline-start: 3px solid var(--mat-sys-outline);
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.resource-detail__occurrence--open {
+  border-color: var(--mat-sys-primary);
+  background: #e3f4fc;
+}
+
+.resource-detail__occurrence {
+  flex-wrap: wrap;
+}
+
+/* Text keeps ≥12rem; in a narrower column the actions drop below it. */
+.resource-detail__occurrence-text {
+  flex: 1 1 12rem;
+}
+
+.resource-detail__occurrence-text,
+.resource-detail__reservation {
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.resource-detail__reservation {
+  flex: 1;
+}
+
+.resource-detail__occurrence-actions {
+  margin-inline-start: auto;
+}
+
+.resource-detail__reservation--cancelled .resource-detail__reservation-title {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+@media (min-width: 1280px) {
+  .resource-detail__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    grid-template-areas: 'm o' 'r o';
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: 1.5rem;
+  }
+
+  .resource-detail__master {
+    grid-area: m;
+  }
+
+  .resource-detail__reservations {
+    grid-area: r;
+  }
+
+  .resource-detail__occurrences {
+    grid-area: o;
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .resource-detail__cta,
+  .resource-detail__back,
+  .resource-detail__occurrence-action {
+    height: 48px;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .resource-detail__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-detail__master .resource-detail__panel-header {
+    flex-wrap: wrap;
+  }
+
+  .resource-detail__actions,
+  .resource-detail__master .resource-detail__cta {
+    flex: 1 1 100%;
+  }
+}

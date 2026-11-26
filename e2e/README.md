@@ -38,6 +38,10 @@ npm run e2e:report
 
 A UI chama `/api/v1/employees*` no BFF (`api` / porta `8180`). O módulo `EmployeesModule` no BFF faz proxy pass-through para o serviço `employees`. Seed/purge do harness ainda usam a API do domínio em `E2E_EMPLOYEES_URL` (mais rápido e estável).
 
+## BFF → resources (`resources.spec.ts`)
+
+A UI, o seed e o purge dos recursos `E2E-` (DELETE lógico) usam `/api/v1/resources*` no BFF. Precisa de `resources` e `reservations` no ar, além de `oauth`, `keycloak` e `bff`.
+
 ## Variáveis opcionais
 
 | Variável | Default |

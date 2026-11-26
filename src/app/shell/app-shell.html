@@ -20,7 +20,7 @@
       class="app-shell__mark"
       src="/brand/pucrs-brasao.png"
       width="40"
-      height="40"
+      height="50"
       alt="Brasão PUCRS"
     />
 
@@ -70,7 +70,7 @@
               class="app-shell__nav-item"
               [routerLink]="item.path"
               routerLinkActive="app-shell__nav-item--active"
-              [routerLinkActiveOptions]="{ exact: true }"
+              [routerLinkActiveOptions]="{ exact: false }"
               (click)="onNavItemClick()"
             >
               <mat-icon
