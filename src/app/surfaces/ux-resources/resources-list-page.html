@@ -1,6 +1,7 @@
 <section class="resources-list" aria-labelledby="resources-list-title">
   <header class="resources-list__page-header">
     <div class="resources-list__titles">
+      <span class="app-page-context">Contexto · Recursos</span>
       <h1 id="resources-list-title" class="resources-list__title">Recursos</h1>
       <p class="resources-list__caption">
         Consulte os recursos reserváveis e quantas reservas futuras cada um tem.
@@ -14,11 +15,12 @@
       class="resources-list__search"
       subscriptSizing="dynamic"
     >
-      <mat-label>Buscar</mat-label>
       <input
         matInput
         type="search"
         name="resources-search"
+        placeholder="Buscar…"
+        aria-label="Buscar"
         autocomplete="off"
         [ngModel]="searchQuery()"
         (ngModelChange)="onSearchInput($event)"
@@ -33,9 +35,6 @@
         class="resources-list__cta"
         (click)="onCreate()"
       >
-        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
-          >add</mat-icon
-        >
         Novo recurso
       </button>
     }

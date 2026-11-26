@@ -201,7 +201,7 @@ describe('ResourcesListPage', () => {
       'funcionario',
     ]);
     const labels = buttonLabels(fixture);
-    expect(labels).toContain('add Novo recurso');
+    expect(labels).toContain('Novo recurso');
     expect(labels).toContain('Abrir');
     expect(labels).toContain('Editar');
     expect(labels).not.toContain('Excluir');

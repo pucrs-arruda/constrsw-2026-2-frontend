@@ -23,7 +23,8 @@
 .resources-list__title {
   margin: 0 0 0.35rem;
   font: var(--mat-sys-headline-small);
-  color: var(--mat-sys-on-surface);
+  font-weight: 700;
+  color: var(--mat-sys-secondary);
 }
 
 .resources-list__caption {
@@ -45,15 +46,28 @@
   background: var(--mat-sys-surface-container-low);
 }
 
+/* Figma 14 / mockup .search: 40px white pill. */
 .resources-list__search {
   flex: 1 1 12rem;
   max-width: 20rem;
   width: 100%;
+  border-radius: 20px;
+  background: var(--mat-sys-surface-container-lowest);
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+  --mat-form-field-outlined-container-shape: 20px;
+  --mat-form-field-outlined-outline-color: var(--mat-sys-outline);
 }
 
 .resources-list__cta {
-  /* touch target ≥48px (UX-DR17) */
-  min-height: 48px;
+  height: 40px;
+}
+
+/* touch target ≥48px on compact/medium (UX-DR17) */
+@media (max-width: 1023.98px) {
+  .resources-list__cta {
+    height: 48px;
+  }
 }
 
 @media (max-width: 599.98px) {

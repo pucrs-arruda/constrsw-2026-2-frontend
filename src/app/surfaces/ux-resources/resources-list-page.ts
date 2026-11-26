@@ -12,7 +12,6 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { BffRequestError, type AlertBannerKind } from '../../shared/http';
@@ -80,7 +79,6 @@ function matchesSearch(resource: ResourceView, query: string): boolean {
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatIconModule,
     MatInputModule,
     AlertBanner,
     EmptyState,
