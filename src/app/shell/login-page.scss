@@ -35,9 +35,9 @@
 .login-panel__mark {
   flex: 0 0 auto;
   width: 40px;
-  height: 40px;
+  height: 50px;
   border-radius: 8px;
-  object-fit: contain;
+  object-fit: cover;
   background: color-mix(in srgb, var(--mat-sys-on-primary) 12%, transparent);
 }
 
@@ -161,7 +161,7 @@
 
   .login-panel__mark {
     width: 56px;
-    height: 56px;
+    height: 70px;
   }
 
   .login-panel__product {

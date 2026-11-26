@@ -27,13 +27,14 @@
   padding: 0;
 }
 
+/* Crest on its own light-blue tile (Figma 04 brand mark), 40×50 asset. */
 .app-shell__mark {
   flex: 0 0 auto;
   width: 40px;
-  height: 40px;
+  height: 50px;
   border-radius: 8px;
-  object-fit: contain;
-  background: var(--mat-sys-surface-container-lowest);
+  object-fit: cover;
+  background: var(--mat-sys-primary-container);
 }
 
 .app-shell__titles {
