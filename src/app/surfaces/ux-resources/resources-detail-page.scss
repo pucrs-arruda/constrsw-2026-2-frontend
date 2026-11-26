@@ -1,9 +1,9 @@
-.resource-detail {
+.resource-detail,
+.resource-detail__layout {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   width: 100%;
-  max-width: 100%;
   min-width: 0;
 }
 
@@ -22,38 +22,21 @@
   text-decoration: underline;
 }
 
-.resource-detail__page-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.resource-detail__titles {
-  min-width: 0;
-  flex: 1 1 16rem;
-}
-
 .resource-detail__title {
   margin: 0 0 0.35rem;
   font: var(--mat-sys-headline-small);
   color: var(--mat-sys-on-surface);
-  word-break: break-word;
 }
 
-.resource-detail__caption {
+.resource-detail__caption,
+.resource-detail__empty {
   margin: 0;
   font: var(--mat-sys-body-medium);
   color: var(--mat-sys-on-surface-variant);
 }
 
-.resource-detail__layout {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  width: 100%;
-  min-width: 0;
+.resource-detail__empty {
+  margin: 1rem 0;
 }
 
 .resource-detail__panel {
@@ -75,7 +58,6 @@
   margin: 0;
   font: var(--mat-sys-title-medium);
   color: var(--mat-sys-on-surface);
-  word-break: break-word;
 }
 
 .resource-detail__fields {
@@ -83,10 +65,6 @@
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   gap: 0.85rem 1.25rem;
   margin: 1rem 0 0;
-}
-
-.resource-detail__field {
-  min-width: 0;
 }
 
 .resource-detail__field dt {
@@ -99,7 +77,6 @@
   margin: 0;
   font: var(--mat-sys-body-large);
   color: var(--mat-sys-on-surface);
-  word-break: break-word;
 }
 
 .resource-detail__status--inactive {
@@ -109,83 +86,12 @@
 
 .resource-detail__status-note {
   display: block;
-  margin: 0.35rem 0 0;
+  margin-top: 0.35rem;
   font: var(--mat-sys-body-small);
   font-weight: 400;
-  color: var(--mat-sys-on-surface-variant);
 }
 
-.resource-detail__cta {
-  flex: 0 0 auto;
-  min-height: 48px;
-}
-
-/* Figma 15: counter pill next to "Ocorrências". */
-.resource-detail__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.5rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  font: var(--mat-sys-label-large);
-  color: var(--mat-sys-on-secondary-container);
-  background: var(--mat-sys-secondary-container);
-}
-
-.resource-detail__empty {
-  margin: 1rem 0;
-  font: var(--mat-sys-body-medium);
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.resource-detail__occurrence-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 1rem 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Figma 15: tinted card with a left accent for open occurrences. */
-.resource-detail__occurrence {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 0.75rem;
-  min-width: 0;
-  padding: 0.6rem 0.75rem;
-  border-inline-start: 3px solid var(--mat-sys-outline-variant);
-  border-radius: 8px;
-  background: var(--mat-sys-surface-container);
-}
-
-.resource-detail__occurrence--open {
-  border-inline-start-color: var(--mat-sys-primary);
-  background: var(--mat-sys-primary-container);
-}
-
-.resource-detail__occurrence-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.resource-detail__occurrence-title {
-  font: var(--mat-sys-body-medium);
-  color: var(--mat-sys-on-surface);
-  word-break: break-word;
-}
-
-.resource-detail__occurrence-meta,
-.resource-detail__occurrence-resolution {
-  font: var(--mat-sys-body-small);
-  color: var(--mat-sys-on-surface-variant);
-  word-break: break-word;
-}
-
+.resource-detail__cta,
 .resource-detail__occurrence-action {
   flex: 0 0 auto;
   min-height: 48px;
@@ -195,34 +101,69 @@
   width: 100%;
 }
 
+/* Figma 15: counter pill next to the panel title. */
+.resource-detail__count {
+  min-width: 2.5rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  text-align: center;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-secondary-container);
+  background: var(--mat-sys-secondary-container);
+}
+
+.resource-detail__occurrence-list,
 .resource-detail__reservation-list {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin: 1rem 0 0.5rem;
+  margin: 1rem 0;
   padding: 0;
   list-style: none;
 }
 
+.resource-detail__occurrence,
 .resource-detail__reservation {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  justify-content: space-between;
+  gap: 0.15rem 0.75rem;
   min-width: 0;
   padding: 0.6rem 0.75rem;
   border-radius: 8px;
   background: var(--mat-sys-surface-container);
 }
 
+.resource-detail__reservation,
+.resource-detail__occurrence-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Figma 15: open occurrences get a tinted card with a left accent. */
+.resource-detail__occurrence {
+  align-items: center;
+  border-inline-start: 3px solid var(--mat-sys-outline-variant);
+}
+
+.resource-detail__occurrence--open {
+  border-inline-start-color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+}
+
+.resource-detail__occurrence-title,
 .resource-detail__reservation-title {
   font: var(--mat-sys-body-medium);
   color: var(--mat-sys-on-surface);
 }
 
-.resource-detail__reservation-meta {
+.resource-detail__occurrence-meta,
+.resource-detail__occurrence-resolution,
+.resource-detail__reservation-meta,
+.resource-detail__note {
+  margin: 0;
   font: var(--mat-sys-body-small);
   color: var(--mat-sys-on-surface-variant);
-  word-break: break-word;
 }
 
 .resource-detail__reservation--cancelled .resource-detail__reservation-title {
@@ -230,23 +171,16 @@
   text-decoration: line-through;
 }
 
-.resource-detail__note {
-  margin: 0.5rem 0 0;
-  font: var(--mat-sys-body-small);
-  color: var(--mat-sys-on-surface-variant);
+.resource-detail * {
+  overflow-wrap: break-word;
 }
 
-/*
- * UX-DR9 master-detail at ≥1280: card + reservations on the left (Figma 15
- * proportions), Ocorrências on the right. Stacked below 1280.
- */
+/* UX-DR9: card + reservations left, Ocorrências right at ≥1280; stacked below. */
 @media (min-width: 1280px) {
   .resource-detail__layout {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    grid-template-areas:
-      'master occurrences'
-      'reservations occurrences';
+    grid-template-areas: 'master occ' 'res occ';
     grid-template-rows: auto 1fr;
     align-items: start;
     gap: 1.5rem;
@@ -257,26 +191,18 @@
   }
 
   .resource-detail__reservations {
-    grid-area: reservations;
+    grid-area: res;
   }
 
   .resource-detail__occurrences {
-    grid-area: occurrences;
+    grid-area: occ;
   }
 }
 
 @media (max-width: 599.98px) {
-  .resource-detail__panel-header {
-    align-items: center;
-  }
-
   .resource-detail__master .resource-detail__panel-header {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .resource-detail__master .resource-detail__cta {
-    width: 100%;
   }
 
   .resource-detail__occurrence {
