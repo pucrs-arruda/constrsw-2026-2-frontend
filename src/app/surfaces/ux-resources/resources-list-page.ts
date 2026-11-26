@@ -32,7 +32,11 @@ import {
   type ResourceFormDialogData,
   type ResourceFormDialogResult,
 } from './resource-form-dialog';
-import { resourceStatusLabel, resourceTypeLabel } from './resource-labels';
+import {
+  activeReservationCount,
+  resourceStatusLabel,
+  resourceTypeLabel,
+} from './resource-labels';
 import { hasResourceWriteRole } from './resource-permissions';
 import { ResourcesApi, type ResourceView } from './resources-api';
 
@@ -55,7 +59,7 @@ function toRow(resource: ResourceView): DataTableRow {
     code: resource.code,
     typeLabel: resourceTypeLabel(resource.type),
     statusLabel: resourceStatusLabel(resource.active),
-    futureReservations: String(resource.reservations?.length ?? 0),
+    futureReservations: String(activeReservationCount(resource.reservations)),
   };
 }
 

@@ -33,15 +33,21 @@ import {
   type ResourceFormDialogResult,
 } from './resource-form-dialog';
 import {
+  FAIXA_START,
   OCCURRENCE_PRIORITY_LABELS,
   OCCURRENCE_STATUS_LABELS,
   OCCURRENCE_TYPE_LABELS,
+  RESERVATION_STATUS_LABELS,
+  activeReservationCount,
+  faixaLabel,
+  reservationDateLabel,
   resourceStatusLabel,
   resourceTypeLabel,
 } from './resource-labels';
 import { hasResourceWriteRole } from './resource-permissions';
 import {
   ResourcesApi,
+  type FutureReservation,
   type Occurrence,
   type ResourceAggregateView,
 } from './resources-api';
@@ -91,6 +97,34 @@ function toOccurrenceItems(occurrences: readonly Occurrence[]): OccurrenceItem[]
         .filter(Boolean)
         .join(' · '),
       isOpen: occurrence.status === 'OPEN',
+    }));
+}
+
+export interface ReservationItem {
+  reservation: FutureReservation;
+  title: string;
+  status: string;
+  purpose: string;
+  isCancelled: boolean;
+}
+
+/**
+ * Read-only view of the BFF's T3 `reservations[]`: no join with lessons or
+ * professors, only what the Reservation itself carries. Sorted by date + faixa
+ * so the next booking is on top.
+ */
+function toReservationItems(
+  reservations: readonly FutureReservation[],
+): ReservationItem[] {
+  const key = (r: FutureReservation) => `${r.data} ${FAIXA_START[r.faixaId] ?? '99:99'}`;
+  return [...reservations]
+    .sort((a, b) => key(a).localeCompare(key(b)))
+    .map((reservation) => ({
+      reservation,
+      title: `${reservationDateLabel(reservation.data)} · ${faixaLabel(reservation.faixaId)}`,
+      status: RESERVATION_STATUS_LABELS[reservation.status] ?? reservation.status,
+      purpose: reservation.purpose ?? '',
+      isCancelled: reservation.status === 'CANCELLED',
     }));
 }
 
@@ -145,6 +179,13 @@ export class ResourcesDetailPage implements OnInit {
     const tags = this.resource()?.tags ?? [];
     return tags.length > 0 ? tags.join(', ') : '—';
   });
+
+  readonly reservationItems = computed(() =>
+    toReservationItems(this.resource()?.reservations ?? []),
+  );
+  readonly activeReservations = computed(() =>
+    activeReservationCount(this.resource()?.reservations),
+  );
 
   readonly occurrenceItems = computed(() =>
     toOccurrenceItems(this.resource()?.occurrences ?? []),

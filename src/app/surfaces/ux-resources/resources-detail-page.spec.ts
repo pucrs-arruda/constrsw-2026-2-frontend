@@ -149,11 +149,77 @@ describe('ResourcesDetailPage', () => {
       'Lâmpada fraca — Aberta',
       'Cabo HDMI solto — Resolvida',
     ]);
-    expect(el.querySelector('.resource-detail__count')?.textContent?.trim()).toBe(
-      '1',
-    );
+    expect(
+      el
+        .querySelector('.resource-detail__occurrences .resource-detail__count')
+        ?.textContent?.trim(),
+    ).toBe('1');
     expect(text(fixture)).toContain('Defeito · Prioridade média · 20/11/2026');
     expect(text(fixture)).toContain('Resolução: Cabo trocado');
+  });
+
+  it('shows T3 future reservations read-only, sorted by date + faixa, active count', async () => {
+    const base = {
+      professorId: 'prof-1',
+      lessonId: 'lesson-1',
+      resourceIds: [ID],
+      enabled: true,
+      createdAt: '2026-11-20T10:00:00Z',
+      updatedAt: '2026-11-20T10:00:00Z',
+    };
+    const fixture = await render((req) =>
+      req.flush({
+        ...AGGREGATE,
+        reservations: [
+          { ...base, id: 'rv-3', data: '2026-12-02', faixaId: 'A', status: 'ACTIVE' },
+          {
+            ...base,
+            id: 'rv-2',
+            data: '2026-12-01',
+            faixaId: 'K',
+            status: 'CANCELLED',
+          },
+          {
+            ...base,
+            id: 'rv-1',
+            data: '2026-12-01',
+            faixaId: 'B',
+            status: 'ACTIVE',
+            purpose: 'Aula prática de redes',
+          },
+        ],
+      }),
+    );
+    const el = fixture.nativeElement as HTMLElement;
+
+    const titles = Array.from(
+      el.querySelectorAll('.resource-detail__reservation-title'),
+    ).map((node) => node.textContent?.trim());
+    expect(titles).toEqual([
+      '01/12/2026 · Faixa B (08:45)',
+      '01/12/2026 · Faixa K (18:15)',
+      '02/12/2026 · Faixa A (08:00)',
+    ]);
+    const metas = Array.from(
+      el.querySelectorAll('.resource-detail__reservation-meta'),
+    ).map((node) => node.textContent?.replace(/\s+/g, ' ').trim());
+    expect(metas).toEqual(['Ativa · Aula prática de redes', 'Cancelada', 'Ativa']);
+    expect(
+      el.querySelectorAll('.resource-detail__reservation--cancelled').length,
+    ).toBe(1);
+
+    const counts = Array.from(el.querySelectorAll('.resource-detail__count')).map(
+      (node) => node.textContent?.trim(),
+    );
+    // [reservas futuras ativas, ocorrências abertas]
+    expect(counts).toEqual(['2', '1']);
+    // No reservation write actions on this page.
+    expect(text(fixture)).not.toContain('Nova reserva');
+  });
+
+  it('shows the empty reservations message for []', async () => {
+    const fixture = await render((req) => req.flush(AGGREGATE));
+    expect(text(fixture)).toContain('Nenhuma reserva futura.');
   });
 
   it('shows the empty occurrences message', async () => {

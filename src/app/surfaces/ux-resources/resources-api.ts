@@ -18,16 +18,21 @@ export type OccurrenceType = 'MALFUNCTION' | 'DAMAGE' | 'MISSING' | 'OTHER';
 export type OccurrencePriority = 'LOW' | 'MEDIUM' | 'HIGH';
 export type OccurrenceStatus = 'OPEN' | 'RESOLVED';
 
+/** grupo03 Reservation status; the BFF does not filter it, so CANCELLED ones appear too. */
+export type ReservationStatus = 'ACTIVE' | 'CANCELLED';
+
 /** grupo03 Reservation, embedded by the BFF as future `reservations[]` (T3). */
 export interface FutureReservation {
   id: string;
   professorId: string;
   lessonId: string;
+  /** `YYYY-MM-DD`, no time. */
   data: string;
+  /** Canonical faixa A–E, F–N, P. */
   faixaId: string;
   purpose?: string;
   resourceIds: string[];
-  status: string;
+  status: ReservationStatus | string;
   enabled: boolean;
   createdAt: string;
   updatedAt: string;

@@ -195,13 +195,73 @@
   width: 100%;
 }
 
-/* UX-DR9 master-detail: 2 columns at ≥1280, stacked below. */
+.resource-detail__reservation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.resource-detail__reservation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container);
+}
+
+.resource-detail__reservation-title {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface);
+}
+
+.resource-detail__reservation-meta {
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+  word-break: break-word;
+}
+
+.resource-detail__reservation--cancelled .resource-detail__reservation-title {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+.resource-detail__note {
+  margin: 0.5rem 0 0;
+  font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/*
+ * UX-DR9 master-detail at ≥1280: card + reservations on the left (Figma 15
+ * proportions), Ocorrências on the right. Stacked below 1280.
+ */
 @media (min-width: 1280px) {
   .resource-detail__layout {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    grid-template-areas:
+      'master occurrences'
+      'reservations occurrences';
+    grid-template-rows: auto 1fr;
     align-items: start;
     gap: 1.5rem;
+  }
+
+  .resource-detail__master {
+    grid-area: master;
+  }
+
+  .resource-detail__reservations {
+    grid-area: reservations;
+  }
+
+  .resource-detail__occurrences {
+    grid-area: occurrences;
   }
 }
 

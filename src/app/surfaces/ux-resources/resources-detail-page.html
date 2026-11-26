@@ -83,6 +83,54 @@
       </article>
 
       <section
+        class="resource-detail__panel resource-detail__reservations"
+        aria-labelledby="resource-reservations-title"
+      >
+        <div class="resource-detail__panel-header">
+          <h2
+            id="resource-reservations-title"
+            class="resource-detail__panel-title"
+          >
+            Reservas futuras
+          </h2>
+          <span
+            class="resource-detail__count"
+            [attr.aria-label]="activeReservations() + ' reservas futuras ativas'"
+            title="Reservas futuras ativas"
+            >{{ activeReservations() }}</span
+          >
+        </div>
+
+        @if (reservationItems().length === 0) {
+          <p class="resource-detail__empty">Nenhuma reserva futura.</p>
+        } @else {
+          <ul class="resource-detail__reservation-list" role="list">
+            @for (item of reservationItems(); track item.reservation.id) {
+              <li
+                class="resource-detail__reservation"
+                [class.resource-detail__reservation--cancelled]="
+                  item.isCancelled
+                "
+              >
+                <span class="resource-detail__reservation-title">{{
+                  item.title
+                }}</span>
+                <span class="resource-detail__reservation-meta">
+                  {{ item.status }}
+                  @if (item.purpose) {
+                    · {{ item.purpose }}
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+        }
+        <p class="resource-detail__note">
+          Somente leitura. As reservas são feitas no detalhe da aula.
+        </p>
+      </section>
+
+      <section
         class="resource-detail__panel resource-detail__occurrences"
         aria-labelledby="resource-occurrences-title"
       >

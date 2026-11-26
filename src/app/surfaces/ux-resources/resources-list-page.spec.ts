@@ -18,7 +18,11 @@ import { ResourcesListPage } from './resources-list-page';
 const LIST_URL = `${environment.bffBaseUrl}/v1/resources`;
 const ME_URL = `${environment.bffBaseUrl}/v1/identidade/me`;
 
-function reservation(id: string, resourceId: string): FutureReservation {
+function reservation(
+  id: string,
+  resourceId: string,
+  status: 'ACTIVE' | 'CANCELLED' = 'ACTIVE',
+): FutureReservation {
   return {
     id,
     professorId: 'prof-1',
@@ -26,7 +30,7 @@ function reservation(id: string, resourceId: string): FutureReservation {
     data: '2026-12-01',
     faixaId: 'A',
     resourceIds: [resourceId],
-    status: 'CONFIRMED',
+    status,
     enabled: true,
     createdAt: '2026-11-20T10:00:00Z',
     updatedAt: '2026-11-20T10:00:00Z',
@@ -44,7 +48,11 @@ const SAMPLE: ResourceView[] = [
     createdAt: '2026-11-01T10:00:00Z',
     updatedAt: '2026-11-01T10:00:00Z',
     openOccurrenceCount: 1,
-    reservations: [reservation('rv-1', 'res-1'), reservation('rv-2', 'res-1')],
+    reservations: [
+      reservation('rv-1', 'res-1'),
+      reservation('rv-2', 'res-1'),
+      reservation('rv-3', 'res-1', 'CANCELLED'),
+    ],
   },
   {
     id: 'res-2',
@@ -150,7 +158,7 @@ describe('ResourcesListPage', () => {
     http.expectOne(LIST_URL).flush(SAMPLE);
   });
 
-  it('renders Figma 14 columns with pt-BR labels and the future reservation count', async () => {
+  it('renders Figma 14 columns with pt-BR labels and the active future reservation count', async () => {
     const fixture = await renderWith((req) => req.flush(SAMPLE));
     const el = fixture.nativeElement as HTMLElement;
 
