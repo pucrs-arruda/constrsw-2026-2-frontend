@@ -37,6 +37,10 @@ npm run e2e:report
 
 A UI chama `/api/v1/employees*` no BFF (`api` / porta `8180`). O módulo `EmployeesModule` no BFF faz proxy pass-through para o serviço `employees`. Seed/purge do harness ainda usam a API do domínio em `E2E_EMPLOYEES_URL` (mais rápido e estável).
 
+## BFF → resources (`resources.spec.ts`)
+
+A UI e o seed usam `/api/v1/resources*` no BFF. O purge dos recursos `E2E-` chama o serviço `resources` direto em `E2E_RESOURCES_URL` (DELETE lógico), porque o BFF ainda não expõe DELETE. Precisa de `resources` e `reservations` no ar, além de `oauth`, `keycloak` e `bff`.
+
 ## Variáveis opcionais
 
 | Variável | Default |
@@ -45,6 +49,7 @@ A UI chama `/api/v1/employees*` no BFF (`api` / porta `8180`). O módulo `Employ
 | `E2E_OAUTH_URL` | `http://127.0.0.1:8181` |
 | `E2E_BFF_URL` | `http://127.0.0.1:8180` |
 | `E2E_EMPLOYEES_URL` | `http://127.0.0.1:8184` |
+| `E2E_RESOURCES_URL` | `http://127.0.0.1:8188` |
 | `E2E_KEYCLOAK_URL` | `http://127.0.0.1:8081` |
 | `E2E_USERNAME` / `E2E_PASSWORD` | `admin@pucrs.br` / `a12345678` |
 
