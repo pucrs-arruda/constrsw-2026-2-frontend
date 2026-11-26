@@ -1,0 +1,97 @@
+<app-edit-dialog-layout
+  [dialogTitle]="dialogTitle"
+  [closeDisabled]="saving()"
+>
+  @if (bannerKind(); as kind) {
+    <app-alert-banner [kind]="kind" [message]="bannerMessage()" />
+  }
+
+  <form class="resource-form" [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Código</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="code"
+        required
+        autocomplete="off"
+        maxlength="32"
+      />
+      @if (mode === 'create') {
+        <mat-hint>Ex.: PROJ-01. Não pode ser alterado depois.</mat-hint>
+      } @else {
+        <mat-hint>O código não pode ser alterado.</mat-hint>
+      }
+      @if (form.controls.code.touched && form.controls.code.invalid) {
+        <mat-error>
+          Use de 3 a 32 letras ou números, separados por hífen (ex.: PROJ-01).
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Nome</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="name"
+        required
+        autocomplete="off"
+        maxlength="120"
+      />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <mat-error>Informe o nome do recurso.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Tipo</mat-label>
+      <mat-select formControlName="type">
+        @for (option of typeOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.type.touched && form.controls.type.invalid) {
+        <mat-error>Selecione o tipo.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="active">
+        <mat-option [value]="true">Ativo</mat-option>
+        <mat-option [value]="false">Inativo</mat-option>
+      </mat-select>
+      @if (!form.controls.active.value) {
+        <mat-hint>Recursos inativos não podem ser reservados.</mat-hint>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Etiquetas</mat-label>
+      <input matInput type="text" formControlName="tags" autocomplete="off" />
+      <mat-hint>Opcional. Separe por vírgula (ex.: av, sala-multimidia).</mat-hint>
+      @if (form.controls.tags.touched && form.controls.tags.invalid) {
+        <mat-error>
+          Até 10 etiquetas de letras minúsculas, números e hífen (até 30
+          caracteres cada).
+        </mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  <div editActions>
+    <button type="button" mat-button [disabled]="saving()" (click)="cancel()">
+      Cancelar
+    </button>
+    <button
+      type="button"
+      mat-flat-button
+      color="primary"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      Salvar
+    </button>
+  </div>
+</app-edit-dialog-layout>

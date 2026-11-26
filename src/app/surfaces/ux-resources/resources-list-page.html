@@ -24,6 +24,21 @@
         (ngModelChange)="onSearchInput($event)"
       />
     </mat-form-field>
+
+    @if (canWrite()) {
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        class="resources-list__cta"
+        (click)="onCreate()"
+      >
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+          >add</mat-icon
+        >
+        Novo recurso
+      </button>
+    }
   </div>
 
   @if (bannerKind(); as kind) {
@@ -35,7 +50,11 @@
   } @else if (showEmpty()) {
     <app-empty-state
       title="Nenhum recurso cadastrado ainda."
-      message="Os recursos cadastrados aparecerão aqui."
+      [message]="
+        canWrite()
+          ? 'Use o botão Novo recurso para cadastrar o primeiro.'
+          : 'Os recursos cadastrados aparecerão aqui.'
+      "
     />
   } @else if (showNoSearchResults()) {
     <app-empty-state
@@ -47,9 +66,10 @@
       [columns]="columns"
       [rows]="filteredRows()"
       [showOpen]="true"
-      [showEdit]="false"
+      [showEdit]="canWrite()"
       [showDelete]="false"
       (openRow)="onOpenRow($event)"
+      (editRow)="onEditRow($event)"
     />
   }
 </section>

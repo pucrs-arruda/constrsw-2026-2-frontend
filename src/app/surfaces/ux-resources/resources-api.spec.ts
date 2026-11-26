@@ -66,6 +66,32 @@ describe('ResourcesApi', () => {
     expect(result).toEqual(aggregate);
   });
 
+  it('creates with POST /api/v1/resources', () => {
+    api
+      .create({ code: 'PROJ-02', name: 'Projetor', type: 'PROJECTOR' })
+      .subscribe();
+
+    const req = http.expectOne(`${environment.bffBaseUrl}/v1/resources`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      code: 'PROJ-02',
+      name: 'Projetor',
+      type: 'PROJECTOR',
+    });
+    req.flush(RESOURCE, { status: 201, statusText: 'Created' });
+  });
+
+  it('updates with PATCH /api/v1/resources/{id}', () => {
+    api.patch(RESOURCE.id, { active: false }).subscribe();
+
+    const req = http.expectOne(
+      `${environment.bffBaseUrl}/v1/resources/${RESOURCE.id}`,
+    );
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ active: false });
+    req.flush({ ...RESOURCE, active: false });
+  });
+
   it('maps a 503 composition failure to a composition BffRequestError', () => {
     let error: unknown;
     api.list().subscribe({ error: (err) => (error = err) });

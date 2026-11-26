@@ -51,6 +51,11 @@
   width: 100%;
 }
 
+.resources-list__cta {
+  /* touch target ≥48px (UX-DR17) */
+  min-height: 48px;
+}
+
 @media (max-width: 599.98px) {
   .resources-list__toolbar {
     flex-direction: column;

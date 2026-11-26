@@ -5,15 +5,18 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, Router } from '@angular/router';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthSession } from '../../shell/auth-session';
+import { ResourceFormDialog } from './resource-form-dialog';
 import type { FutureReservation, ResourceView } from './resources-api';
 import { ResourcesListPage } from './resources-list-page';
 
 const LIST_URL = `${environment.bffBaseUrl}/v1/resources`;
+const ME_URL = `${environment.bffBaseUrl}/v1/identidade/me`;
 
 function reservation(id: string, resourceId: string): FutureReservation {
   return {
@@ -110,20 +113,35 @@ describe('ResourcesListPage', () => {
     http.verify();
   });
 
+  function flushIdentity(papeis: string[]): void {
+    http
+      .expectOne(ME_URL)
+      .flush({ sub: 'user-1', email: 'ops@pucrs.br', papeis });
+  }
+
   async function renderWith(
     respond: (req: ReturnType<HttpTestingController['expectOne']>) => void,
+    papeis: string[] = ['funcionario'],
   ) {
     const fixture = TestBed.createComponent(ResourcesListPage);
     fixture.detectChanges();
+    flushIdentity(papeis);
     respond(http.expectOne(LIST_URL));
     await fixture.whenStable();
     fixture.detectChanges();
     return fixture;
   }
 
+  function buttonLabels(fixture: { nativeElement: HTMLElement }): string[] {
+    return Array.from(fixture.nativeElement.querySelectorAll('button')).map(
+      (btn) => btn.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+    );
+  }
+
   it('shows the skeleton while GET /api/v1/resources is in flight', () => {
     const fixture = TestBed.createComponent(ResourcesListPage);
     fixture.detectChanges();
+    flushIdentity(['funcionario']);
 
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('app-skeleton-block')).not.toBeNull();
@@ -170,14 +188,66 @@ describe('ResourcesListPage', () => {
     expect(text.toLowerCase()).not.toContain('sala');
   });
 
-  it('hides Editar and Excluir until stories 6.2 / DELETE land', async () => {
-    const fixture = await renderWith((req) => req.flush(SAMPLE));
-    const labels = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll('button'),
-    ).map((btn) => btn.textContent?.trim());
+  it('shows Novo recurso and Editar for write roles, never Excluir', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE), [
+      'funcionario',
+    ]);
+    const labels = buttonLabels(fixture);
+    expect(labels).toContain('add Novo recurso');
+    expect(labels).toContain('Abrir');
+    expect(labels).toContain('Editar');
+    expect(labels).not.toContain('Excluir');
+  });
+
+  it('treats administrator as a write role too', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE), [
+      'administrator',
+    ]);
+    expect(buttonLabels(fixture)).toContain('Editar');
+  });
+
+  it('hides Novo recurso and Editar for read-only roles', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE), [
+      'professor',
+    ]);
+    const labels = buttonLabels(fixture);
     expect(labels).toContain('Abrir');
     expect(labels).not.toContain('Editar');
-    expect(labels).not.toContain('Excluir');
+    expect(labels.some((label) => label.includes('Novo recurso'))).toBe(false);
+  });
+
+  it('opens the create dialog and reloads the list after a save', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE));
+    const dialog = TestBed.inject(MatDialog);
+    const openSpy = vi.spyOn(dialog, 'open').mockReturnValue({
+      afterClosed: () => of({ id: 'res-new' }),
+    } as unknown as MatDialogRef<unknown>);
+
+    fixture.componentInstance.onCreate();
+
+    expect(openSpy).toHaveBeenCalledWith(
+      ResourceFormDialog,
+      expect.objectContaining({ data: { mode: 'create' } }),
+    );
+    http.expectOne(LIST_URL).flush(SAMPLE);
+  });
+
+  it('opens the edit dialog with the row resource and skips reload on cancel', async () => {
+    const fixture = await renderWith((req) => req.flush(SAMPLE));
+    const dialog = TestBed.inject(MatDialog);
+    const openSpy = vi.spyOn(dialog, 'open').mockReturnValue({
+      afterClosed: () => of(false),
+    } as unknown as MatDialogRef<unknown>);
+
+    fixture.componentInstance.onEditRow({ id: 'res-2' });
+
+    expect(openSpy).toHaveBeenCalledWith(
+      ResourceFormDialog,
+      expect.objectContaining({
+        data: { mode: 'edit', resource: SAMPLE[1] },
+      }),
+    );
+    http.expectNone(LIST_URL);
   });
 
   it('filters by name, code, type label and tag', async () => {

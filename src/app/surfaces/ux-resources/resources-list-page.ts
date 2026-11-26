@@ -6,9 +6,13 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { BffRequestError, type AlertBannerKind } from '../../shared/http';
@@ -17,12 +21,22 @@ import {
   EmptyState,
   ResponsiveDataTable,
   SkeletonBlock,
+  openEditDialog,
   type DataTableColumn,
   type DataTableRow,
 } from '../../shared/ui';
 import { AuthSession } from '../../shell/auth-session';
+import { IdentityApi } from '../../shell/identity-api';
+import {
+  ResourceFormDialog,
+  type ResourceFormDialogData,
+  type ResourceFormDialogResult,
+} from './resource-form-dialog';
 import { resourceStatusLabel, resourceTypeLabel } from './resource-labels';
 import { ResourcesApi, type ResourceView } from './resources-api';
+
+/** Default WRITE_ROLES of the resources service (backend/resources env.config). */
+const WRITE_ROLES = ['funcionario', 'administrator'];
 
 /**
  * Figma 14 order is Nome · Tipo · Status · Reservas futuras. Status is the 2nd
@@ -62,7 +76,9 @@ function matchesSearch(resource: ResourceView, query: string): boolean {
   standalone: true,
   imports: [
     FormsModule,
+    MatButtonModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     AlertBanner,
     EmptyState,
@@ -74,8 +90,11 @@ function matchesSearch(resource: ResourceView, query: string): boolean {
 })
 export class ResourcesListPage implements OnInit {
   private readonly resourcesApi = inject(ResourcesApi);
+  private readonly identityApi = inject(IdentityApi);
   private readonly session = inject(AuthSession);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+  private readonly breakpoints = inject(BreakpointObserver);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly columns = RESOURCE_COLUMNS;
@@ -85,6 +104,8 @@ export class ResourcesListPage implements OnInit {
   readonly searchQuery = signal('');
   readonly bannerKind = signal<AlertBannerKind | null>(null);
   readonly bannerMessage = signal('');
+  /** UI hint only; the resources service still enforces WRITE_ROLES (403). */
+  readonly canWrite = signal(false);
 
   readonly filteredRows = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();
@@ -113,11 +134,54 @@ export class ResourcesListPage implements OnInit {
   );
 
   ngOnInit(): void {
+    this.loadCanWrite();
     this.loadResources();
   }
 
   onSearchInput(value: string): void {
     this.searchQuery.set(value);
+  }
+
+  onCreate(): void {
+    this.openForm({ mode: 'create' });
+  }
+
+  onEditRow(row: DataTableRow): void {
+    const resource = this.resources().find((item) => item.id === row.id);
+    if (resource) {
+      this.openForm({ mode: 'edit', resource });
+    }
+  }
+
+  private openForm(data: ResourceFormDialogData): void {
+    if (!this.canWrite()) {
+      return;
+    }
+    openEditDialog<
+      ResourceFormDialog,
+      ResourceFormDialogData,
+      ResourceFormDialogResult
+    >(this.dialog, ResourceFormDialog, this.breakpoints, { data })
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result && result.id) {
+          this.loadResources();
+        }
+      });
+  }
+
+  private loadCanWrite(): void {
+    this.identityApi
+      .me()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (me) => {
+          const roles = me.papeis ?? [];
+          this.canWrite.set(WRITE_ROLES.some((role) => roles.includes(role)));
+        },
+        error: () => this.canWrite.set(false),
+      });
   }
 
   onOpenRow(row: DataTableRow): void {
