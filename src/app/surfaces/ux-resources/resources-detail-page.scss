@@ -160,12 +160,28 @@
   background: #e3f4fc;
 }
 
+.resource-detail__occurrence {
+  flex-wrap: wrap;
+}
+
+/* Text keeps ≥12rem; in a narrower column the actions drop below it. */
+.resource-detail__occurrence-text {
+  flex: 1 1 12rem;
+}
+
 .resource-detail__occurrence-text,
 .resource-detail__reservation {
   flex-direction: column;
   align-items: stretch;
-  flex: 1;
   min-width: 0;
+}
+
+.resource-detail__reservation {
+  flex: 1;
+}
+
+.resource-detail__occurrence-actions {
+  margin-inline-start: auto;
 }
 
 .resource-detail__reservation--cancelled .resource-detail__reservation-title {
@@ -198,6 +214,7 @@
 
 @media (max-width: 1023.98px) {
   .resource-detail__cta,
+  .resource-detail__back,
   .resource-detail__occurrence-action {
     height: 48px;
   }

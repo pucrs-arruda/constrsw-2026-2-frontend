@@ -106,6 +106,32 @@ describe('ResponsiveDataTable', () => {
     expect(el.textContent).not.toContain('Papel');
   });
 
+  it('shows Abrir, Editar and Excluir inline at ≥1280 (Excluir styled as danger)', () => {
+    compact$.next(false);
+    fullColumns$.next(true);
+    const el = create().nativeElement as HTMLElement;
+    const inline = Array.from(
+      el.querySelectorAll('.rdt-table__actions .rdt-table__action'),
+    ).map((btn) => btn.textContent?.trim());
+    expect(inline).toEqual(['Abrir', 'Editar', 'Excluir']);
+    expect(el.querySelector('.rdt-table__action--danger')?.textContent?.trim()).toBe(
+      'Excluir',
+    );
+    expect(el.querySelector('.rdt-table__more')).toBeNull();
+  });
+
+  it('keeps Abrir inline and moves Editar/Excluir into a menu between 600 and 1279', () => {
+    compact$.next(false);
+    fullColumns$.next(false);
+    const el = create().nativeElement as HTMLElement;
+    const inline = Array.from(
+      el.querySelectorAll('.rdt-table__actions .rdt-table__action'),
+    ).map((btn) => btn.textContent?.trim());
+    expect(inline).toEqual(['Abrir']);
+    const more = el.querySelector('.rdt-table__more');
+    expect(more?.getAttribute('aria-label')).toBe('Mais ações');
+  });
+
   it('renders 2-line list + Mais ações in compact viewport', () => {
     compact$.next(true);
     fullColumns$.next(false);

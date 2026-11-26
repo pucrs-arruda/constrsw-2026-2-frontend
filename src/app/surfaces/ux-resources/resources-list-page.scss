@@ -68,6 +68,13 @@
   .resources-list__cta {
     height: 48px;
   }
+
+  .resources-list__search {
+    border-radius: 24px;
+    --mat-form-field-container-height: 48px;
+    --mat-form-field-container-vertical-padding: 12px;
+    --mat-form-field-outlined-container-shape: 24px;
+  }
 }
 
 @media (max-width: 599.98px) {

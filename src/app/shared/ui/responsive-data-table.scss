@@ -104,9 +104,24 @@
 
 .rdt-table__actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 0.25rem;
   justify-content: flex-end;
+  white-space: nowrap;
+}
+
+/* < 1280: Editar/Excluir live behind this button (UX-DR8 TableRowActions). */
+.rdt-table__more {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.rdt-menu__danger {
+  --mat-menu-item-label-text-color: var(--mat-sys-error);
+  color: var(--mat-sys-error);
 }
 
 .rdt-table__action {
