@@ -43,16 +43,18 @@
   flex: 1 1 auto;
 }
 
+/* Mockup .brand-name: 18/22 bold primary. */
 .app-shell__name {
   font: var(--mat-sys-title-medium);
+  font-size: 1.125rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.375rem;
   color: var(--mat-sys-primary);
   overflow-wrap: anywhere;
 }
 
 .app-shell__caption {
-  font: var(--mat-sys-label-small);
+  font: var(--mat-sys-body-small);
   color: var(--mat-sys-on-surface-variant);
   overflow-wrap: anywhere;
 }
@@ -66,8 +68,10 @@
   margin-inline-start: auto;
 }
 
+/* Mockup .user-name: body 14px semibold. */
 .app-shell__display-name {
-  font: var(--mat-sys-body-small);
+  font: var(--mat-sys-body-medium);
+  font-weight: 600;
   color: var(--mat-sys-on-surface);
   max-width: 14rem;
   overflow: hidden;
@@ -79,12 +83,13 @@
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--mat-sys-secondary);
   color: var(--mat-sys-on-secondary);
   font: var(--mat-sys-label-medium);
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
