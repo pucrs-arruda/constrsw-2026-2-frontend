@@ -35,6 +35,7 @@ import {
 } from '../data/classes.models';
 import { ClassFormDialog, ClassFormDialogData } from '../list/class-form.dialog';
 import { ClassEnrollmentsTab } from './class-enrollments-tab';
+import { ClassLessonsTab } from '../../ux-class-lessons/class-lessons-tab';
 
 const TAB_KEYS = ['alunos', 'aulas', 'reservas'] as const;
 type TabKey = (typeof TAB_KEYS)[number];
@@ -50,6 +51,7 @@ type TabKey = (typeof TAB_KEYS)[number];
     AlertBanner,
     SkeletonBlock,
     ClassEnrollmentsTab,
+    ClassLessonsTab,
   ],
   templateUrl: './class-detail.page.html',
   styleUrl: './class-detail.page.scss',

@@ -96,12 +96,9 @@
         </mat-tab>
 
         <mat-tab label="Aulas">
-          <section class="class-detail__handoff" aria-label="Aulas da turma">
-            <h2 class="class-detail__handoff-title">Aulas da turma</h2>
-            <p class="class-detail__handoff-text">
-              Superfície <strong>UX-CLASS-LESSONS</strong> (Grupo 02 — Epic 2): geração de aulas a partir do período ({{ item.startDate }} a {{ item.endDate }}) e CRUD de aulas desta turma.
-            </p>
-          </section>
+          <ng-template matTabContent>
+            <app-class-lessons-tab [classItem]="item" [rooms]="lookups().rooms" />
+          </ng-template>
         </mat-tab>
 
         <mat-tab label="Reservas">

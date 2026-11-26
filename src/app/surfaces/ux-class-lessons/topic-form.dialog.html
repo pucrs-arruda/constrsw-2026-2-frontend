@@ -1,0 +1,30 @@
+<app-edit-dialog-layout [dialogTitle]="data.topic ? 'Editar tópico' : 'Novo tópico'" [closeDisabled]="saving()">
+  <form id="topic-form" class="lesson-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    @if (error(); as err) { <app-alert-banner [kind]="err.kind" [message]="err.message" /> }
+    <mat-form-field appearance="outline">
+      <mat-label>Ordem</mat-label><input matInput type="number" formControlName="order" min="1" max="32767" step="1" required />
+      @if (form.controls.order.invalid) { <mat-error>Use um número inteiro de 1 a 32767.</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Enunciado</mat-label><textarea matInput formControlName="statement" rows="4"></textarea>
+    </mat-form-field>
+    @if (syllabusUnavailable()) {
+      <p role="status">O plano de ensino não está disponível agora. Você pode informar o enunciado do tópico.</p>
+    }
+    <mat-form-field appearance="outline">
+      <mat-label>Item do plano de ensino (opcional)</mat-label>
+      <mat-select formControlName="syllabusItemId">
+        <mat-option value="">Sem vínculo</mat-option>
+        @if (data.topic?.syllabusItemId && !hasLinkedItem()) {
+          <mat-option [value]="data.topic!.syllabusItemId">Item já vinculado</mat-option>
+        }
+        @for (item of syllabus(); track item.id) { <mat-option [value]="item.id">{{ item.order }}. {{ item.statement }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <p>Preencha o enunciado, o item do plano de ensino ou ambos.</p>
+  </form>
+  <div editActions>
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" form="topic-form" [disabled]="saving()">{{ saving() ? 'Salvando…' : 'Salvar tópico' }}</button>
+  </div>
+</app-edit-dialog-layout>

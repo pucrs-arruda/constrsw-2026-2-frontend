@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "e2e": "playwright test",
+    "e2e:lessons:ui": "playwright test --config playwright.lessons.config.ts",
     "e2e:ui": "playwright test --ui",
     "e2e:report": "playwright show-report e2e-report"
   },

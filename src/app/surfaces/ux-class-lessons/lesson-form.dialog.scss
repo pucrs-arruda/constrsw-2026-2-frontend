@@ -1,0 +1,5 @@
+.lesson-form { display: grid; gap: 12px; }
+mat-form-field { width: 100%; }
+p { margin: 0 0 8px; color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-medium); }
+[editActions] { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+button { min-height: 48px; }

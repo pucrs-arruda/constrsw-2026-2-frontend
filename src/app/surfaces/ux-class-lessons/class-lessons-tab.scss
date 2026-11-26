@@ -1,0 +1,14 @@
+:host { display: block; min-width: 0; }
+.lessons { padding: 24px; min-width: 0; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 20px; }
+h2 { margin: 0; flex: 1; font: var(--mat-sys-title-large); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.search { flex-basis: 100%; max-width: 420px; }
+button { min-height: 48px; }
+.notice { color: var(--mat-sys-primary); }
+@media (max-width: 599.98px) {
+  .lessons { padding: 16px 0; }
+  .actions { width: 100%; }
+  .actions button { flex: 1 1 100%; }
+  .search { max-width: none; width: 100%; }
+}
