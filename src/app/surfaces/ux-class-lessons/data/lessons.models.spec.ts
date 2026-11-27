@@ -14,6 +14,10 @@ describe('Lessons: permissões, datas e recusas', () => {
     expect(lessonPermissions({ sub: 'p', papeis: ['professor'] }, 'p').edit).toBe(false);
     expect(lessonPermissions({ sub: 'u', professorId: 'outro', papeis: ['professor'] }, 'p').edit).toBe(false);
   });
+  it('conta classes pode criar, gerar e excluir, mas não ganha edição de aulas ou tópicos', () => {
+    expect(lessonPermissions({ sub: 'service', papeis: ['classes'] }, 'p')).toEqual({ manage: true, edit: false });
+    expect(lessonPermissions({ sub: 'u', professorId: 'p', papeis: ['classes', 'professor'] }, 'p')).toEqual({ manage: true, edit: true });
+  });
   it('valida período, dias inexistentes e domingo sem depender do fuso local', () => {
     expect(validLessonDate('2026-11-04', '2026-11-01', '2026-11-30')).toBe(true);
     expect(validLessonDate('2026-11-08', '2026-11-01', '2026-11-30')).toBe(false);

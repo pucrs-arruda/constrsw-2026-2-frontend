@@ -32,8 +32,9 @@ export function lessonError(error: unknown): LessonUiError {
 
 export function lessonPermissions(identity: IdentityMe | null, professorId: string) {
   const roles = identity?.papeis ?? [];
-  const manage = roles.some(role => ['coordinator', 'coordenador', 'classes'].includes(role));
-  return { manage, edit: manage || (roles.includes('professor') && !!professorId && identity?.professorId === professorId) };
+  const coordinator = roles.some(role => ['coordinator', 'coordenador'].includes(role));
+  const manage = coordinator || roles.includes('classes');
+  return { manage, edit: coordinator || (roles.includes('professor') && !!professorId && identity?.professorId === professorId) };
 }
 
 export function displayLessonDate(date: string): string {
