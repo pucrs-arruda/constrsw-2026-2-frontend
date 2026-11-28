@@ -1,0 +1,37 @@
+<section class="lessons" aria-labelledby="lessons-heading" [attr.aria-busy]="loading() || busy()">
+  <div class="toolbar">
+    <h2 id="lessons-heading">Aulas da turma</h2>
+    <div class="actions">
+      @if (permissions().manage) {
+        <button type="button" mat-stroked-button (click)="edit()" [disabled]="busy()">Nova aula</button>
+        <button type="button" mat-flat-button (click)="generate()" [disabled]="busy()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">event_repeat</mat-icon>
+          {{ busy() ? 'Aguarde…' : 'Gerar aulas' }}
+        </button>
+      }
+    </div>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
+      <mat-label>Buscar tópico</mat-label>
+      <input matInput [value]="search()" (input)="search.set($any($event.target).value)" />
+    </mat-form-field>
+  </div>
+  @if (identityError()) {
+    <app-alert-banner kind="identity" />
+    <button mat-button type="button" (click)="loadIdentity()">Tentar carregar permissões</button>
+  }
+  @if (notice()) { <p role="status" class="notice">{{ notice() }}</p> }
+  @if (error(); as err) {
+    <app-alert-banner [kind]="err.kind" [message]="err.message" />
+    <button mat-button type="button" [disabled]="busy()" (click)="load()">Atualizar aulas</button>
+  }
+  @if (loading()) {
+    <app-skeleton-block [lines]="4" label="Carregando aulas…" />
+  } @else if (rows().length) {
+    <app-responsive-data-table [columns]="columns" [rows]="rows()"
+      [showEdit]="permissions().edit && !busy()" [showDelete]="permissions().manage && !busy()"
+      (openRow)="open($event)" (editRow)="edit($event)" (deleteRow)="remove($event)" />
+  } @else if (!error()) {
+    <app-empty-state [title]="search() ? 'Nenhuma aula encontrada' : 'Nenhuma aula cadastrada'"
+      [message]="search() ? 'Tente outro tópico ou limpe a busca.' : 'As aulas desta turma aparecerão aqui.'" />
+  }
+</section>

@@ -1,0 +1,51 @@
+<section class="lesson-detail" aria-labelledby="lesson-heading" [attr.aria-busy]="loading() || busy()">
+  <a mat-button [routerLink]="['/turmas', classId]" [queryParams]="{ aba: 'aulas' }">Voltar para Aulas da turma</a>
+  @if (loading()) {
+    <app-skeleton-block [lines]="5" label="Carregando aula…" />
+  } @else if (error(); as err) {
+    <app-alert-banner [kind]="err.kind" [message]="err.message" />
+    <button type="button" mat-stroked-button (click)="load()">Tentar novamente</button>
+  } @else if (lesson(); as item) {
+    <header>
+      <div><p class="eyebrow">Aula da turma {{ classItem()?.code || classItem()?.label }}</p>
+        <h1 #lessonHeading id="lesson-heading" tabindex="-1">{{ dateLabel() }} · Faixa {{ item.timeSlotId }}</h1></div>
+      <div class="actions">
+        @if (permissions().edit) { <button mat-stroked-button type="button" (click)="edit()" [disabled]="busy()">Editar aula</button> }
+        @if (permissions().manage) { <button mat-button type="button" (click)="remove()" [disabled]="busy()">Excluir aula</button> }
+      </div>
+    </header>
+    @if (notice()) { <p role="status">{{ notice() }}</p> }
+    @if (actionError(); as err) { <app-alert-banner [kind]="err.kind" [message]="err.message" /> }
+    @if (identityError()) {
+      <app-alert-banner kind="identity" /><button mat-button type="button" (click)="loadIdentity()">Tentar carregar permissões</button>
+    }
+    <dl class="facts">
+      <div><dt>Modalidade</dt><dd>{{ item.modality === 'REMOTE' ? 'Remota' : 'Presencial' }}</dd></div>
+      <div><dt>Avaliação</dt><dd>{{ item.hasAssessment ? 'Com avaliação' : 'Sem avaliação' }}</dd></div>
+      <div><dt>Sala efetiva</dt><dd>{{ room() }}</dd></div>
+    </dl>
+    <section class="topics" aria-labelledby="topics-heading">
+      <div class="section-heading"><h2 id="topics-heading">Tópicos da aula</h2>
+        @if (permissions().edit) { <button mat-flat-button type="button" (click)="editTopic()" [disabled]="busy()">Novo tópico</button> }
+      </div>
+      @if (topics().length) {
+        <ol>
+          @for (topic of topics(); track topic.id) {
+            <li [value]="topic.order">
+              <div><p>{{ topic.statement || 'Item do plano de ensino' }}</p>
+                @if (topic.syllabusItemId) { <span class="syllabus-link">Vinculado ao plano de ensino</span> }
+              </div>
+              @if (permissions().edit) {
+                <div class="actions">
+                  <button mat-button type="button" (click)="editTopic(topic)" [disabled]="busy()" [attr.aria-label]="'Editar tópico ' + topic.order">Editar</button>
+                  <button mat-button type="button" (click)="removeTopic(topic)" [disabled]="busy()" [attr.aria-label]="'Excluir tópico ' + topic.order">Excluir</button>
+                </div>
+              }
+            </li>
+          }
+        </ol>
+      } @else { <app-empty-state title="Nenhum tópico cadastrado" message="Os tópicos e os itens do plano de ensino desta aula aparecerão aqui." /> }
+    </section>
+    <a mat-stroked-button [routerLink]="['/turmas', classId]" [queryParams]="{ aba: 'reservas' }">Ver reservas da turma</a>
+  }
+</section>

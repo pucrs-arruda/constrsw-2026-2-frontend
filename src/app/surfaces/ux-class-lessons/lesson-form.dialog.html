@@ -1,0 +1,30 @@
+<app-edit-dialog-layout [dialogTitle]="data.lesson ? 'Editar aula' : 'Nova aula'" [closeDisabled]="saving()">
+  <form id="lesson-form" class="lesson-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    @if (error(); as err) { <app-alert-banner [kind]="err.kind" [message]="err.message" /> }
+    <mat-form-field appearance="outline">
+      <mat-label>Data da aula</mat-label>
+      <input matInput type="date" formControlName="date" [min]="data.classItem.startDate" [max]="data.classItem.endDate" required />
+      @if (form.controls.date.hasError('required')) { <mat-error>Informe a data.</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Faixa</mat-label>
+      <mat-select formControlName="timeSlotId" required>
+        @for (slot of slots; track slot) { <mat-option [value]="slot">{{ slot }}</mat-option> }
+      </mat-select>
+      @if (form.controls.timeSlotId.hasError('required')) { <mat-error>Escolha uma faixa.</mat-error> }
+    </mat-form-field>
+    @if (data.lesson) { <p>Data, faixa e turma são fixas. Os tópicos são editados no detalhe da aula.</p> }
+    <mat-form-field appearance="outline">
+      <mat-label>Modalidade</mat-label>
+      <mat-select formControlName="modality">
+        <mat-option value="IN_PERSON">Presencial</mat-option><mat-option value="REMOTE">Remota</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-checkbox formControlName="hasAssessment">Aula com avaliação</mat-checkbox>
+    <p>A sala efetiva é definida automaticamente. Adicione ou ajuste tópicos ao abrir a aula.</p>
+  </form>
+  <div editActions>
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" form="lesson-form" [disabled]="saving()">{{ saving() ? 'Salvando…' : 'Salvar aula' }}</button>
+  </div>
+</app-edit-dialog-layout>
