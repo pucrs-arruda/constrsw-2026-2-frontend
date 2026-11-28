@@ -19,13 +19,20 @@ Usa tabela/lista e diálogos responsivos do kit, sem alterar o menu ou implement
 reservas. A integração em `ux-classes` substitui somente o slot reservado à aba
 Aulas e registra o detalhe. O link de reservas retorna à aba Reservas da turma.
 
+Em um `401` de Lessons ou do catálogo de itens do plano, o cliente renova a sessão
+pelo OAuth e repete a chamada uma única vez com o novo Bearer. Falha no refresh ou
+novo `401` limpa o token em memória e retorna ao login. Recusas `403`/`409` e
+indisponibilidade não repetem escritas. Requisições simultâneas reutilizam o
+refresh compartilhado do shell.
+
 Validação: Node 24 compatível, `npm ci`, `npm test -- --watch=false`, `npm run build`.
 Com o build gerado e Chromium instalado, `npm run e2e:lessons:ui`
 verifica a jornada com fixtures HTTP, inclusive larguras 360/768/1280 e fullscreen
 compact. A suíte inicia um servidor local do build; `E2E_BASE_URL` permite usar um
 servidor existente. Essa suíte não usa o seed de funcionários e não substitui E2E com a stack
-real. O fluxo real de criação/geração continua dependendo do alinhamento entre
-Lessons e Classes e da disponibilidade do módulo Lessons no BFF em execução.
+real. A geração com sucesso depende de `weeklySlots` publicado por Classes;
+a edição como professor depende de `professorId` no token, vinculado à turma.
+O módulo Lessons e os demais serviços envolvidos precisam estar atualizados na stack.
 
 Stack: **Angular 22.x** + Angular Material (M3) + CDK + SCSS. Tema: tokens `DESIGN.md` (primary `#0066B3`). Em desenvolvimento (`npm start`): porta **4200**. Pelo Compose: porta de `FRONTEND_EXTERNAL_PORT` (**4200** no `.env` do repositório base).
 
