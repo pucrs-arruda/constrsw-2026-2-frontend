@@ -1,14 +1,24 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { BffRequestError } from '../../../shared/http';
+import { AuthSession } from '../../../shell/auth-session';
+import { bearerInterceptor } from '../../../shell/bearer.interceptor';
 import { LessonsApiService } from './lessons-api.service';
 
 describe('LessonsApiService — somente BFF', () => {
   let api: LessonsApiService;
   let http: HttpTestingController;
+  let session: AuthSession;
+  let navigate: ReturnType<typeof vi.fn>;
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    navigate = vi.fn().mockResolvedValue(true);
+    TestBed.configureTestingModule({ providers: [provideHttpClient(withInterceptors([bearerInterceptor])),
+      provideHttpClientTesting(), { provide: Router, useValue: { navigateByUrl: navigate } }] });
     api = TestBed.inject(LessonsApiService); http = TestBed.inject(HttpTestingController);
+    session = TestBed.inject(AuthSession);
+    session.applyTokens({ access_token: 'expired-token' });
   });
   afterEach(() => http.verify());
   it('filtra por turma e trata o 404 de coleção filtrada como vazio', () => {
@@ -56,5 +66,86 @@ describe('LessonsApiService — somente BFF', () => {
   it('busca o plano de ensino pelo BFF e escapa identificadores', () => {
     api.syllabus('course/id').subscribe(); const req = http.expectOne('/api/v1/courses/course%2Fid/syllabus-items'); req.flush([]);
     api.get('lesson/id').subscribe(); http.expectOne('/api/v1/lessons/lesson%2Fid').flush({});
+  });
+
+  it('renova pelo OAuth e repete a leitura com o novo Bearer', () => {
+    let result: unknown;
+    api.get('l').subscribe(value => result = value);
+    const first = http.expectOne('/api/v1/lessons/l');
+    expect(first.request.headers.get('Authorization')).toBe('Bearer expired-token');
+    first.flush({}, { status: 401, statusText: 'Unauthorized' });
+    const refresh = http.expectOne('/oauth/refresh');
+    expect(refresh.request.method).toBe('POST');
+    expect(refresh.request.withCredentials).toBe(true);
+    expect(refresh.request.headers.has('Authorization')).toBe(false);
+    refresh.flush({ access_token: 'renewed-token' });
+    const retry = http.expectOne('/api/v1/lessons/l');
+    expect(retry.request.headers.get('Authorization')).toBe('Bearer renewed-token');
+    retry.flush({ id: 'l' });
+    expect(result).toEqual({ id: 'l' });
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it.each([401, 503])('se o refresh falha com %s, limpa a sessão e retorna ao login', status => {
+    let failure: BffRequestError | undefined;
+    api.get('l').subscribe({ error: error => failure = error });
+    http.expectOne('/api/v1/lessons/l').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/oauth/refresh').flush({}, { status, statusText: 'Refresh failed' });
+    expect(failure?.http.status).toBe(401);
+    expect(session.accessToken).toBeNull();
+    expect(navigate).toHaveBeenCalledWith('/login');
+    http.expectNone('/api/v1/lessons/l');
+  });
+
+  it('um segundo 401 encerra a sessão sem entrar em ciclo de refresh', () => {
+    let failed = false;
+    api.get('l').subscribe({ error: () => failed = true });
+    http.expectOne('/api/v1/lessons/l').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/oauth/refresh').flush({ access_token: 'renewed-token' });
+    http.expectOne('/api/v1/lessons/l').flush({}, { status: 401, statusText: 'Unauthorized' });
+    expect(failed).toBe(true);
+    expect(session.accessToken).toBeNull();
+    expect(navigate).toHaveBeenCalledWith('/login');
+    http.expectNone('/oauth/refresh');
+  });
+
+  it.each([403, 409, 503])('não repete escrita nem renova a sessão em resposta %s', status => {
+    let failure: BffRequestError | undefined;
+    api.generate('c').subscribe({ error: error => failure = error });
+    http.expectOne('/api/v1/lessons/generate').flush({}, { status, statusText: 'Domain refusal' });
+    expect(failure?.http.status).toBe(status);
+    expect(session.accessToken).toBe('expired-token');
+    expect(navigate).not.toHaveBeenCalled();
+    http.expectNone('/oauth/refresh');
+    http.expectNone('/api/v1/lessons/generate');
+  });
+
+  it('preserva o corpo da geração depois de um 401 e propaga a recusa sem novo refresh', () => {
+    let failure: BffRequestError | undefined;
+    api.generate('c').subscribe({ error: error => failure = error });
+    http.expectOne('/api/v1/lessons/generate').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/oauth/refresh').flush({ access_token: 'renewed-token' });
+    const retry = http.expectOne('/api/v1/lessons/generate');
+    expect(retry.request.method).toBe('POST');
+    expect(retry.request.body).toEqual({ classId: 'c' });
+    expect(retry.request.headers.get('Authorization')).toBe('Bearer renewed-token');
+    retry.flush({ error_code: 'LE-409' }, { status: 409, statusText: 'Conflict' });
+    expect(failure?.http.status).toBe(409);
+    expect(session.accessToken).toBe('renewed-token');
+    expect(navigate).not.toHaveBeenCalled();
+    http.expectNone('/oauth/refresh');
+  });
+
+  it('duas recusas simultâneas compartilham um único refresh', () => {
+    let completed = 0;
+    api.get('l').subscribe(() => completed++);
+    api.syllabus('c').subscribe(() => completed++);
+    http.expectOne('/api/v1/lessons/l').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/api/v1/courses/c/syllabus-items').flush({}, { status: 401, statusText: 'Unauthorized' });
+    http.expectOne('/oauth/refresh').flush({ access_token: 'renewed-token' });
+    http.expectOne('/api/v1/lessons/l').flush({ id: 'l' });
+    http.expectOne('/api/v1/courses/c/syllabus-items').flush([]);
+    expect(completed).toBe(2);
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
